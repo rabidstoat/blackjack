@@ -1,6 +1,6 @@
 package drexel.edu.blackjack.server.commands;
 
-import drexel.edu.blackjack.server.game.User;
+import drexel.edu.blackjack.server.BlackjackProtocol;
 
 /**
  * This class handles the case where the user sent a command
@@ -12,10 +12,9 @@ import drexel.edu.blackjack.server.game.User;
  */
 public class UnknownCommand extends BlackjackCommand {
 
-	@Override
-	public String processCommand(User user, CommandMetadata cm) {
+	public String processCommand(BlackjackProtocol protocol, CommandMetadata cm) {
 		// We need to implement something here....
-		return super.processCommand(user, cm);
+		return super.processCommand(protocol, cm);
 	}
 
 	@Override

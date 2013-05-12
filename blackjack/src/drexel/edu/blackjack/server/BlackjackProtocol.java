@@ -2,6 +2,7 @@ package drexel.edu.blackjack.server;
 
 import drexel.edu.blackjack.server.commands.BlackjackCommand;
 import drexel.edu.blackjack.server.commands.CommandMetadata;
+import drexel.edu.blackjack.server.game.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,6 +42,103 @@ public class BlackjackProtocol {
 
 	// And our logger
 	private final static Logger LOGGER = Logger.getLogger(BlackjackProtocol.class.getName()); 
+
+	/*************************************************************
+	 * The enumeration of protocol states
+	 ************************************************************/
+	public enum STATE {
+		// The client connected but hasn't supplied a username yet
+		WAITING_FOR_USERNAME,
+		
+		// The client connected and has given a username, but needs to give a password
+		// username variable holds the username
+		WAITING_FOR_PASSWORD,
+		
+		// The client has authenticated but is not in a session
+		// In this and all states below, the user variable should be set
+		NOT_IN_SESSION,	
+		
+		// The user has joined a session, but there's a game in progress and they
+		// aren't playing, they have to wait until the next round of betting
+		IN_SESSION_AS_OBSERVER,
+		
+		// The server has requested that the client give its bet
+		IN_SESSION_AWAITING_BETS,
+		
+		// Bets have been made and cards are being dealt, the server
+		// is not waiting for any client input. The bet variable should
+		// be set to the value of the bet
+		IN_SESSION_CARDS_BEING_DEALT,
+		
+		// This is after the cards are dealt, and the dealer doesn't have
+		// a blackjack. Still not waiting for client input as others are
+		// playing. The bet variable should be set to the value of the bet.
+		IN_SESSION_AWAITING_PLAY,
+		
+		// In this case, the dealer has a blackjack. Too bad for the
+		// client! The thread has to do some bookkeeping and is not
+		// expecting client input. The bet value should be set to 
+		// what the client bet.
+		IN_SESSION_DEALER_BLACKJACK,
+		
+		// The dealer didn't have blackjack, and the client already 
+		// played out their hand. It's just waiting for others to 
+		// finish playing now. The bet value should be set to what
+		// the client bet.
+		IN_SESSION_WAITING_FOR_OTHERS,
+		
+		// Now everyone is done playing and the server is processing
+		// the results. The bet value should be set to what the client bet.
+		IN_SESSION_SERVER_PROCESSING
+	}
+
+	/*************************************************************
+	 * Each instantiation of the protocol have these local
+	 * variables.
+	 ************************************************************/
+	
+	// This is null until we're authenticated, then it points to the user associated
+	// with this instance of the protocol
+	private User user = null;
+	
+	// This is the state that the protocol connection is in.
+	private STATE state = null;
+	
+	// If the client is in the state where it's waiting for a password,
+	// the username attribute is set to what they said as a username.
+	private String username = null;
+	
+	// If the client has made a bet that hasn't been processed, this 
+	// will reflect the amount bet.
+	private Integer bet = null;
+	
+	
+	/******************************************************************
+	 * I don't think this is the right set of timers we need. These
+	 * attributes are used to track when a timeout needs to occur,
+	 * by recording the client activity. Somewhere else some daemon
+	 * will have to periodically search all connections for ones
+	 * that have been idle too long for their state.
+	 *****************************************************************/
+	
+	// This attribute is the last time the client did any sort of
+	// command, even if it was pure garbage. It's system time in
+	// milliseconds
+	private Long lastCommand = null;
+	
+	// This attribute is the last time the client did a command
+	// that was valid for its state. This include commands that
+	// are valid at any time, like CAPABILITIES
+	private Long lastSuccessfulCommand = null;
+
+	// This is a timer that can be used if something is being
+	// waited for from the user. It seems like this might be
+	// distinct from the above because, for example, if they're
+	// waiting for the client to make a BET command, they
+	// shouldn't be able to avoid timing out by using the
+	// perfectly allowable CAPABILITIES command repeatedly
+	private Long timer = null;
+	
 
 	/*************************************************************
 	 * Constructor goes  here
