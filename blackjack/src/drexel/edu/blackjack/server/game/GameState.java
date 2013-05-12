@@ -1,4 +1,4 @@
-package drexel.edu.blackjack.db.game;
+package drexel.edu.blackjack.server.game;
 
 /**
  * Used to pass game state information from
