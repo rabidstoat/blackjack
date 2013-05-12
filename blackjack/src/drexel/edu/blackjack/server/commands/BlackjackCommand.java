@@ -1,6 +1,9 @@
 package drexel.edu.blackjack.server.commands;
 
+import java.util.Set;
+
 import drexel.edu.blackjack.server.BlackjackProtocol;
+import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 
 /**
  * Commands that the server interprets will implement this class.
@@ -39,4 +42,23 @@ public abstract class BlackjackCommand {
 	
 	// This is the word that commands of this type begin with
 	public abstract String getCommandWord();
+	
+	/**
+	 * This returns a set of states that the command can validly be used in.
+	 * The CAPABILITIES command will use this to get a list of capabilities
+	 * for the current protocol state to return
+	 **/
+	public abstract Set<BlackjackProtocol.STATE> getValidStates();
+	
+	/**
+	 * This returns a list of parameters that the command requires.
+	 * For example, for USERNAME there is a 'username' parameter
+	 * that the command needs. For BET, there is the 'amount'
+	 * parameter. The CAPABILITIES command makes use of this
+	 * for sending the capabilities list
+	 * 
+	 * @return
+	 */
+	public abstract Set<String> getRequiredParameterNames();
+
 }
