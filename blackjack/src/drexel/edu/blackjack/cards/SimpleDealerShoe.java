@@ -1,8 +1,9 @@
 package drexel.edu.blackjack.cards;
 
 public class SimpleDealerShoe implements DealerShoeInterface {
-  private ArrayList<Card> undealtCards;
-  private ArrayList<Card> alreadyDealtCards;
+  
+  	private ArrayList<Card> undealtCards;
+  	private ArrayList<Card> alreadyDealtCards;
 	private int numberOfDecks;
 	
 	public SimpleDealerShoe(int numberOfDecks) {
