@@ -6,6 +6,9 @@ package drexel.edu.blackjack.server.game;
  * are made, what cards are dealt, what users
  * are joining and leaving, etc.
  * 
+ * See Section 2.15 of the protocol design
+ * for details.
+ * 
  * @author Jennifer
  *
  */
