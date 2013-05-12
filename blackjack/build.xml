@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="compile" name="blackjack">
+
+	<!-- Use Java 7 -->
+	<property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
+    
+	<!-- Any JAR files we add will go here -->
+	<path id="blackjack.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="libs/hamcrest-core-1.3.jar"/>
+        <pathelement location="libs/junit-4.11.jar"/>
+        <pathelement location="config"/>
+    </path>
+
+	<!-- Makes sure the directory to compile in exists -->
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+	
+	<!-- Deletes all the classfiles  -->
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    
+	<!-- How we compile the code -->
+    <target depends="init" name="compile">
+        <echo message="Compile ${ant.project.name}: ${ant.file}"/>
+        <javac destdir="bin" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="blackjack.classpath"/>
+        </javac>
+    </target>
+
+	<!-- Runs the server -->
+    <target depends="compile" name="run-server">
+        <echo message="Run-server ${ant.project.name}: ${ant.file}"/>
+    	<java classname="drexel.edu.blackjack.server.BlackjackServer">
+            <classpath refid="blackjack.classpath"/>
+    	</java>
+    </target>
+
+	<!-- Runs the client against the local host  -->
+    <target depends="compile" name="run-client-local">
+        <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
+    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
+            <classpath refid="blackjack.classpath"/>
+    	</java>
+    </target>
+	
+	<!-- Jar task here -->
+	
+	<!-- Junit test tasks here -->
+
+</project>
