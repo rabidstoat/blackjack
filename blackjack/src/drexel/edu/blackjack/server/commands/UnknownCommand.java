@@ -18,4 +18,11 @@ public class UnknownCommand extends BlackjackCommand {
 		return null;
 	}
 
+	@Override
+	public String getCommandWord() {
+		// Since this is the command to use if no valid command is specified,
+		// it returns the special 'null' command word
+		return null;
+	}
+
 }

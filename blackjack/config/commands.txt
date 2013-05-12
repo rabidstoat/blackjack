@@ -3,3 +3,16 @@
 # loaded via reflection. Need to specify fully
 # qualified (with path) classes that implement the
 # BlackjackCommand interface.
+
+drexel.edu.blackjack.server.commands.AccountCommand
+drexel.edu.blackjack.server.commands.BetCommand
+drexel.edu.blackjack.server.commands.CapabilitiesCommand
+drexel.edu.blackjack.server.commands.HitCommand
+drexel.edu.blackjack.server.commands.JoinSessionCommand
+drexel.edu.blackjack.server.commands.LeaveSessionCommand
+drexel.edu.blackjack.server.commands.ListgamesCommand
+drexel.edu.blackjack.server.commands.PasswordCommand
+drexel.edu.blackjack.server.commands.QuitCommand
+drexel.edu.blackjack.server.commands.StandCommand
+drexel.edu.blackjack.server.commands.UsernameCommand
+drexel.edu.blackjack.server.commands.VersionCommand

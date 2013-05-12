@@ -63,7 +63,8 @@ public class BlackjackServer {
 	 * Constructor needs a comment
 	 */
 	public BlackjackServer() {
-		// Don't really do anything
+		// Surely there is a way to do this in a config file
+		LOGGER.setLevel(Level.INFO); 		
 	}
 	
 	/**
@@ -85,9 +86,6 @@ public class BlackjackServer {
 		
 		// We need to keep track of this
 		ServerSocket serverSocket = null;
-		
-		// Surely there is a way to do this in a config file
-		LOGGER.setLevel(Level.INFO); 
 		
         try {
             // Keystore

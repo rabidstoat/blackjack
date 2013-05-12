@@ -5,6 +5,11 @@ import drexel.edu.blackjack.server.game.User;
 /**
  * Commands that the server interprets will implement this class.
  * 
+ * These commands should keep track of no state. The state should
+ * be derived from the user object. The commands will be shared
+ * across multiple connections, so they just have the logic that
+ * operate on parameters that are passed into them.
+ * 
  * @author Jennifer
  */
 public abstract class BlackjackCommand {
@@ -25,8 +30,11 @@ public abstract class BlackjackCommand {
 		// The default implementation should be overridden!
 		StringBuilder str = new StringBuilder( "Someone needs to implement the " );
 		str.append( this.getClass().toString() );
-		str.append( " command." );
+		str.append( " class." );
 		return str.toString();
 		
 	}
+	
+	// This is the word that commands of this type begin with
+	public abstract String getCommandWord();
 }
