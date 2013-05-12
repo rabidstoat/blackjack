@@ -1,0 +1,8 @@
+public interface UserManagerInterface {
+
+  void load();
+	
+	void save();
+	
+	UserMetadata loginUser(Object loginInformation);
+}
