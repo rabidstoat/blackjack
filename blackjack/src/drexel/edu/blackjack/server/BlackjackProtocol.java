@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -165,6 +166,27 @@ public class BlackjackProtocol {
 		}
 	}
 
+	/*************************************************************
+	 * Public methods go here
+	 ************************************************************/
+	
+	/**
+	 * Return a list of all the valid commands that the protocol
+	 * can process. The CAPABILITIES command in particular will
+	 * be interested in this.
+	 * 
+	 * @return
+	 */
+	public Set<BlackjackCommand> getAllValidCommands() {
+		
+		if( commands == null ) {
+			return null;
+		}
+		
+		// Not sure if I can cast i like that....
+		return (Set<BlackjackCommand>) commands.values();
+	}
+	
 	/*************************************************************
 	 * Private methods go here
 	 ************************************************************/
