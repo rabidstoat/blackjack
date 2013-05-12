@@ -58,7 +58,8 @@ public class BlackjackProtocol {
 		LOGGER.setLevel(Level.INFO); 
 		
 		// Only initialize it once
-		if( isInitialized ) {
+		if( !isInitialized ) {
+			LOGGER.info( "About to initialize the commands" );
 			isInitialized = initializeCommands();
 			if( !isInitialized ) {
 				LOGGER.severe( "Could not initialize config file for the protocol. This is probably bad..." );
@@ -86,16 +87,18 @@ public class BlackjackProtocol {
 					
 					// This should have a class name that we need to instantiate
 					String classname = line.trim();
-					@SuppressWarnings("rawtypes")
-					Class c = classname.getClass();
+
 					try {
-						Object obj = c.newInstance();
+						// This uses java reflection to get the class object offf the name
+						Class<?> c = Class.forName( classname );
 						
-						// It'd better be an instance of BlackjackCommand
-						if( !(obj instanceof BlackjackCommand) ) {
-							LOGGER.warning( classname + " did not subclass BlackjackCommand and couldn't be used." );
+						// Make sure class is something that extends BlackjackComand
+						if( !BlackjackCommand.class.isAssignableFrom(c) ) {
+							LOGGER.warning( c.getCanonicalName() + " did not subclass BlackjackCommand and couldn't be used." );
 							LOGGER.warning( "Will continue, but that command won't work on the server." );
 						} else {
+						
+							Object obj = c.newInstance();						
 							BlackjackCommand command = (BlackjackCommand)obj;
 							
 							// Now we hash it using its command word -- unless it's a null, which
@@ -137,14 +140,25 @@ public class BlackjackProtocol {
 						LOGGER.warning( "Could not access class " + classname );
 						LOGGER.warning( "Will continue, but that command won't work on the server." );
 						e.printStackTrace();
+					} catch (ClassNotFoundException e) {
+						LOGGER.warning( "Could not find class " + classname );
+						LOGGER.warning( "Will continue, but that command won't work on the server." );
+						e.printStackTrace();
 					}
 				}
+				
+				// Read the next line
+				line = reader.readLine();
 			}
-		} catch (IOException e) {
+		} catch (IOException e ) {
 			LOGGER.severe( "Had a problem reading the command file. The server probably won't work." );
 			e.printStackTrace();
+			return false;
 		}
 		
+		// Recap what was read in
+		LOGGER.info( "We do " + (unknownCommand == null ? "NOT " : "") + "have an unknown command set." );
+		LOGGER.info( "We have " + commands.size() + " commands loaded successfully." );
 		// Assume if you got this far, that it's all good
 		return true;
 	}
@@ -168,7 +182,9 @@ public class BlackjackProtocol {
 
 		// We use the command word to look up the command to use
 		String commandWord = metadata.getCommandWord();
-		if( commandWord != null ) {
+		if( commandWord == null ) {
+			LOGGER.info( "Command word was null. That's pretty odd." );
+		} else {
 			// Make it lowercase as we're case-insensitive, and hashed them in lowercase
 			commandWord = commandWord.toLowerCase();
 			command = commands.get( commandWord );

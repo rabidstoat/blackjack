@@ -31,7 +31,7 @@
 	<!-- How we compile the code -->
     <target depends="init" name="compile">
         <echo message="Compile ${ant.project.name}: ${ant.file}"/>
-        <javac destdir="bin" source="${source}" target="${target}">
+        <javac includeantruntime="false" destdir="bin" source="${source}" target="${target}">
             <src path="src"/>
             <classpath refid="blackjack.classpath"/>
         </javac>

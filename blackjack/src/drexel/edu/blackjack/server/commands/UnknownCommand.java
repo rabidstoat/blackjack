@@ -14,8 +14,8 @@ public class UnknownCommand extends BlackjackCommand {
 
 	@Override
 	public String processCommand(User user, CommandMetadata cm) {
-		// TODO Auto-generated method stub
-		return null;
+		// We need to implement something here....
+		return super.processCommand(user, cm);
 	}
 
 	@Override
