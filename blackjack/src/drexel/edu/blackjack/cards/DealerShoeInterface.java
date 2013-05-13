@@ -9,7 +9,7 @@ package drexel.edu.blackjack.cards;
 public interface DealerShoeInterface {
   
   
-  	void shuffle();
+  void shuffle();
   
 	Card dealTopCard();
 	
