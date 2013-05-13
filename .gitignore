@@ -3,9 +3,9 @@
 *.ear
 *.class
 .metadata
-bin/**
-tmp/**
-tmp/**/*
+blackjack/bin/**
+blackjack/tmp/**
+blackjack/tmp/**/*
 *.tmp
 *.bak
 *.swp
