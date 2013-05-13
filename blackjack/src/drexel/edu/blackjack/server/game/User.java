@@ -9,5 +9,9 @@ package drexel.edu.blackjack.server.game;
  *
  */
 public class User {
+  
+  private UserMetadata user ;
+  private Hand hand;
+	private int bet;
 
 }
