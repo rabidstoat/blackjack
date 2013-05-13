@@ -1,6 +1,0 @@
-public class User {
-  
-	private UserMetadata user ;
-	private Hand hand;
-	private int bet;
-}
