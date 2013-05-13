@@ -1,0 +1,10 @@
+import java.util.ArrayList;
+
+
+public interface GameManagerInterface {
+  
+	void load();
+	
+	ArrayList<GameMetadata> getGames();
+
+}
