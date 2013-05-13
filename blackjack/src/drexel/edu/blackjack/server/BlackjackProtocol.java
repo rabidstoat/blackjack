@@ -72,8 +72,8 @@ public class BlackjackProtocol {
 		IN_SESSION_CARDS_BEING_DEALT,
 		
 		// This is after the cards are dealt, and the dealer doesn't have
-		// a blackjack. Still not waiting for client input as others are
-		// playing. The bet variable should be set to the value of the bet.
+		// a blackjack. Now waiting for client input as to whether
+		// they HIT or STAND. The bet variable should be set to the value of the bet.
 		IN_SESSION_AWAITING_PLAY,
 		
 		// In this case, the dealer has a blackjack. Too bad for the
