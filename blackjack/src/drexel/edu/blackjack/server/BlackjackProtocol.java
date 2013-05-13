@@ -326,4 +326,116 @@ public class BlackjackProtocol {
 		return response;
 	}
 
+	/**
+	 * @return the commands
+	 */
+	public static Map<String, BlackjackCommand> getCommands() {
+		return commands;
+	}
+
+	/**
+	 * @param commands the commands to set
+	 */
+	public static void setCommands(Map<String, BlackjackCommand> commands) {
+		BlackjackProtocol.commands = commands;
+	}
+
+	/**
+	 * @return the user
+	 */
+	public User getUser() {
+		return user;
+	}
+
+	/**
+	 * @param user the user to set
+	 */
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	/**
+	 * @return the state
+	 */
+	public STATE getState() {
+		return state;
+	}
+
+	/**
+	 * @param state the state to set
+	 */
+	public void setState(STATE state) {
+		this.state = state;
+	}
+
+	/**
+	 * @return the username
+	 */
+	public String getUsername() {
+		return username;
+	}
+
+	/**
+	 * @param username the username to set
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	/**
+	 * @return the bet
+	 */
+	public Integer getBet() {
+		return bet;
+	}
+
+	/**
+	 * @param bet the bet to set
+	 */
+	public void setBet(Integer bet) {
+		this.bet = bet;
+	}
+
+	/**
+	 * @return the lastCommand
+	 */
+	public Long getLastCommand() {
+		return lastCommand;
+	}
+
+	/**
+	 * @param lastCommand the lastCommand to set
+	 */
+	public void setLastCommand(Long lastCommand) {
+		this.lastCommand = lastCommand;
+	}
+
+	/**
+	 * @return the lastSuccessfulCommand
+	 */
+	public Long getLastSuccessfulCommand() {
+		return lastSuccessfulCommand;
+	}
+
+	/**
+	 * @param lastSuccessfulCommand the lastSuccessfulCommand to set
+	 */
+	public void setLastSuccessfulCommand(Long lastSuccessfulCommand) {
+		this.lastSuccessfulCommand = lastSuccessfulCommand;
+	}
+
+	/**
+	 * @return the timer
+	 */
+	public Long getTimer() {
+		return timer;
+	}
+
+	/**
+	 * @param timer the timer to set
+	 */
+	public void setTimer(Long timer) {
+		this.timer = timer;
+	}
+
 }
