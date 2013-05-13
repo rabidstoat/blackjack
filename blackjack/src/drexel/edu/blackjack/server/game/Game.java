@@ -1,5 +1,9 @@
 package drexel.edu.blackjack.server.game;
 
+import java.util.ArrayList;
+
+import drexel.edu.blackjack.db.game.GameMetadata;
+
 /**
  * Holds information about the blackjack game.
  * @author Jennifer

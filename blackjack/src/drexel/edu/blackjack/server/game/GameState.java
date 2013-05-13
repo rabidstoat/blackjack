@@ -13,10 +13,5 @@ package drexel.edu.blackjack.server.game;
  *
  */
 public class GameState {
-  
-  AWAITING_BIDS,  //Awaiting Bids
-	DEALING_CARDS,	//Dealing Cards
-	IN_PLAY,		//In Play
-	SETTING_BETS;	//Settling Bets
 
 }

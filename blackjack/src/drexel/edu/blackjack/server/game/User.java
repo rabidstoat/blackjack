@@ -1,5 +1,8 @@
 package drexel.edu.blackjack.server.game;
 
+import drexel.edu.blackjack.cards.Hand;
+import drexel.edu.blackjack.db.user.UserMetadata;
+
 /**
  * Think of this as the dynamic instantiation of
  * the UserMetadata. A User object is only created
