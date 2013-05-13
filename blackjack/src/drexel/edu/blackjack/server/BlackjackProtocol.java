@@ -290,8 +290,10 @@ public class BlackjackProtocol {
 	/**
 	 * This is how we handle messages.
 	 * 
-	 * @param inputLine
-	 * @return
+	 * TODO: (Jennifer) update the timers on the protocol object
+	 * 
+	 * @param inputLine The message as received from the client
+	 * @return The message that should be sent back to the client
 	 */
 	protected String processInput(String inputLine) {
 		// This basically parses out the command word, and the parameters
