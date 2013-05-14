@@ -1,5 +1,6 @@
 package drexel.edu.blackjack.server.commands;
 
+import java.util.List;
 import java.util.Set;
 
 import drexel.edu.blackjack.server.BlackjackProtocol;
@@ -26,7 +27,7 @@ public class JoinSessionCommand extends BlackjackCommand {
 	}
 
 	@Override
-	public Set<String> getRequiredParameterNames() {
+	public List<String> getRequiredParameterNames() {
 		// TODO Auto-generated method stub
 		return null;
 	}
