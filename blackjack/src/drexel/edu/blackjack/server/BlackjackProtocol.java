@@ -128,11 +128,6 @@ public class BlackjackProtocol {
 	// milliseconds
 	private Long lastCommand = null;
 	
-	// This attribute is the last time the client did a command
-	// that was valid for its state. This include commands that
-	// are valid at any time, like CAPABILITIES
-	private Long lastSuccessfulCommand = null;
-
 	// This is a timer that can be used if something is being
 	// waited for from the user. It seems like this might be
 	// distinct from the above because, for example, if they're
@@ -165,6 +160,12 @@ public class BlackjackProtocol {
 				LOGGER.severe( "Could not initialize config file for the protocol. This is probably bad..." );
 			}
 		}
+		
+		// When we start up, we're waiting for the username, that's the first state
+		state = STATE.WAITING_FOR_USERNAME;
+		
+		// And we start the timer
+		setLastCommand( System.currentTimeMillis() );
 	}
 
 	/*************************************************************
@@ -291,8 +292,6 @@ public class BlackjackProtocol {
 	/**
 	 * This is how we handle messages.
 	 * 
-	 * TODO: (Jennifer) update the timers on the protocol object
-	 * 
 	 * @param inputLine The message as received from the client
 	 * @return The message that should be sent back to the client
 	 */
@@ -321,9 +320,11 @@ public class BlackjackProtocol {
 		// We are going to use this response if we had a null command, at this point
 		String response = "Received an unknown command, but had no command handler defined for it.";
 		if( command != null ) {
-			// We really shouldn't pass in a null user, but it's okay for debugging
-			response = command.processCommand( null, metadata );
+			response = command.processCommand( this, metadata );
 		}
+		
+		// Update the timer
+		setLastCommand( System.currentTimeMillis() );
 		
 		// Whatever we have, we return
 		return response;
@@ -411,20 +412,6 @@ public class BlackjackProtocol {
 	 */
 	public void setLastCommand(Long lastCommand) {
 		this.lastCommand = lastCommand;
-	}
-
-	/**
-	 * @return the lastSuccessfulCommand
-	 */
-	public Long getLastSuccessfulCommand() {
-		return lastSuccessfulCommand;
-	}
-
-	/**
-	 * @param lastSuccessfulCommand the lastSuccessfulCommand to set
-	 */
-	public void setLastSuccessfulCommand(Long lastSuccessfulCommand) {
-		this.lastSuccessfulCommand = lastSuccessfulCommand;
 	}
 
 	/**
