@@ -9,18 +9,24 @@ import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 public class UsernameCommand extends BlackjackCommand {
 	
 	private static final String COMMAND_WORD = "USERNAME";
-	// Takes command words, like 'BET' or 'USERNAME'
-	private String commandWord = null;
+	
 
 	/**Check to see if in a state (get it from protocol object) 
 		 * where this command is valid; if not, send error message*/
 	@Override
 	public String processCommand(BlackjackProtocol protocol, CommandMetadata cm) {
+	
+	if(protocol == null || cm == null) {
+		return new ResponseCode( ResponseCode.CODE.INTERNAL_ERROR,
+			 "UsernameCommand.processCommand() received null arguments" ).toString();
+			}
+	
 	String stateWord = protocol.getState().toString(); 
 			
-			//Compare to only allowed state for USERNAME command "WAITING_FOR_USERNAME"; send error message if not equal.	
-			if(!stateWord.equals("WAITING_FOR_USERNAME")) {
-				System.out.println("404 USERNAME is not expected/allowed in the " +  stateWord + " state");
+		// Return an error if not in valid state for USERNAME command
+			if(!getValidStates().contains( protocol.getState()) ) {
+				return new ResponseCode( ResponseCode.CODE.NOT_EXPECTING_USERNAME,
+					"UsernameCommand.processCommand() received wrong command").toString();
 			}
 			return super.processCommand(protocol, cm);	
 	}
