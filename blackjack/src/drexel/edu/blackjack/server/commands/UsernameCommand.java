@@ -21,11 +21,32 @@ public class UsernameCommand extends BlackjackCommand {
 		return COMMAND_WORD;
 	}
 
+	/**
+	 * This returns a set of states that the command can validly be used in.
+	 * The CAPABILITIES command will use this to get a list of capabilities
+	 * for the current protocol state to return
+	 **/
 	@Override
 	public Set<STATE> getValidStates() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		public class UsernameCommand {
+			
+			private STATE WAITING_FOR_USERNAME;
+
+			public Set<STATE> getValidStates() {
+					
+					Set<STATE> validUsernameStates = new HashSet<STATE>();
+					
+					//Add the only allowed state which is WAITING_FOR_USERNAME
+					validUsernameStates.add(WAITING_FOR_USERNAME);
+					
+					return validUsernameStates; 
+				}
+
+			}
+
 	}
+
 
 	@Override
 	public List<String> getRequiredParameterNames() {
