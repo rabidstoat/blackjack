@@ -13,7 +13,7 @@ import drexel.edu.blackjack.db.user.UserMetadata;
  */
 public class User {
   
-	private UserMetadata user ;
+	private UserMetadata userMetadata;
 	private Hand hand;
 	private int bet;
 	
@@ -21,14 +21,14 @@ public class User {
 	/**
 	 * @return the user
 	 */
-	public UserMetadata getUser() {
-		return user;
+	public UserMetadata getUserMetadata() {
+		return userMetadata;
 	}
 	/**
 	 * @param user the user to set
 	 */
-	public void setUser(UserMetadata user) {
-		this.user = user;
+	public void setUserMetadata(UserMetadata user) {
+		this.userMetadata = user;
 	}
 	/**
 	 * @return the hand
