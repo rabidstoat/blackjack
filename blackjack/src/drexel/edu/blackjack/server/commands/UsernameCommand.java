@@ -47,7 +47,6 @@ public class UsernameCommand extends BlackjackCommand {
 				return validUsernameStates;
 			}
 	}
-
 	
 	/**
 	* This returns a list of parameters that the command requires.
