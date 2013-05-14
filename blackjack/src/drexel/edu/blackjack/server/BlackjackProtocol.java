@@ -66,15 +66,16 @@ public class BlackjackProtocol {
 		// The server has requested that the client give its bet
 		IN_SESSION_AWAITING_BETS,
 		
-		// Bets have been made and cards are being dealt, the server
-		// is not waiting for any client input. The bet variable should
-		// be set to the value of the bet
-		IN_SESSION_CARDS_BEING_DEALT,
+		// Bets have been made and cards are being dealt and other
+		// players may be taking their turn. The server is not waiting 
+		// for any client input. The bet variable should be set to the 
+		// value of the bet
+		IN_SESSION_BEFORE_YOUR_TURN,
 		
 		// This is after the cards are dealt, and the dealer doesn't have
 		// a blackjack. Now waiting for client input as to whether
 		// they HIT or STAND. The bet variable should be set to the value of the bet.
-		IN_SESSION_AWAITING_PLAY,
+		IN_SESSION_AND_YOUR_TURN,
 		
 		// In this case, the dealer has a blackjack. Too bad for the
 		// client! The thread has to do some bookkeeping and is not
@@ -86,7 +87,7 @@ public class BlackjackProtocol {
 		// played out their hand. It's just waiting for others to 
 		// finish playing now. The bet value should be set to what
 		// the client bet.
-		IN_SESSION_WAITING_FOR_OTHERS,
+		IN_SESSION_AFTER_YOUR_TURN,
 		
 		// Now everyone is done playing and the server is processing
 		// the results. The bet value should be set to what the client bet.
