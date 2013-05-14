@@ -28,24 +28,17 @@ public class UsernameCommand extends BlackjackCommand {
 	 **/
 	@Override
 	public Set<STATE> getValidStates() {
-		
-		public class UsernameCommand {
-			
-			private STATE WAITING_FOR_USERNAME;
-
-			public Set<STATE> getValidStates() {
-					
-					Set<STATE> validUsernameStates = new HashSet<STATE>();
-					
-					//Add the only allowed state which is WAITING_FOR_USERNAME
-					validUsernameStates.add(WAITING_FOR_USERNAME);
-					
-					return validUsernameStates; 
-				}
-
+			STATE WAITING_FOR_USERNAME = null;
+				
+				Set<STATE> validUsernameStates = new HashSet<STATE>();
+				
+				//Add the only allowed state which is WAITING_FOR_USERNAME
+				validUsernameStates.add(WAITING_FOR_USERNAME);
+				
+				return validUsernameStates;
 			}
-
 	}
+
 
 
 	@Override
