@@ -165,7 +165,7 @@ public class ResponseCode {
 		}
 		
 		this.code = code.getCode();
-		this.text = code.getMessage();
+		this.text = message;
 	}
 	
 	/***************************************************************
