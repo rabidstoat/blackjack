@@ -3,7 +3,7 @@ package drexel.edu.blackjack.db.user;
 /**
  * Persistent information about users to store in the database.
  * 
- * @author Jennifer
+ * @author DAN
  */
 public class UserMetadata {
 
