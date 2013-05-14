@@ -21,6 +21,8 @@ public abstract class BlackjackCommand {
 	 * The algorithm for all command states should look something
 	 * like this (possibly incomplete):
 	 * 
+	 * 0. If either parameter is null, return an internal error
+	 * response code
 	 * 1. Check to see if in a state (get it from the protocol
 	 * object) where this command is valid.
 	 * 1a. If not, send the error response code (this is hopefully
