@@ -38,7 +38,6 @@ public class AccountCommand extends BlackjackCommand {
 					"AccountCommand.processCommand() had a problem with the protocol object").toString();
 		}
 		int balance = protocol.getUser().getUserMetadata().getBalance();
-		
 		// Step 6: Save out state variables? There are none
 		// Step 7: Update any change in state? There is none
 		
