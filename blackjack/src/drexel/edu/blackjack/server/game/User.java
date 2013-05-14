@@ -13,8 +13,46 @@ import drexel.edu.blackjack.db.user.UserMetadata;
  */
 public class User {
   
-  private UserMetadata user ;
-  private Hand hand;
+	private UserMetadata user ;
+	private Hand hand;
 	private int bet;
+	
+	// Auto-generated getters nd setters below
+	/**
+	 * @return the user
+	 */
+	public UserMetadata getUser() {
+		return user;
+	}
+	/**
+	 * @param user the user to set
+	 */
+	public void setUser(UserMetadata user) {
+		this.user = user;
+	}
+	/**
+	 * @return the hand
+	 */
+	public Hand getHand() {
+		return hand;
+	}
+	/**
+	 * @param hand the hand to set
+	 */
+	public void setHand(Hand hand) {
+		this.hand = hand;
+	}
+	/**
+	 * @return the bet
+	 */
+	public int getBet() {
+		return bet;
+	}
+	/**
+	 * @param bet the bet to set
+	 */
+	public void setBet(int bet) {
+		this.bet = bet;
+	}
 
 }
