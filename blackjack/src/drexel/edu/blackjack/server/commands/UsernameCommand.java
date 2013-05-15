@@ -30,7 +30,7 @@ public class UsernameCommand extends BlackjackCommand {
 			if(!getValidStates().contains( protocol.getState()) ) {
 				return new ResponseCode( ResponseCode.CODE.NOT_EXPECTING_USERNAME,
 					"UsernameCommand.processCommand() received out-of-context command").toString();
-						}
+			}
 			return super.processCommand(protocol, cm);	
 		}
 
@@ -50,7 +50,7 @@ public class UsernameCommand extends BlackjackCommand {
 				
 				
 				return validUsernameStates;
-			}
+		}
 		
 		/**
 		 * This returns a list of parameters that the command requires.
