@@ -16,6 +16,7 @@ public class UsernameCommand extends BlackjackCommand {
 	@Override
 	public String processCommand(BlackjackProtocol protocol, CommandMetadata cm) {
 	
+	//Step 0: If either object is null, it's an internal error
 	if(protocol == null || cm == null) {
 		return new ResponseCode( ResponseCode.CODE.INTERNAL_ERROR,
 			 "UsernameCommand.processCommand() received null arguments" ).toString();
@@ -23,7 +24,7 @@ public class UsernameCommand extends BlackjackCommand {
 	
 	String stateWord = protocol.getState().toString(); 
 			
-		// Return an error if not in valid state for USERNAME command
+		// Step 1-2: Return an error if not in valid state for USERNAME command
 			if(!getValidStates().contains( protocol.getState()) ) {
 				return new ResponseCode( ResponseCode.CODE.NOT_EXPECTING_USERNAME,
 					"UsernameCommand.processCommand() received wrong command").toString();
@@ -48,7 +49,7 @@ public class UsernameCommand extends BlackjackCommand {
 				Set<STATE> validUsernameStates = new HashSet<STATE>();
 				
 				//Add the only allowed state which is WAITING_FOR_USERNAME
-				validUsernameStates.add(WAITING_FOR_USERNAME);
+				validUsernameStates.add(STATE.WAITING_FOR_USERNAME);
 				
 				return validUsernameStates;
 			}
