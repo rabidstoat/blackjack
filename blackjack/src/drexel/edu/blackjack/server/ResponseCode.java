@@ -74,7 +74,7 @@ public class ResponseCode {
 		SYNTAX_ERROR( 502, "That command had a syntax error." )
 		
 		INFORMATIVE_MESSAGE( 600, null),
-		USER_RESPONSE_NEEDED_MESSAGE(601, null);
+		USER_RESPONSE_NEEDED_MESSAGE( 601, null);
 
 		// 3-digit response code
 		private final int code;
