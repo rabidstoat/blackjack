@@ -125,7 +125,6 @@ public class ResponseCode {
 	 * purposefully private so others don't use it.
 	 */
 	private ResponseCode() {
-		this( null, null );
 	}
 	
 	/**
