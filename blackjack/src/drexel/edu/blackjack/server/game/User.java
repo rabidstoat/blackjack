@@ -13,11 +13,30 @@ import drexel.edu.blackjack.db.user.UserMetadata;
  */
 public class User {
   
+	/***************************************************************
+	 * Local variabls go here.
+	 **************************************************************/
+
 	private UserMetadata userMetadata;
 	private Hand hand;
 	private int bet;
 	
-	// Auto-generated getters nd setters below
+	/***************************************************************
+	 * Constructors go here
+	 **************************************************************/
+	
+	public User() {
+	}
+	
+	public User( UserMetadata userMetadata ) {
+		this.userMetadata = userMetadata;
+	}
+	
+	/***************************************************************
+	 * Getters and setters
+	 **************************************************************/
+
+	// Auto-generated getters and setters below
 	/**
 	 * @return the user
 	 */
