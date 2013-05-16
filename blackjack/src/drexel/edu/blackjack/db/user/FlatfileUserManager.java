@@ -37,7 +37,18 @@ public class FlatfileUserManager implements UserManagerInterface {
 
 	@Override
 	public UserMetadata loginUser(String username, String password) {
-		// TODO Auto-generated method stub
+		// TODO Write the real method, this is a stub method for
+		// testing purposes. The rule is: if they enter 'password' 
+		// as their password, create a valid UserMetadata object and
+		// return it. Otherwise, return null
+		if( password != null && password.trim().equalsIgnoreCase("password") ) {
+			UserMetadata metadata = new UserMetadata();
+			metadata.setBalance(500);
+			metadata.setFullname( username );
+			metadata.setUserame(username);
+			metadata.setPassword(password);
+			return metadata;
+		}
 		return null;
 	}
 	
