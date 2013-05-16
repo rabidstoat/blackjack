@@ -88,4 +88,14 @@ public class CommandMetadata {
 		this.parameters = parameters;
 	}
 
+	/**
+	 * @param parameter the parameter to add
+	 */
+	public void addParameter( String parameter ) {
+		if( parameters == null ) {
+			parameters = new ArrayList<String>();
+		}
+		
+		parameters.add( parameter );
+	}
 }
