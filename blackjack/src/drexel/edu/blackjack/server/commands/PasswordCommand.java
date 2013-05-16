@@ -48,7 +48,7 @@ public class PasswordCommand extends BlackjackCommand {
 	}
 
 	@Override
-	public String getCommandWord() {
+	public String getCommandWord() { 
 		return COMMAND_WORD;
 	}
 
