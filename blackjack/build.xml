@@ -52,6 +52,13 @@
             <classpath refid="blackjack.classpath"/>
     	</java>
     </target>
+
+    <target depends="compile" name="add-user">
+        <echo message="Add user to server"/>
+        <java classname="drexel.edu.blackjack.db.user.UserHelper">
+            <classpath refid="blackjack.classpath"/>
+        </java>
+    </target>
 	
 	<!-- Jar task here -->
 	

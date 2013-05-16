@@ -38,7 +38,7 @@ public class TestFlatfileUserManager {
 
 	@Test
 	public void test() {
-		UserManagerInterface f = FlatfileUserManager.getDefaultUserManager();
+		UserManagerInterface f = FlatfileUserManager.getDefaultTestUserManager();
 		f.add(u1);
 		assertTrue(f.save());
 		assertTrue(f.load());

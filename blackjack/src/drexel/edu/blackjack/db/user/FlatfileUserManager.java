@@ -21,14 +21,17 @@ public class FlatfileUserManager implements UserManagerInterface {
 	
 	// Keep a single instance around for the singleton design pattern
 	private static FlatfileUserManager userManager = null;
+	private static FlatfileUserManager tuserManager = null;
 	private HashMap<String, UserMetadata> users;
-	private static String USER_RECORDS = "user_serialized"; 
+	public final static String USER_RECORDS = "users_serialized";
+	private final String objectFile;
 
 	/**
 	 * Following the singleton design pattern, the constructor
 	 * is kept private.
 	 */
-	private FlatfileUserManager() {
+	private FlatfileUserManager(String filename) {
+		objectFile = filename;
 		if (!load()) {
 			users = new HashMap<String, UserMetadata>();
 		}
@@ -92,10 +95,19 @@ public class FlatfileUserManager implements UserManagerInterface {
 	public static UserManagerInterface getDefaultUserManager() {
 		
 		if( userManager == null ) {
-			userManager = new FlatfileUserManager();
+			userManager = new FlatfileUserManager(FlatfileUserManager.USER_RECORDS);
 		}
 		
 		return userManager;
+	}
+	
+	public static UserManagerInterface getDefaultTestUserManager() {
+		
+		if( tuserManager == null ) {
+			tuserManager = new FlatfileUserManager(FlatfileUserManager.USER_RECORDS + "_test");
+		}
+		
+		return tuserManager;
 	}
 
 }
