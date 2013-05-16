@@ -26,6 +26,7 @@ public class Card implements Comparable {
 		
 		private final int rank;
 		
+		/**Constructor*/
 		RANK( int rank ) {
 			this.rank = rank;	
 		}
@@ -49,6 +50,7 @@ public class Card implements Comparable {
 		 
 		 private final char suit;
 		 
+		 /**Constructor*/
 		 SUIT( char suit ) {
 			 this.suit = suit;
 		 }
@@ -64,6 +66,7 @@ public class Card implements Comparable {
 	}
 	
 		
+	/**Constructor*/
 	public Card(SUIT suit, RANK rank){
 		
 		
