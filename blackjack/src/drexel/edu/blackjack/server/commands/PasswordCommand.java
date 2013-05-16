@@ -14,6 +14,21 @@ public class PasswordCommand extends BlackjackCommand {
 	private static final String COMMAND_WORD = "PASSWORD";
 	
 	Set<STATE> validPasswordStates = null;
+	
+	public String loginCredentialsCommand(String password, String username) {
+		
+		UserManagerInterface userManager = FlatfileUserManager.getDefaultUserManager();
+		
+		if(userManager.loginUser(username, password) == null) {
+			
+			return new ResponseCode( ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS, 
+					"PasswordCommand.loginCredentialsCommand() received invalid login credentials").toString();
+				
+		}
+		return new ResponseCode( ResponseCode.CODE.SUCCESSFULLY_AUTHENTICATED, 
+				"PasswordCommand.loginCredentialsCommand() received valid login credentials").toString();
+	} 
+	
 
 	public String processCommand(BlackjackProtocol protocol, CommandMetadata cm) {
 		
