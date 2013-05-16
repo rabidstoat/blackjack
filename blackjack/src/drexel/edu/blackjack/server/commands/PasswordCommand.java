@@ -29,8 +29,6 @@ public class PasswordCommand extends BlackjackCommand {
 					"PasswordCommand.processCommand() received out-of-context command").toString();
 		}
 		
-		// TODO: Steps 0-2 look right, but you need to implement steps 3-8 instead of 
-		// calling super.processCommand().
 			return super.processCommand(protocol, cm);
 	}
 
@@ -52,9 +50,6 @@ public class PasswordCommand extends BlackjackCommand {
 	@Override
 	public List<String> getRequiredParameterNames() {
 	
-		// TODO: See my comment on the username command. It's the same here, but
-		// the PASSWORD command takes a single parameter, and its name is
-		// password. 
 		ArrayList<String> requiredParameterNames = new ArrayList<String>();
 		
 		//Parse the PASSWORD command and enter the parameter tokens in List.

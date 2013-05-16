@@ -33,10 +33,6 @@ public class UsernameCommand extends BlackjackCommand {
 				return new ResponseCode( ResponseCode.CODE.NOT_EXPECTING_USERNAME,
 					"UsernameCommand.processCommand() received out-of-context command").toString();
 			}
-			
-			// TODO: Instead of calling super.processCommand(), you need to implement steps 3-8
-			// of the algorithm in the comment of BlackjackCommand.processCommand(). Steps 1-2
-			// look right to me, though, at a glance.
 			return super.processCommand(protocol, cm);	
 		}
 
@@ -73,11 +69,6 @@ public class UsernameCommand extends BlackjackCommand {
 			//Parse the USERNAME command and enter the parameter tokens in List.
 			// Use this to extract whitespace-delineated tokens
 			
-			// TODO: What this method is for is to return a list of parameters that the 
-			// command is expecting, like a help feature. So here, you just need to return
-			// a list with the word '<username>' in it, because the USERNAME command expects
-			// one parameter, and that parameter's name is <username>. This just taken
-			// from what it says in the 'Syntax' part of Section 2.1 of our document.
 			StringTokenizer strtok = new StringTokenizer(COMMAND_WORD);
 			if( strtok.hasMoreTokens() ) {
 				String commandWord = strtok.nextToken();	// command word is always first

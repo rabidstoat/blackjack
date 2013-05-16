@@ -1,32 +1,80 @@
 package drexel.edu.blackjack.db.user;
 
+import java.io.Serializable;
+
 /**
  * Persistent information about users to store in the database.
  * 
  * @author DAN
  */
-public class UserMetadata {
+public class UserMetadata implements Serializable {
 	
-	private String userame;
+	/**
+	 * For serializable purpose 
+	 */
+	private static final long serialVersionUID = 2724507393682991711L;
+	
+	private String username;
 	private String password;
 	private String fullname;
 	private int balance;		// Integer because we only deal in whole dollars
 	
-	// TODO: Maybe constructor? 
+	public static class Builder {
+		private String username, password, fullname;
+		private int balance;
+		
+		public UserMetadata build() {
+			if (balance < 0) return null;
+			if (fullname == null || password == null || username == null) return null;
+			UserMetadata u = new UserMetadata();
+			u.setBalance(balance);
+			u.setFullname(fullname);
+			u.setPassword(password);
+			u.setUsername(username);
+			return u;
+		}
+		
+		public Builder setUsername(String username) {
+			this.username = username;
+			return this;
+		}
+		
+		public Builder setPassword(String password) {
+			this.password = password;
+			return this;
+		}
+		
+		public Builder setFullname(String name) {
+			this.fullname = name;
+			return this;
+		}
+		
+		public Builder setBalance(int balance) {
+			this.balance = balance;
+			return this;
+		}
+	}
+	
+	private UserMetadata() {
+		this.username = "";
+		this.password = "";
+		this.fullname = "";
+		this.balance = 0;
+	}
 
 	// Automated getters/setters below
 	
 	/**
-	 * @return the userame
+	 * @return the username
 	 */
-	public String getUserame() {
-		return userame;
+	public String getUsername() {
+		return username;
 	}
 	/**
-	 * @param userame the userame to set
+	 * @param userame the username to set
 	 */
-	protected void setUserame(String userame) {
-		this.userame = userame;
+	protected void setUsername(String username) {
+		this.username = username;
 	}
 	/**
 	 * @return the password

@@ -41,6 +41,14 @@ public interface UserManagerInterface {
 	public boolean save();
 	
 	/**
+	 * This method tries to add a new user with his metadata to the
+	 * current list
+	 * 
+	 * @return True if the user is added succesfully
+	 */
+	public boolean add(UserMetadata user);
+	
+	/**
 	 * This method should only be used AFTER a successful load()
 	 * was executed at some point.
 	 * 
