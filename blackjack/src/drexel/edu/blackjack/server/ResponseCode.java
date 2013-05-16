@@ -71,8 +71,7 @@ public class ResponseCode {
 
 		UNKNOWN_COMMAND( 500, "That command is unknown to the server." ),
 		UNSUPPORTED_COMMAND( 501, "That command is not supported on this server." ),
-		SYNTAX_ERROR( 502, "That command had a syntax error." )
-		
+		SYNTAX_ERROR( 502, "That command had a syntax error." ),		
 		INFORMATIVE_MESSAGE( 600, null ),
 		USER_RESPONSE_NEEDED_MESSAGE( 601, null );
 
