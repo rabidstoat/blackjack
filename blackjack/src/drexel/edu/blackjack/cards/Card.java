@@ -1,11 +1,8 @@
-package drexel.edu.blackjack.cards;
-
-
-
+package Main;
 
 /**
  * A playing card.
- * @author Jennifer
+ * 
  * @author CLaz
  *
  */
@@ -190,10 +187,9 @@ public class Card {
 		  case KING:
 			  value[0] = 10;
 			  value[1] = 10;
-			  break;
-		  
+			  break;		  
 		  } 
-		
+		  
 		return value;
 		
 	}
