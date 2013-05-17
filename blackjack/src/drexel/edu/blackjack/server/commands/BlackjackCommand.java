@@ -59,7 +59,7 @@ public abstract class BlackjackCommand {
 	public String processCommand( BlackjackProtocol protocol, CommandMetadata cm ) {
 		
 		// The default implementation should be overridden!
-		StringBuilder str = new StringBuilder( "Someone needs to implement the " );
+		StringBuilder str = new StringBuilder( "500 Someone needs to implement the " );
 		str.append( this.getClass().toString() );
 		str.append( " class." );
 		return str.toString();
