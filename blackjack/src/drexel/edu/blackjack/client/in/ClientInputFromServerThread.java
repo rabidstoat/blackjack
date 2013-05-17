@@ -29,20 +29,13 @@ public class ClientInputFromServerThread extends Thread {
 	
 	// Need to keep track of what we're reading input from
 	private BufferedReader reader = null;
-	
-	// This listener is automatically registered for any messages that don't
-	// have anyone else registering for them
+
+	// Only one listener at a time
 	private MessagesFromServerListener defaultListener = null;
 
 	// And a logger for errors
 	private final static Logger LOGGER = Logger.getLogger(ClientInputFromServerThread.class.getName()); 
 	
-	// Listeners are done on a per-response-code basis. So, instead of just a set of
-	// listeners, there needs to be a set per response code. This will be done in a Map,
-	// where the key is the response code integer, and the value is the list of listeners
-	// interested in that response code (possibly null if no one is interested).
-	private Map<Integer,Set<MessagesFromServerListener>> listeners = null;
-
 	/**********************************************************
 	 * Constructor goes here
 	 *********************************************************/
@@ -53,9 +46,6 @@ public class ClientInputFromServerThread extends Thread {
 		
 		// Record the listener
 		this.defaultListener = defaultListener;
-		
-		// Need something to hold the listeners
-		listeners = new HashMap<Integer,Set<MessagesFromServerListener>>();
 		
 		// Just sets the logging level
 		LOGGER.setLevel( Level.INFO );
@@ -68,164 +58,6 @@ public class ClientInputFromServerThread extends Thread {
 			e.printStackTrace();
 		}
 	}
-
-	/**********************************************************
-	 * Public methods for adding and removing oneself as a
-	 * listener.
-	 *********************************************************/
-	
-	/**
-	 * Register for interest in a particular response code. Here, the
-	 * response code is given as an integer. An example of how one
-	 * would get the integer value of a response code of interest is:
-	 * ResponseCode.USER_BUSTED.getCode()
-	 * 
-	 * @param l The listener who is registering for the messages
-	 * @param responseCode The response code, as an integer 
-	 * @return true if interest was successfully registered,
-	 * false if there was some sort of problem
-	 */
-	public boolean registerForMessages( MessagesFromServerListener l, int responseCode ) {
-		
-		// First, get the set for this response code
-		Set<MessagesFromServerListener> listenersForCode = listeners.get( Integer.valueOf(responseCode) );
-		
-		// If the set is null, create it and store it in the map
-		if( listenersForCode == null ) {
-			listenersForCode = new HashSet<MessagesFromServerListener>();
-			listeners.put( Integer.valueOf(responseCode), listenersForCode );
-		}
-		
-		// And add them 
-		return listenersForCode.add( l );
-	}
-
-	/**
-	 * Register for interest in a particular response code. Here, the
-	 * response code is given as an object. An example of how one
-	 * would get the integer value of a response code of interest is:
-	 * ResponseCode.USER_BUSTED
-	 * 
-	 * @param l The listener who is registering for the messages
-	 * @param responseCode The response code, as an object. Just the
-	 * code value is used, and the text is ignored.
-	 * @return true if interest was successfully registered,
-	 * false if there was some sort of problem
-	 */
-	public boolean registerForMessages( MessagesFromServerListener l, ResponseCode responseCode ) {
-		
-		// If it's null, we have a problem
-		if( responseCode == null || responseCode.getCode() == null ) {
-			return false;
-		}
-		
-		// Otherwise just pass it to the above method
-		return registerForMessages( l, responseCode.getCode().intValue() );
-	}
-	
-	/**
-	 * Register for interest in a set of response codec. Here, the
-	 * response codes are given as objects. An example of how one
-	 * would get the integer value of a response code of interest is:
-	 * ResponseCode.USER_BUSTED
-	 * 
-	 * @param l The listener who is registering for the messages
-	 * @param responseCodes The set of response codes, as an object
-	 * @return true if all response codes of interest were successfully 
-	 * registered, false if one or more had some sort of problem
-	 */
-	public boolean registerForMessages( MessagesFromServerListener l, Set<ResponseCode> responseCodes ) {
-		
-		// If it's null, we have a problem
-		if( responseCodes == null ) {
-			return false;
-		}
-
-		// Otherwise step through and add them, one by one
-		boolean success = true;
-		for( ResponseCode code : responseCodes ) {
-			success = success && registerForMessages( l, code );
-		}
-		
-		return success;
-	}
-
-	/**
-	 * Unregister for interest in a particular response code. Here, the
-	 * response code is given as an integer. An example of how one
-	 * would get the integer value of a response code of interest is:
-	 * ResponseCode.USER_BUSTED.getCode()
-	 * 
-	 * @param l The listener who is unregistering for the messages
-	 * @param responseCode The response code, as an integer 
-	 * @return true if interest was successfully unregistered,
-	 * false if there was some sort of problem (like if it wasn't
-	 * registered in the first place)
-	 */
-	public boolean unregisterForMessages( MessagesFromServerListener l, int responseCode ) {
-		
-		// First, get the set for this response code
-		Set<MessagesFromServerListener> listenersForCode = listeners.get( Integer.valueOf(responseCode) );
-		
-		// If the set is null, then there's a problem, obviously we never registered
-		if( listenersForCode == null ) {
-			return false;
-		}
-		
-		// otherwise, remove them if possible
-		return listenersForCode.remove( l );
-	}
-
-	/**
-	 * Unregister for interest in a particular response code. Here, the
-	 * response code is given as an object. An example of how one
-	 * would get the value of a response code of interest is:
-	 * ResponseCode.USER_BUSTED
-	 * 
-	 * @param l The listener who is unregistering for the messages
-	 * @param responseCode The response code, as an object. Just the
-	 * code value is used, and the text is ignored.
-	 * @return true if interest was successfully unregistered,
-	 * false if there was some sort of problem
-	 */
-	public boolean unregisterForMessages( MessagesFromServerListener l, ResponseCode responseCode ) {
-		
-		// If it's null, we have a problem
-		if( responseCode == null || responseCode.getCode() == null ) {
-			return false;
-		}
-		
-		// Otherwise just pass it to the above method
-		return unregisterForMessages( l, responseCode.getCode().intValue() );
-	}
-	
-	/**
-	 * Unregister for interest in a set of response codes. Here, the
-	 * response codes are given as objects. An example of how one
-	 * would get the value of a response code of interest is:
-	 * ResponseCode.USER_BUSTED
-	 * 
-	 * @param l The listener who is unregistering for the messages
-	 * @param responseCodes The set of response codes, as an object
-	 * @return true if all response codes of interest were successfully 
-	 * unregistered, false if one or more had some sort of problem
-	 */
-	public boolean unregisterForMessages( MessagesFromServerListener l, Set<ResponseCode> responseCodes ) {
-		
-		// If it's null, we have a problem
-		if( responseCodes == null ) {
-			return false;
-		}
-
-		// Otherwise step through and add them, one by one
-		boolean success = true;
-		for( ResponseCode code : responseCodes ) {
-			success = success && unregisterForMessages( l, code );
-		}
-		
-		return success;
-	}
-
 
 	/**********************************************************
 	 * This is the meat of the thread, the run() method
@@ -282,8 +114,11 @@ public class ClientInputFromServerThread extends Thread {
 		if( inputLine == null ) {
 			LOGGER.severe( "Got a null input line. This shouldn't happen! " );
 			return false;
-		} else if( listeners == null ) {
-			LOGGER.severe( "Internal error, null listeners list in ClientInputFromServerThread." );
+		}
+		
+		// And that someone is listening
+		if( defaultListener == null ) {
+			LOGGER.severe( "Internal error, no current default listener in ClientInputFromServerThread." );
 			return false;
 		}
 		
@@ -294,18 +129,8 @@ public class ClientInputFromServerThread extends Thread {
 			LOGGER.severe( "Received unrecognized input from the server: " + inputLine );
 			return false;
 		} else {
-			// Get the set of listeners it needs to get delivered to
-			Set<MessagesFromServerListener> recipients = listeners.get( code.getCode() );
-			
-			// If it's null or empty, we send to the default listener
-			if( recipients == null || recipients.size() == 0 ) {
-				defaultListener.receivedMessage( code );
-			} else {
-				// Otherwise, send it to each listener
-				for( MessagesFromServerListener recipient : recipients ) {
-					recipient.receivedMessage( code );
-				}
-			}
+			// And send to the non-null listener
+			defaultListener.receivedMessage( code );
 		}
 		
 		// If we get this far, it must have worked
