@@ -42,5 +42,18 @@ public interface GameManagerInterface {
 	 */
 	public List<GameMetadata> getGames();
 	
+	/**
+	 * this return one game based on id string
+	 * 
+	 * @return the game that has the provided unique id
+	 * 
+	 */
+	public GameMetadata getGame(String id);
 
+	boolean save();
+
+	boolean add(GameMetadata game);
+
+	boolean remove(String id);
+	
 }
