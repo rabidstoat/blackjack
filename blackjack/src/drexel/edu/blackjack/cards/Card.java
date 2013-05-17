@@ -1,4 +1,4 @@
-package Main;
+package drexel.edu.blackjack.cards;
 
 /**
  * A playing card.
@@ -18,8 +18,8 @@ public class Card {
 	 * Is a hand that has an Ace. In this hand the value of the Ace is 
 	 * eleven (11). In this hand the Ace and its value are key elements.
 	 * This type of hand gives the player an advantage - they choose to 
-	 * add a third card without worrying about going “bust” as the value 
-	 * of the Ace can change to a 1. For example, the term “soft seventeen” 
+	 * add a third card without worrying about going "bust" as the value 
+	 * of the Ace can change to a 1. For example, the term "soft seventeen" 
 	 * is used in the protocol description. In this scenario, the player 
 	 * initially receives an Ace and a six (6) card. Suit is unimportant. 
 	 * The player can choose the HIT command, be dealt a card (say a 10) 
@@ -204,10 +204,42 @@ public class Card {
 		
 		return str.toString();
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
 	public int hashCode() {
-		
-		return (Integer) null;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((rank == null) ? 0 : rank.hashCode());
+		result = prime * result + ((suit == null) ? 0 : suit.hashCode());
+		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Card other = (Card) obj;
+		if (rank == null) {
+			if (other.rank != null)
+				return false;
+		} else if (!rank.equals(other.rank))
+			return false;
+		if (suit == null) {
+			if (other.suit != null)
+				return false;
+		} else if (!suit.equals(other.suit))
+			return false;
+		return true;
+	}
+	
 }
