@@ -131,8 +131,8 @@ public class Card {
 	public int[] getValues(){
 		
 		 
-		RANK rank = null;
-		@SuppressWarnings("null")
+		RANK rank = RANK.ACE;
+		
 		String rankName = rank.name();
 		rank = Enum.valueOf(RANK.class, rankName.toUpperCase());
 		 
