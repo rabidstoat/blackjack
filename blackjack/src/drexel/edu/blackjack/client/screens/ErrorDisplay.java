@@ -14,7 +14,7 @@ import drexel.edu.blackjack.server.ResponseCode;
  * @author Jennifer
  *
  */
-public class ErrorScreen implements MessagesFromServerListener {
+public class ErrorDisplay implements MessagesFromServerListener {
 
 	@Override
 	public void receivedMessage(ResponseCode code) {

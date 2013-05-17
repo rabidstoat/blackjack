@@ -21,7 +21,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
-import drexel.edu.blackjack.client.screens.ErrorScreen;
+import drexel.edu.blackjack.client.screens.ErrorDisplay;
 
 /**
  * Need some comments.
@@ -126,7 +126,7 @@ public class BlackjackCLClient {
             LOGGER.info( "Started a client connecting to localhost on port " + PORT );
             
             // Create the thread to handle input and start it up
-            ClientInputFromServerThread input = new ClientInputFromServerThread( socket, new ErrorScreen() );
+            ClientInputFromServerThread input = new ClientInputFromServerThread( socket, new ErrorDisplay() );
             input.start();
             
             // Create the helper to handle output
