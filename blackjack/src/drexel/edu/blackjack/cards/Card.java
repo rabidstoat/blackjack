@@ -1,5 +1,8 @@
 package drexel.edu.blackjack.cards;
 
+
+
+
 /**
  * A playing card.
  * @author Jennifer
@@ -8,6 +11,8 @@ package drexel.edu.blackjack.cards;
  */
 public class Card implements Comparable {
 	
+	
+	/**Instances of card ranks allowed in Blackjack version.1.0*/
 	public enum RANK {
 		  
 		ACE (1),	
@@ -26,13 +31,8 @@ public class Card implements Comparable {
 		
 		private final int rank;
 		
-		/**Constructor*/
 		RANK( int rank ) {
 			this.rank = rank;	
-		}
-		
-		public void setRank( RANK rank ){
-			
 		}
 		
 		public int getRank() {
@@ -41,36 +41,49 @@ public class Card implements Comparable {
 
 	}
 	
+	/**Instances of card suits*/
 	public enum SUIT {
 		  
-		 CLUBS('C'),		
-		 SPADES('S'),	
-		 HEARTS('H'),	
-		 DIAMONDS('D'), ;
+		 CLUBS("C"),		
+		 SPADES("S"),	
+		 HEARTS("H"),	
+		 DIAMONDS("D"), ;
 		 
-		 private final char suit;
+		 private final String suit;
 		 
-		 /**Constructor*/
-		 SUIT( char suit ) {
+		 SUIT( String suit ) {
 			 this.suit = suit;
 		 }
 		 
-		 public char getSuit() {
+		 public String getSuit() {
 			 return suit;
-		 }
-		 
-		 public void setSuit ( SUIT suit ) {
-			 
 		 }
 
 	}
 	
+	/**Local variables*/
+	private Integer rank = null;
+	private String suit = null;
+	
+	public int getRank() {
+		return rank;
+	}
+	
+	public String getSuit() {
+		return suit;
+	}
+	
+	
+	/** @param rank a valid rank
+	 *  @param suit a valid suit */	
+	public Card( RANK rank, SUIT suit ) {
 		
-	/**Constructor*/
-	public Card(SUIT suit, RANK rank){
+		if( rank == null || suit == null) {
+			throw new IllegalArgumentException( "The rank or suit cannot be null");
+		}
 		
-		
-		
+		this.rank = getRank();
+		this.suit = getSuit();	
 	}
 	
 	public int[] getValues(){
@@ -78,8 +91,15 @@ public class Card implements Comparable {
 		
 	}
 	
+	/**Concatenates rank and suit into a string to create a playing card*/
 	public String toString() {
-		return null;
+		
+		StringBuilder str = new StringBuilder();
+
+		str.append(this.rank);
+		str.append(this.suit );
+		
+		return str.toString();
 	}
 	
 	public int hashCode() {
