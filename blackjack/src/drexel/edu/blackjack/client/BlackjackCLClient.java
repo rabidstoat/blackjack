@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -19,6 +18,10 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
+
+import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
+import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
+import drexel.edu.blackjack.client.screens.ErrorScreen;
 
 /**
  * Need some comments.
@@ -93,8 +96,6 @@ public class BlackjackCLClient {
 
 		// Here are some IO-related variables
         Socket socket = null;
-        PrintWriter out = null;
-        BufferedReader in = null;
 		
 		// Surely there is a way to do this in a config file
 		LOGGER.setLevel(Level.INFO); 
@@ -124,11 +125,12 @@ public class BlackjackCLClient {
             socket = ssf.createSocket( "127.0.0.1", PORT );
             LOGGER.info( "Started a client connecting to localhost on port " + PORT );
             
-            // We're going to write out to the socket
-            out = new PrintWriter(socket.getOutputStream(), true);
+            // Create the thread to handle input and start it up
+            ClientInputFromServerThread input = new ClientInputFromServerThread( socket, new ErrorScreen() );
+            input.start();
             
-            // And read in responses from the server through this socket
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            // Create the helper to handle output
+            ClientOutputToServerHelper output = new ClientOutputToServerHelper( socket );
             
             // We read in input from the user from standard in, though
             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
@@ -139,21 +141,7 @@ public class BlackjackCLClient {
             	// We send whatever they typed to the server. When we really have a client
             	// implemented, there will be a command line UI and we'll have to generate
             	// real valid comands to send. But for now, let them type whatever.
-            	out.println( fromUser );
-            	
-            	// And we read the response from the server
-            	String fromServer = in.readLine();
-            	
-            	// If the server disconnected us, we get a null. We'll break out of
-            	// our continual while loop then
-            	if( fromServer == null ) {
-            		break;	// Exit the while loop
-            	}
-            	
-            	// Normally we would interpret this response and have the UI
-            	// respond in some way to the user. Right now, we just print
-            	// it out to the screen
-            	System.out.println( fromServer );
+            	output.sendRawText( fromUser );
             	
             	// And read the next line
             	fromUser = stdIn.readLine();
