@@ -91,7 +91,12 @@ public class BlackjackProtocol {
 		
 		// Now everyone is done playing and the server is processing
 		// the results. The bet value should be set to what the client bet.
-		IN_SESSION_SERVER_PROCESSING
+		IN_SESSION_SERVER_PROCESSING,
+				
+		// This is, like it says, the state of being disconnected. Not much
+		// exciting happens in this state.
+		DISCONNECTED
+
 	}
 
 	/*************************************************************
