@@ -44,7 +44,7 @@ public class BlackjackServerThread extends Thread {
 		this.socket = socket;
 		this.protocol = new BlackjackProtocol();
 		LOGGER.setLevel( Level.INFO );
-		LOGGER.info( "Inside a blackjack server thread constructor." );
+		LOGGER.finer( "Inside a blackjack server thread constructor." );
 	}
 
 	/**********************************************************
@@ -53,12 +53,12 @@ public class BlackjackServerThread extends Thread {
 	@Override
 	public void run() {
 		
-		LOGGER.info( "Inside a blackjack server thread run() method." );
+		LOGGER.finer( "Inside a blackjack server thread run() method." );
 
 		// We need to register the thread with the idle timeout daemon
 		IdleTimeoutDaemon daemon = IdleTimeoutDaemon.getDefaultIdleTimeoutDaemon();
 		if( daemon != null ) {
-			LOGGER.info( "Inside a blackjack server thread, about to register this thread" );
+			LOGGER.finer( "Inside a blackjack server thread, about to register this thread" );
 			daemon.addBlackjackServerThread(this);
 		} else {
 			LOGGER.warning( "Cannot register a blackjack server thread with the timeout daemon." );
@@ -72,27 +72,27 @@ public class BlackjackServerThread extends Thread {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	
 			// Keep reading single-line commands as long as we can
-			LOGGER.info( "Inside a blackjack server thread, about to block for the first read" );
+			LOGGER.finer( "Inside a blackjack server thread, about to block for the first read" );
 			String inputLine = in.readLine();
 			while ( inputLine != null ) {
 				
 				// We pass it to our protcol to figure out what to do
-				LOGGER.info( "Inside a blackjack server thread, about to process some input" );
+				LOGGER.finer( "Inside a blackjack server thread, about to process some input" );
 				String outputLine = protocol.processInput(inputLine);
 				
 				// They give us the response to send back
-				LOGGER.info( "Inside a blackjack server thread, about to write some output" );
+				LOGGER.finer( "Inside a blackjack server thread, about to write some output" );
 				out.println(outputLine);
 				
 				// And we read another line
-				LOGGER.info( "Inside a blackjack server thread, about to block for another read" );
+				LOGGER.finer( "Inside a blackjack server thread, about to block for another read" );
 				inputLine = in.readLine();
 	       }	
 		} catch (IOException e) {
-			System.err.println( "Something went wrong in our BlackjackServerThread for a client" );
-			e.printStackTrace();
+			// This happens when the socket is closed, for whatever reason
+			LOGGER.finer( "Socket was closed for a connection." );
 		} finally {
-			LOGGER.info( "Inside a blackjack server thread, in the finally clause" );
+			LOGGER.finer( "Inside a blackjack server thread, in the finally clause" );
 			// Always nice to clean up after ourselves
 			try {
 				in.close();
@@ -103,7 +103,10 @@ public class BlackjackServerThread extends Thread {
 			}
 		}
 		
-		LOGGER.info( "Inside a blackjack server thread, about to exit the run() method" );
+		LOGGER.info( "Inside a client connection thread, about to shut down the connection" );
+		if( daemon != null ) {
+			daemon.removeBlackjackServerThread(this);
+		}
 	}
 
 	/**
@@ -128,7 +131,7 @@ public class BlackjackServerThread extends Thread {
 	
 	public void handleTimeout(STATE newState, ResponseCode responseCode) {
 		
-		LOGGER.info( "Inside a blackjack server thread, about to handle a timeout" );
+		LOGGER.info( "Inside a client connection thread, about to handle a timeout" );
 
 		// Set the new state
 		if( protocol != null ) {
@@ -152,7 +155,7 @@ public class BlackjackServerThread extends Thread {
 		// Now if they're in the disconnected state, we have to handle
 		// the fact that this connection needs to close
 		if( newState == null || newState.equals(BlackjackProtocol.STATE.DISCONNECTED) ) {
-			LOGGER.info( "Inside a blackjack server thread, about to close the connection" );
+			LOGGER.finer( "Inside a blackjack server thread, about to close the connection" );
 			closeConnection();
 		}
 	}
@@ -168,17 +171,10 @@ public class BlackjackServerThread extends Thread {
 		// Well, if we close the input reader, then the thread
 		// should (hopefully stop!)
 		try {
-			LOGGER.info( "Inside a blackjack server thread, about to call in.close()" );
-			in.close();
+			LOGGER.finer( "Inside a blackjack server thread, about to call socket.close()" );
+			socket.close();
 		} catch (IOException e) {
-			LOGGER.warning( "Unable to close the input reader on the socket in a blackjack server thread." );
-		}
-		
-		// And we need to unregister the thread from the idle timeout daemon
-		IdleTimeoutDaemon daemon = IdleTimeoutDaemon.getDefaultIdleTimeoutDaemon();
-		LOGGER.info( "Inside a blackjack server thread, about to unregister this thread" );
-		if( daemon != null ) {
-			daemon.removeBlackjackServerThread(this);
+			LOGGER.warning( "Unable to close the socket in a blackjack server thread." );
 		}
 		
 	}

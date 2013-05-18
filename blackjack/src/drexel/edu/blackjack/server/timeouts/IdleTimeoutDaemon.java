@@ -83,7 +83,7 @@ public class IdleTimeoutDaemon extends Thread {
 	 * @return true if added successfully, else false
 	 */
 	public boolean addBlackjackServerThread( BlackjackServerThread thread ) {
-		LOGGER.info( "Adding a server thread to the existing " + clientThreads.size() + " threads." );
+		LOGGER.info( "Adding a client connection to monitor in the idle timeout daemon." );
 		return clientThreads.add(thread);
 	}
 	
@@ -97,7 +97,7 @@ public class IdleTimeoutDaemon extends Thread {
 	 * @return true if removed successfully, else false
 	 */
 	public boolean removeBlackjackServerThread( BlackjackServerThread thread ) {
-		LOGGER.info( "Removing a server thread from the existing " + clientThreads.size() + " threads." );
+		LOGGER.info( "Removing a client connection to monitor from the idle timeout daemon." );
 		return clientThreads.remove(thread);
 	}
 	
@@ -118,7 +118,7 @@ public class IdleTimeoutDaemon extends Thread {
 			}
 
 			
-			LOGGER.info( "About to sweep the connections." );
+			LOGGER.finer( "About to sweep the connections." );
 			
 			// Keep a list of threads that need to be removed. We can't
 			// remove them while we're iterating through them, though
@@ -129,12 +129,15 @@ public class IdleTimeoutDaemon extends Thread {
 				
 				// First looked for closed sockets that we need to remove
 				if( !thread.isAlive() || ( thread.getSocket() != null && thread.getSocket().isClosed()) ) {
-					LOGGER.info( "Found a dead thread to remove." );
+					LOGGER.info( "Found a dead client connection thread to remove." );
 					threadsToReap.add(thread);
-				} else {
+				} else if( thread.getProtocol() != null ) {
 					// Then look for a relevant timer based on state
-					TimeoutDefinition timeout = this.timeoutMap.get( thread.getState() );
+					LOGGER.finer( "Thread state is: " + thread.getProtocol().getState() );
+					TimeoutDefinition timeout = this.timeoutMap.get( thread.getProtocol().getState() );
 					if( timeout != null ) {
+						
+						LOGGER.finer( "Found a timeout definition for the state." );
 						
 						// Figure out how much time has passed since the relevant timer
 						long currentTime = System.currentTimeMillis();
@@ -148,6 +151,9 @@ public class IdleTimeoutDaemon extends Thread {
 								thread.getProtocol().getTimer() != null ) {
 							delta = currentTime - thread.getProtocol().getTimer();
 						}
+						
+						LOGGER.finer( "The delta on the thread is " + delta );
+						LOGGER.finer( "The timeout value is " + timeout.getTimeoutInMilliseconds() );
 						
 						// If it's more than the timeout, we have to do something
 						if( delta > timeout.getTimeoutInMilliseconds() ) {
