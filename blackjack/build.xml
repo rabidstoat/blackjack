@@ -37,19 +37,60 @@
         </javac>
     </target>
 
-	<!-- Runs the server -->
+	<!-- Runs the server, with only SEVERE log messages shown -->
     <target depends="compile" name="run-server">
         <echo message="Run-server ${ant.project.name}: ${ant.file}"/>
     	<java classname="drexel.edu.blackjack.server.BlackjackServer">
             <classpath refid="blackjack.classpath"/>
+    		<sysproperty key="loglevel" value="SEVERE"/>
+    	</java>
+    </target>
+
+	<!-- Runs the server, with WARNING and above log messages shown -->
+    <target depends="compile" name="run-server-warning">
+        <echo message="Run-server ${ant.project.name}: ${ant.file}"/>
+    	<java classname="drexel.edu.blackjack.server.BlackjackServer">
+            <classpath refid="blackjack.classpath"/>
+    		<sysproperty key="loglevel" value="WARNING"/>
+    	</java>
+    </target>
+
+	<!-- Runs the server, with INFO and above log messages shown -->
+    <target depends="compile" name="run-server-info">
+        <echo message="Run-server ${ant.project.name}: ${ant.file}"/>
+    	<java classname="drexel.edu.blackjack.server.BlackjackServer">
+            <classpath refid="blackjack.classpath"/>
+    		<sysproperty key="loglevel" value="INFO"/>
     	</java>
     </target>
 
 	<!-- Runs the client against the local host  -->
+	<!-- with only SEVERE log messages shown -->
     <target depends="compile" name="run-client-local">
         <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
     	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
             <classpath refid="blackjack.classpath"/>
+    		<sysproperty key="loglevel" value="SEVERE"/>
+    	</java>
+    </target>
+
+	<!-- Runs the client against the local host  -->
+	<!-- with WARNING and above log messages shown -->
+    <target depends="compile" name="run-client-local-warning">
+        <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
+    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
+            <classpath refid="blackjack.classpath"/>
+    		<sysproperty key="loglevel" value="WARNING"/>
+    	</java>
+    </target>
+
+	<!-- Runs the client against the local host  -->
+	<!-- with INFO and above log messages shown -->
+    <target depends="compile" name="run-client-local-info">
+        <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
+    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
+            <classpath refid="blackjack.classpath"/>
+    		<sysproperty key="loglevel" value="INFO"/>
     	</java>
     </target>
 
@@ -61,7 +102,7 @@
     </target>
 
     <target depends="compile" name="game-manager">
-        <echo message="Add user to server"/>
+        <echo message="Add game to server"/>
         <java classname="drexel.edu.blackjack.db.game.GameHelper">
             <classpath refid="blackjack.classpath"/>
         </java>

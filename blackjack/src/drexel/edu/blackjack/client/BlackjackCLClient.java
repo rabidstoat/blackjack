@@ -98,9 +98,6 @@ public class BlackjackCLClient {
 		// Here are some IO-related variables
         Socket socket = null;
 		
-		// Surely there is a way to do this in a config file
-		LOGGER.setLevel(Level.INFO); 
-		
         try {
             // Keystore
             KeyStore ks = KeyStore.getInstance(KEYSTORE_TYPE);

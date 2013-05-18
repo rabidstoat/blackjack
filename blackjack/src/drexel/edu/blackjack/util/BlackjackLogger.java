@@ -41,7 +41,7 @@ public class BlackjackLogger {
 		LOGGER.addHandler( new BlackjackLogHandler() );
 		
 		// See if an environment variable overrode the log level
-		String customLogLevel = System.getenv( LOG_LEVEL_PROPERTY );
+		String customLogLevel = System.getProperty( LOG_LEVEL_PROPERTY );
 		if( customLogLevel != null ) {
 			if( customLogLevel.equalsIgnoreCase(FINEST) ) {
 				LOGGER.setLevel(Level.FINEST);

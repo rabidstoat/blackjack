@@ -44,7 +44,6 @@ public class BlackjackServerThread extends Thread {
 		super( "BlackjackServerThread" );
 		this.socket = socket;
 		this.protocol = new BlackjackProtocol();
-		LOGGER.setLevel( Level.INFO );
 		LOGGER.finer( "Inside a blackjack server thread constructor." );
 	}
 

@@ -155,9 +155,6 @@ public class BlackjackProtocol {
 	 */
 	public BlackjackProtocol() {
 		
-		// Surely there is a way to do this in a config file
-		LOGGER.setLevel(Level.INFO); 
-		
 		// Only initialize it once
 		if( !isInitialized ) {
 			LOGGER.info( "About to initialize the commands" );

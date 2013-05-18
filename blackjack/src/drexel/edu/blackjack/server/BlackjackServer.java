@@ -65,8 +65,6 @@ public class BlackjackServer {
 	 * Constructor needs a comment
 	 */
 	public BlackjackServer() {
-		// Surely there is a way to do this in a config file
-		LOGGER.setLevel(Level.INFO); 		
 	}
 	
 	/**
