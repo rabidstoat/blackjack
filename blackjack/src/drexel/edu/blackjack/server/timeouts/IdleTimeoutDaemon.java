@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.BlackjackServerThread;
+import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
  * This class keeps track of all client connections. Every 5 seconds
@@ -40,7 +41,7 @@ public class IdleTimeoutDaemon extends Thread {
 	private static IdleTimeoutDaemon daemon = null;
 	
 	// And a logger for errors
-	private final static Logger LOGGER = Logger.getLogger(IdleTimeoutDaemon.class.getName()); 
+	private final static Logger LOGGER = BlackjackLogger.createLogger(IdleTimeoutDaemon.class.getName()); 
 
 	
 	/***********************************************************

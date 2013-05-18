@@ -22,6 +22,7 @@ import javax.net.ssl.TrustManagerFactory;
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
 import drexel.edu.blackjack.client.screens.ErrorDisplay;
+import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
  * Need some comments.
@@ -59,7 +60,7 @@ public class BlackjackCLClient {
 	// Finally, the port that the server will run on
 	private static final int PORT						= 55555;
 	
-	private final static Logger LOGGER = Logger.getLogger(BlackjackCLClient.class .getName()); 
+	private final static Logger LOGGER = BlackjackLogger.createLogger(BlackjackCLClient.class .getName()); 
 	
 	/************************************************************
 	 * Main method is here! And constructor!

@@ -17,6 +17,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import drexel.edu.blackjack.util.BlackjackLogger;
+
 /**
  * Should probably have some comments.
  */
@@ -53,7 +55,7 @@ public class BlackjackServer {
 	// Finally, the port that the server will run on
 	private static final int PORT						= 55555;
 	
-	private final static Logger LOGGER = Logger.getLogger(BlackjackServer.class .getName()); 
+	private final static Logger LOGGER = BlackjackLogger.createLogger(BlackjackServer.class .getName()); 
 	
 	/************************************************************
 	 * Main method is here! And constructor!

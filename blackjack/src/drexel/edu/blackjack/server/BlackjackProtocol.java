@@ -3,6 +3,7 @@ package drexel.edu.blackjack.server;
 import drexel.edu.blackjack.server.commands.BlackjackCommand;
 import drexel.edu.blackjack.server.commands.CommandMetadata;
 import drexel.edu.blackjack.server.game.User;
+import drexel.edu.blackjack.util.BlackjackLogger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class BlackjackProtocol {
 	private static BlackjackCommand unknownCommand = null;
 
 	// And our logger
-	private final static Logger LOGGER = Logger.getLogger(BlackjackProtocol.class.getName()); 
+	private final static Logger LOGGER = BlackjackLogger.createLogger(BlackjackProtocol.class.getName()); 
 
 	/*************************************************************
 	 * The enumeration of protocol states

@@ -8,10 +8,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import drexel.edu.blackjack.server.ResponseCode;
+import drexel.edu.blackjack.util.BlackjackLogHandler;
+import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
  * This threaded class is designed to read input from the 
@@ -34,7 +37,7 @@ public class ClientInputFromServerThread extends Thread {
 	private MessagesFromServerListener defaultListener = null;
 
 	// And a logger for errors
-	private final static Logger LOGGER = Logger.getLogger(ClientInputFromServerThread.class.getName()); 
+	private final static Logger LOGGER = BlackjackLogger.createLogger(ClientInputFromServerThread.class.getName()); 
 	
 	/**********************************************************
 	 * Constructor goes here
@@ -46,9 +49,6 @@ public class ClientInputFromServerThread extends Thread {
 		
 		// Record the listener
 		this.defaultListener = defaultListener;
-		
-		// Just sets the logging level
-		LOGGER.setLevel( Level.INFO );
 		
 		// Create a reader for the socket
 		try {

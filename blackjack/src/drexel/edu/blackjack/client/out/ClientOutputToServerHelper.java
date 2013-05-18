@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.logging.Logger;
 
+import drexel.edu.blackjack.util.BlackjackLogger;
+
 /**
  * This class is used to write output to the server.
  * 
@@ -20,7 +22,7 @@ public class ClientOutputToServerHelper extends Thread {
 	private PrintWriter writer = null;
 
 	// And a logger for errors
-	private final static Logger LOGGER = Logger.getLogger(ClientOutputToServerHelper.class.getName()); 
+	private final static Logger LOGGER = BlackjackLogger.createLogger(ClientOutputToServerHelper.class.getName()); 
 
 	/**********************************************************
 	 * Constructor goes here

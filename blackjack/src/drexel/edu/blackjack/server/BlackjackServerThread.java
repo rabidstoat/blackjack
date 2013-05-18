@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 import drexel.edu.blackjack.server.timeouts.IdleTimeoutDaemon;
+import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
  * One thread per client. Better comments needed.
@@ -33,7 +34,7 @@ public class BlackjackServerThread extends Thread {
 	private BlackjackProtocol protocol = null;
 	
 	// And a logger for errors
-	private final static Logger LOGGER = Logger.getLogger(BlackjackServerThread.class.getName()); 
+	private final static Logger LOGGER = BlackjackLogger.createLogger(BlackjackServerThread.class.getName()); 
 
 	/**********1************************************************
 	 * Constructor goes here
