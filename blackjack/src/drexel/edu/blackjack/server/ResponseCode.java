@@ -71,7 +71,8 @@ public class ResponseCode {
 
 		UNKNOWN_COMMAND( 500, "That command is unknown to the server." ),
 		UNSUPPORTED_COMMAND( 501, "That command is not supported on this server." ),
-		SYNTAX_ERROR( 502, "That command had a syntax error." ),		
+		SYNTAX_ERROR( 502, "That command had a syntax error." ),	
+		
 		INFORMATIVE_MESSAGE( 600, null ),
 		USER_RESPONSE_NEEDED_MESSAGE( 601, null );
 
@@ -393,6 +394,57 @@ public class ResponseCode {
 		}
 		
 		return parameter;
+	}
+	
+	/** 
+	 * A syntactically correct error code is anything in the 
+	 * 4xx ("Command was syntactically correct but failed for 
+	 * some reason" range.
+	 * 
+	 * @return True if it's this type or error, else false
+	 */
+	public boolean isSyntacticallyCorrectError() {
+		
+		return code != null && code >= 400 && code < 500;
+		
+	}
+
+	/** 
+	 * A syntactically INcorrect error code is anything in the 
+	 * 5xx ("Command unknown, unsupported, unavailable, or 
+	 * syntax error") range.
+	 * 
+	 * @return True if it's this type or error, else false
+	 */
+	public boolean isSyntacticallyIncorrectError() {
+		
+		return code != null && code >= 500 && code < 600;
+		
+	}
+
+	/** 
+	 * An error code is anything in the 4xx ("Command was syntactically
+	 * correct but failed for some reason" or 5xx ("Command unknown,
+	 * unsupported, unavailable, or syntax error") range.
+	 * 
+	 * @return True if it represents an error, else false
+	 */
+	public boolean isError() {
+		
+		return isSyntacticallyCorrectError() || isSyntacticallyIncorrectError();
+		
+	}
+
+	/** 
+	 * An informative code is anything in the 1xx range.
+	 * 
+	 * @return True if it represents an informative
+	 * code, else false
+	 */
+	public boolean isInformative() {
+		
+		return code != null && code >= 100 && code < 200;
+		
 	}
 
 	/* (non-Javadoc)
