@@ -496,6 +496,8 @@ public class ResponseCode {
 	 */
 	@Override
 	public boolean equals(Object obj) {
+		
+		// Something is equal only if the code AND the text are equal
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -514,5 +516,23 @@ public class ResponseCode {
 		} else if (!text.equals(other.text))
 			return false;
 		return true;
+	}
+	
+	/**
+	 * This basically is like an equality on the code attribute,
+	 * ignoring whether or not the text is equal.
+	 * 
+	 * @param code The response code comparing to
+	 * @return True if just the code part of the ResponseCode
+	 * is equal (ignoring any text differences), false otherwise
+	 */
+	@SuppressWarnings("unused")
+	public boolean hasSameCode( ResponseCode.CODE compareToCode ) {
+		
+		if( compareToCode != null ) {
+			return getCode() == compareToCode.getCode();
+		}
+		
+		return false;
 	}
 }
