@@ -40,7 +40,7 @@
 	<!-- Runs the server, with only SEVERE log messages shown -->
     <target depends="compile" name="run-server">
         <echo message="Run-server ${ant.project.name}: ${ant.file}"/>
-    	<java classname="drexel.edu.blackjack.server.BlackjackServer">
+    	<java classname="drexel.edu.blackjack.server.BlackjackServer" fork="true">
             <classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="SEVERE"/>
     	</java>
@@ -49,7 +49,7 @@
 	<!-- Runs the server, with WARNING and above log messages shown -->
     <target depends="compile" name="run-server-warning">
         <echo message="Run-server ${ant.project.name}: ${ant.file}"/>
-    	<java classname="drexel.edu.blackjack.server.BlackjackServer">
+    	<java classname="drexel.edu.blackjack.server.BlackjackServer" fork="true">
             <classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="WARNING"/>
     	</java>
@@ -58,7 +58,7 @@
 	<!-- Runs the server, with INFO and above log messages shown -->
     <target depends="compile" name="run-server-info">
         <echo message="Run-server ${ant.project.name}: ${ant.file}"/>
-    	<java classname="drexel.edu.blackjack.server.BlackjackServer">
+    	<java classname="drexel.edu.blackjack.server.BlackjackServer" fork="true">
             <classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="INFO"/>
     	</java>
@@ -68,7 +68,7 @@
 	<!-- with only SEVERE log messages shown -->
     <target depends="compile" name="run-client-local">
         <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
-    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
+    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient" fork="true">
             <classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="SEVERE"/>
     	</java>
@@ -78,7 +78,7 @@
 	<!-- with WARNING and above log messages shown -->
     <target depends="compile" name="run-client-local-warning">
         <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
-    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
+    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient" fork="true">
             <classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="WARNING"/>
     	</java>
@@ -88,7 +88,7 @@
 	<!-- with INFO and above log messages shown -->
     <target depends="compile" name="run-client-local-info">
         <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
-    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
+    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient" fork="true">
             <classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="INFO"/>
     	</java>
