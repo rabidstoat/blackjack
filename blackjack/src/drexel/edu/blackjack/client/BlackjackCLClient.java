@@ -22,6 +22,7 @@ import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
 import drexel.edu.blackjack.client.screens.AbstractScreen;
 import drexel.edu.blackjack.client.screens.LoginInputScreen;
+import drexel.edu.blackjack.client.screens.NotInSessionScreen;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
@@ -65,6 +66,10 @@ public class BlackjackCLClient {
 	
 	// And keep track of the 'screen' that is 'up' on the clint
 	private AbstractScreen currentScreen = null;
+	
+	// ALong with the input and output
+	private ClientOutputToServerHelper output = null;
+	private ClientInputFromServerThread input = null;
 	
 	/************************************************************
 	 * Main method is here! And constructor!
@@ -128,18 +133,18 @@ public class BlackjackCLClient {
             LOGGER.info( "Started a client connecting to localhost on port " + PORT );
             
             // Create the thread to handle input and start it up
-            ClientInputFromServerThread input = new ClientInputFromServerThread( 
+            input = new ClientInputFromServerThread( 
             		this, socket );
             input.start();
             
             // Create the helper to handle output
-            ClientOutputToServerHelper output = new ClientOutputToServerHelper( socket );
+            output = new ClientOutputToServerHelper( socket );
             
             // We read in input from the user from standard in, though
             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
             // Set the screen to the login input screen
-            setScreen( LoginInputScreen.getDefaultScreen( input, output ) );
+            setScreen( LoginInputScreen.getDefaultScreen( this, input, output ) );
 
             // Loop through as long as we have input
             String fromUser = stdIn.readLine();
@@ -228,6 +233,22 @@ public class BlackjackCLClient {
 		System.out.println( "You have been disconnected from the server." );
 		System.exit(0);
 		
+	}
+
+	/**
+	 * Do whatever needs to be done to show the next interface screen.
+	 * This typically involves looking at the current screen, then
+	 * finding an appropriate new screen, and setting it.
+	 */
+	public void showNextScreen() {
+		
+		if( currentScreen == null ) {
+			LOGGER.severe( "Could not showNextScreen() because no current screen was set." );
+		} else if( currentScreen.getScreenType() != null && 
+				currentScreen.getScreenType().equals(AbstractScreen.SCREEN_TYPE.LOGIN_SCREEN) ) {
+			// If we were showing the login screen, now need to show the NotInSessionScreen
+			this.setScreen( NotInSessionScreen.getDefaultScreen(this, input, output) );
+		}
 	}
 
 

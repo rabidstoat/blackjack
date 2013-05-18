@@ -6,38 +6,30 @@ import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
 import drexel.edu.blackjack.server.ResponseCode;
 
 /**
- * This handles the user interface for logging into the
- * server with a username and password.
+ * This is the user interface that shows when the
+ * user is waiting to join a session.
  * 
  * @author Jennifer
  */
-public class LoginInputScreen extends AbstractScreen {
-	
-	// This screen can be in one of these three states
-	private static final int JUST_STARTED	= 0;
-	private static final int ENTER_USERNAME	= 1;
-	private static final int ENTER_PASSWORD = 2;
-	
-	// Track which one it's in
-	private int loginScreenState;
+public class NotInSessionScreen extends AbstractScreen {
 	
 	// And keep a copy to itself for the singleton pattern
-	private static LoginInputScreen loginInputScreen = null;
+	private static NotInSessionScreen notInSessionScreen = null;
 	
-	public LoginInputScreen( BlackjackCLClient client, ClientInputFromServerThread thread,
+	public NotInSessionScreen( BlackjackCLClient client, ClientInputFromServerThread thread,
 			ClientOutputToServerHelper helper ) {
 		
 		// It starts in the ENTER_USERNAME state, but inactive
 		super(client, thread,helper);
-		setScreenType( AbstractScreen.SCREEN_TYPE.LOGIN_SCREEN );
-		loginScreenState = JUST_STARTED;
+		setScreenType( AbstractScreen.SCREEN_TYPE.NOT_IN_SESSION_SCREEN );
 		setIsActive( false );
 		
 	}
 
 	@Override
 	public void processMessage(ResponseCode code) {
-		
+
+		/**
 		// One message we might receive says that the server is ready for the password
 		if( code.hasSameCode( ResponseCode.CODE.WAITING_FOR_PASSWORD ) ) {
 			loginScreenState = ENTER_PASSWORD;
@@ -55,6 +47,8 @@ public class LoginInputScreen extends AbstractScreen {
 		} else {
 			super.handleResponseCode( code );
 		}
+		**/
+		super.handleResponseCode( code );
 	}
 	
 	/**
@@ -62,49 +56,38 @@ public class LoginInputScreen extends AbstractScreen {
 	 * to the screen that is appropriate.
 	 */
 	public void displayMenu() {
+
+		System.out.println( "Someone needs to write the NotInSessionScreen.displayMenu() method." );
+		System.out.println( "For now, just type in raw protocol commands." );
 		
-		// We only want to show this when they first log in, not
-		// on subsequent attempt to reconnect
-		if( loginScreenState == JUST_STARTED ) {
-			System.out.println( "Welcome to the Blackjack Game!" );
-			loginScreenState = ENTER_USERNAME;
-		} 
-		
-		if( loginScreenState == ENTER_USERNAME ) {
-			System.out.println( "Please enter your username: " );
-		} else if( loginScreenState == ENTER_PASSWORD ) {
-			System.out.println( "Please enter your password: " );
-		} else {
-			// This should never happen
-			System.out.println( "We should never get here in the code. Oh great, you broke it!!!" );
-		}
 	}
 
 	/**
 	 * This is used in the singleton pattern so that only
-	 * one login screen is instantiated at a time.
+	 * one not-in-session screen is instantiated at a time.
 	 * 
+	 * @param client Need a valid client
 	 * @param thread Need a valid and active client input thread
-	 * @return The login screen
+	 * @param helper Need smoething for output
+	 * @return The not-in-session screen
 	 */
 	public static AbstractScreen getDefaultScreen( BlackjackCLClient client, 
 			ClientInputFromServerThread thread,
 			ClientOutputToServerHelper helper ) {
 		
-		if( loginInputScreen == null ) {
-			loginInputScreen = new LoginInputScreen( client, thread, helper );
+		if( notInSessionScreen == null ) {
+			notInSessionScreen = new NotInSessionScreen( client, thread, helper );
 		}
 		
-		return loginInputScreen;
+		return notInSessionScreen;
 		
 	}
 
 	@Override
 	public void reset() {
 		
-		// For us, resetting the screen involves prompting for a login
+		// For us, resetting the screen involves showing the menu again
 		System.out.println( "Whoops, the user interface got confused. Let's try this again." );
-		loginScreenState = ENTER_USERNAME;
 		displayMenu();
 		
 	}
@@ -112,17 +95,9 @@ public class LoginInputScreen extends AbstractScreen {
 	@Override
 	public void handleUserInput(String str) {
 		
-		if( str == null || str.trim().length() == 0 ) {
-			// If they just hit enter, we repeat whatever prompt we're at
-			displayMenu();
-		} else if( loginScreenState == ENTER_USERNAME ) {
-			helper.sendUsername( str.trim() );
-		} else if( loginScreenState == ENTER_PASSWORD ) {
-			helper.sendPassword( str.trim() );
-		} else {
-			// This is weird....
-			reset();
-		}
+		// TODO: Something more sensible
+		helper.sendRawText( str );
+
 	}
 
 }

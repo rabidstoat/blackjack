@@ -2,6 +2,7 @@ package drexel.edu.blackjack.client.screens;
 
 import java.util.logging.Logger;
 
+import drexel.edu.blackjack.client.BlackjackCLClient;
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.in.MessagesFromServerListener;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
@@ -16,8 +17,22 @@ import drexel.edu.blackjack.util.BlackjackLogger;
 public abstract class AbstractScreen implements MessagesFromServerListener {
 
 	/*****************************************************************
+	 * Enum to define the type of screen
+	 ***************************************************************/
+	public enum SCREEN_TYPE {
+		
+		LOGIN_SCREEN,
+		NOT_IN_SESSION_SCREEN,
+		OTHER_SCREEN 
+		
+	}
+
+	/*****************************************************************
 	 * Local variables here
 	 ***************************************************************/
+
+	// What type of screen is it
+	private SCREEN_TYPE screenType = SCREEN_TYPE.OTHER_SCREEN;	// Default to 'other'
 	
 	// Whether or not this particular screen is active. In general,
 	// only one screen should be active at a time.
@@ -28,14 +43,18 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	protected ClientInputFromServerThread clientThread;
 	protected ClientOutputToServerHelper helper;
 	
+	// And to our client
+	protected BlackjackCLClient client;
+	
 	// Our logger
 	private final static Logger LOGGER = BlackjackLogger.createLogger(AbstractScreen.class .getName()); 
 	
 	/*****************************************************************
 	 * Construct here
 	 ***************************************************************/
-	public AbstractScreen( ClientInputFromServerThread thread,
+	public AbstractScreen( BlackjackCLClient client, ClientInputFromServerThread thread,
 			ClientOutputToServerHelper helper ) {
+		this.client = client;
 		this.clientThread = thread;
 		this.helper = helper;
 	}
@@ -72,6 +91,21 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 ***************************************************************/
 
 	/**
+	 * @return the screenType
+	 */
+	public SCREEN_TYPE getScreenType() {
+		return screenType;
+	}
+
+	/**
+	 * @param screenType the screenType to set
+	 */
+	public void setScreenType(SCREEN_TYPE screenType) {
+		this.screenType = screenType;
+	}	
+
+
+	/**
 	 * Notifies the screen that it is now the 'active' screen,
 	 * and should start doing its I/O, if the value is true.
 	 * Otherwise it's notifying it that it's no longer active
@@ -85,6 +119,19 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		}
 		
 		this.isActive = isActive;
+	}
+	
+	/**
+	 * Request that the user interface show the 'next screen', which is
+	 * based on what the currentScreen is
+	 */
+	public void showNextScreen() {
+		
+		if( client == null ) {
+			LOGGER.severe( "Cannot show the next user interface screen as we don't seem to have a client set." );
+		} else {
+			client.showNextScreen();
+		}
 	}
 	
 	/**
@@ -127,7 +174,6 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		if( isActive ) {
 			processMessage( code );
 		}
-	}	
-
+	}
 
 }
