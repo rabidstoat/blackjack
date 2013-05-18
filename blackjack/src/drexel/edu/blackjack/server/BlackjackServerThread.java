@@ -20,6 +20,9 @@ public class BlackjackServerThread extends Thread {
 	// Need to keep track of client's socket for writing responses
 	private Socket socket = null;
 	
+	// There's a protocol state that goes with it
+	private BlackjackProtocol protocol = null;
+	
 	/**********************************************************
 	 * Constructor goes here
 	 *********************************************************/
@@ -27,6 +30,7 @@ public class BlackjackServerThread extends Thread {
 	public BlackjackServerThread( Socket socket ) {
 		super( "BlackjackServerThread" );
 		this.socket = socket;
+		this.protocol = new BlackjackProtocol();
 	}
 
 	/**********************************************************
@@ -45,9 +49,6 @@ public class BlackjackServerThread extends Thread {
 			// And this is how responses are read from the client
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	
-			// This is our protocol
-			BlackjackProtocol protocol = new BlackjackProtocol();
-	       
 			// Keep reading single-line commands as long as we can
 			String inputLine = in.readLine();
 			while ( inputLine != null ) {
@@ -74,5 +75,19 @@ public class BlackjackServerThread extends Thread {
 				// At this point we're about to end anyway, so ignore it
 			}
 		}
+	}
+
+	/**
+	 * @return the socket
+	 */
+	public Socket getSocket() {
+		return socket;
+	}
+
+	/**
+	 * @return the protocol
+	 */
+	public BlackjackProtocol getProtocol() {
+		return protocol;
 	}
 }
