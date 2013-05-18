@@ -396,6 +396,10 @@ public class ResponseCode {
 		return parameter;
 	}
 	
+	/*************************************************************************************
+	 * For figuring out things about this type of response code
+	 ************************************************************************************/
+	
 	/** 
 	 * A syntactically correct error code is anything in the 
 	 * 4xx ("Command was syntactically correct but failed for 
@@ -446,6 +450,34 @@ public class ResponseCode {
 		return code != null && code >= 100 && code < 200;
 		
 	}
+
+	/** 
+	 * A malformed code has a null code number.
+	 * 
+	 * @return True if this is a malformed code
+	 */
+	public boolean isMalformed() {
+		
+		return code == null;
+				
+	}
+	
+	/** 
+	 * A game state message is something in the 6xx
+	 * range.
+	 * 
+	 * @return True if this is a game state code
+	 */
+	public boolean isGameState() {
+		
+		return code != null && code >= 600 && code < 700;		
+		
+	}
+
+
+	/*************************************************************************************
+	 * So we can do equals() on it.
+	 ************************************************************************************/
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
