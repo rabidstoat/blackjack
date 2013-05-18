@@ -11,7 +11,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -21,7 +20,8 @@ import javax.net.ssl.TrustManagerFactory;
 
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
-import drexel.edu.blackjack.client.screens.ErrorDisplay;
+import drexel.edu.blackjack.client.screens.AbstractScreen;
+import drexel.edu.blackjack.client.screens.LoginInputScreen;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
@@ -60,7 +60,11 @@ public class BlackjackCLClient {
 	// Finally, the port that the server will run on
 	private static final int PORT						= 55555;
 	
+	// Our logger
 	private final static Logger LOGGER = BlackjackLogger.createLogger(BlackjackCLClient.class .getName()); 
+	
+	// And keep track of the 'screen' that is 'up' on the clint
+	private AbstractScreen currentScreen = null;
 	
 	/************************************************************
 	 * Main method is here! And constructor!
@@ -125,7 +129,7 @@ public class BlackjackCLClient {
             
             // Create the thread to handle input and start it up
             ClientInputFromServerThread input = new ClientInputFromServerThread( 
-            		this, socket, new ErrorDisplay() );
+            		this, socket );
             input.start();
             
             // Create the helper to handle output
@@ -134,13 +138,19 @@ public class BlackjackCLClient {
             // We read in input from the user from standard in, though
             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
+            // Set the screen to the login input screen
+            setScreen( LoginInputScreen.getDefaultScreen( input, output ) );
+
             // Loop through as long as we have input
             String fromUser = stdIn.readLine();
             while( fromUser != null ) {
-            	// We send whatever they typed to the server. When we really have a client
-            	// implemented, there will be a command line UI and we'll have to generate
-            	// real valid comands to send. But for now, let them type whatever.
-            	output.sendRawText( fromUser );
+            	
+            	// We pass whatever they entered to to the default screen
+            	if( this.currentScreen == null ) {
+            		LOGGER.severe( "There was no default screen to funnel user input through." );
+            	} else {
+                	currentScreen.handleUserInput( fromUser );
+            	}
             	
             	// And read the next line
             	fromUser = stdIn.readLine();
@@ -181,6 +191,30 @@ public class BlackjackCLClient {
         	}
         }
 
+	}
+
+	/**
+	 * Establishes the default screen. It should set any previous
+	 * screen to active, set this new screen as active, and dispay
+	 * the menu.
+	 * 
+	 * @param screen
+	 */
+	private void setScreen(AbstractScreen screen) {
+		
+		// Set any previous screen inactive
+		if( this.currentScreen != null ) {
+			this.currentScreen.setIsActive( false );
+		}
+		
+		// Handle establishing this new screen
+		if( screen != null ) {
+			
+			screen.setIsActive( true );
+			screen.displayMenu();
+			currentScreen = screen;
+			
+		}
 	}
 
 	/**

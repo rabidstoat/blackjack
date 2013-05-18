@@ -61,5 +61,35 @@ public class ClientOutputToServerHelper extends Thread {
 		// If we got this far, assume success!
 		return true;
 	}
+	
+	/**
+	 * given a username, formulate the proper command
+	 * string for passing this to the server.
+	 * @param username The username
+	 * @return True if sent correctly, false otherwise
+	 */
+	public boolean sendUsername( String username ) {
+		
+		if( username == null ) {
+			return false;
+		}
+		
+		return this.sendRawText( "USERNAME " + username );
+	}
+
+	/**
+	 * given a password, formulate the proper command
+	 * string for passing this to the server.
+	 * @param password The password
+	 * @return True if sent correctly, false otherwise
+	 */
+	public boolean sendPassword( String password ) {
+		
+		if( password == null ) {
+			return false;
+		}
+		
+		return this.sendRawText( "PASSWORD " + password );
+	}
 
 }

@@ -45,16 +45,13 @@ public class ClientInputFromServerThread extends Thread {
 	 * 
 	 * @param blackjackClient Pointer to the main client class
 	 * @param socket The socket to listen from
-	 * @param defaultListener The initial listener who gets notified when
-	 * a message is received
 	 */
 	public ClientInputFromServerThread( BlackjackCLClient blackjackClient,
-			Socket socket, MessagesFromServerListener defaultListener ) {
+			Socket socket ) {
 		
 		super( "ClientInputFromServerThread" );
 		
 		// Record the listener and client
-		this.defaultListener = defaultListener;
 		this.blackjackClient = blackjackClient;
 		
 		// Create a reader for the socket
@@ -140,13 +137,20 @@ public class ClientInputFromServerThread extends Thread {
 			// This is a problem! It means the input wasn't valid
 			LOGGER.severe( "Received unrecognized input from the server: " + inputLine );
 			return false;
-		} else {
+		} else if( defaultListener != null ) {
 			// And send to the non-null listener
 			defaultListener.receivedMessage( code );
 		}
 		
 		// If we get this far, it must have worked
 		return true;
+	}
+
+	/**
+	 * @param defaultListener the defaultListener to set
+	 */
+	public void setDefaultListener(MessagesFromServerListener defaultListener) {
+		this.defaultListener = defaultListener;
 	}
 
 }
