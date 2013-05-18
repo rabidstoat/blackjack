@@ -4,16 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Map;
-import java.util.logging.Handler;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import drexel.edu.blackjack.client.BlackjackCLClient;
 import drexel.edu.blackjack.server.ResponseCode;
-import drexel.edu.blackjack.util.BlackjackLogHandler;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
@@ -35,6 +29,9 @@ public class ClientInputFromServerThread extends Thread {
 
 	// Only one listener at a time
 	private MessagesFromServerListener defaultListener = null;
+	
+	// Our main client, who we notify if the socket connection closes
+	private BlackjackCLClient blackjackClient = null;
 
 	// And a logger for errors
 	private final static Logger LOGGER = BlackjackLogger.createLogger(ClientInputFromServerThread.class.getName()); 
@@ -43,12 +40,22 @@ public class ClientInputFromServerThread extends Thread {
 	 * Constructor goes here
 	 *********************************************************/
 
-	public ClientInputFromServerThread( Socket socket, MessagesFromServerListener defaultListener ) {
+	/**
+	 * Creates the thread that monitors the socket for data.
+	 * 
+	 * @param blackjackClient Pointer to the main client class
+	 * @param socket The socket to listen from
+	 * @param defaultListener The initial listener who gets notified when
+	 * a message is received
+	 */
+	public ClientInputFromServerThread( BlackjackCLClient blackjackClient,
+			Socket socket, MessagesFromServerListener defaultListener ) {
 		
 		super( "ClientInputFromServerThread" );
 		
-		// Record the listener
+		// Record the listener and client
 		this.defaultListener = defaultListener;
+		this.blackjackClient = blackjackClient;
 		
 		// Create a reader for the socket
 		try {
@@ -83,6 +90,8 @@ public class ClientInputFromServerThread extends Thread {
 					// And read the next line
 					inputLine = reader.readLine();
 		       }	
+				
+				LOGGER.info( "Apparently the client just disconnected." );
 			} catch (IOException e) {
 				LOGGER.severe( "Something went wrong in our ClientInputFromServerThread for a client" );
 				e.printStackTrace();
@@ -95,6 +104,9 @@ public class ClientInputFromServerThread extends Thread {
 				}
 			}
 		}
+		
+		// If we get here it's because the socket connection was closed
+		blackjackClient.notifyOfShutdown();
 		
 	}
 

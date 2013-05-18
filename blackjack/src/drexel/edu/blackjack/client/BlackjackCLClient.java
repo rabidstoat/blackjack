@@ -127,7 +127,8 @@ public class BlackjackCLClient {
             LOGGER.info( "Started a client connecting to localhost on port " + PORT );
             
             // Create the thread to handle input and start it up
-            ClientInputFromServerThread input = new ClientInputFromServerThread( socket, new ErrorDisplay() );
+            ClientInputFromServerThread input = new ClientInputFromServerThread( 
+            		this, socket, new ErrorDisplay() );
             input.start();
             
             // Create the helper to handle output
@@ -183,6 +184,19 @@ public class BlackjackCLClient {
         	}
         }
 
+	}
+
+	/**
+	 * This method is called when the client needs to be shut down,
+	 * for example, because the server has broken the connection.
+	 * Probably it should be printing a message and calling the
+	 * System.exit() method.
+	 */
+	public void notifyOfShutdown() {
+		
+		System.out.println( "You have been disconnected from the server." );
+		System.exit(0);
+		
 	}
 
 
