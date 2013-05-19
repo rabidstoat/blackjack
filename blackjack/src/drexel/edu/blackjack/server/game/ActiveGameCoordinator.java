@@ -84,13 +84,12 @@ public class ActiveGameCoordinator {
 	public Game getGame( String id ) {
 		
 		// This shouldn't happen
-		if( gameToThreadMap == null ) {
+		if( gameToThreadMap == null || idToGameMap == null ) {
 			loadGames();
 		}
 				
-		GamePlayingThread thread = gameToThreadMap.get( id );
-		if( thread != null ) {
-			return thread.getGame();
+		if( idToGameMap != null ) {
+			return idToGameMap.get( id );
 		}
 		
 		// If we get here, we weren't playing the game anywhere, just return null
@@ -134,7 +133,7 @@ public class ActiveGameCoordinator {
 			game.addPlayer( user );
 			return game;
 		} else {
-			LOGGER.severe( "Game has no more room. Race condtion?" );
+			LOGGER.severe( "Game has no more room. Race condition?" );
 			return null;
 		}
 	}
