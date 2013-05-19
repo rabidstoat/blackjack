@@ -2,9 +2,12 @@ package drexel.edu.blackjack.server.game;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
+import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.db.game.GameMetadata;
 import drexel.edu.blackjack.server.ResponseCode;
+import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
  * Holds information about the blackjack game.
@@ -20,6 +23,7 @@ public class Game {
 	private GameState state;
 	private User currentPlayer;
 	private GameMetadata metadata;
+	private final static Logger LOGGER = BlackjackLogger.createLogger(Game.class.getName()); 
 	
 	/*******************************************************************************
 	 * Constructor
@@ -90,9 +94,49 @@ public class Game {
 		return null;
 	}
 	
+	/**
+	 * The game descriptor is a string, with newlines in it, capable of
+	 * being inserted directly into the response of a LISTGAMES command.
+	 * For example, one string response might look like this:
+	 * GAME game1 This is sample game 1
+	 * ATTRIBUTE STATUS INACTIVE
+	 * ATTRIBUTE MAXPLAYERS 6
+	 * ATTRIBUTE MINPLAYERS 1
+	 * ATTRIBUTE MINBET 5
+	 * ATTRIBUTE MAXBET 10
+	 * ATTRIBUTE NUMPLAYERS 0
+	 * ATTRIBUTE NUMDECKS 4
+	 * ENDGAME
+	 * 
+	 * @return A string representing the game suitable of putting
+	 * into the response of a LISTGAMES command
+	 */
 	public String getGameDescriptor() {
-		return null;
+
+		if( metadata == null ) {
+			// This is bad
+			LOGGER.severe( "Could not create the game descriptor because of null metadata." );
+			return null;
+		}
+		
+		StringBuilder str = new StringBuilder();
+		str.append( "GAME " + metadata.getId() + " A friendly game of blackjack\n" );
+		str.append( "ATTRIBUTE STATUS " + (isActive() ? "ACTIVE" : "INACTIVE") + "\n");
+		str.append( "ATTRIBUTE MINPLAYERS " + metadata.getMinPlayers() + "\n");
+		str.append( "ATTRIBUTE MAXPLAYERS " + metadata.getMaxPlayers() + "\n");
+		str.append( "ATTRIBUTE MINBET " + metadata.getMinBet() + "\n");
+		str.append( "ATTRIBUTE MAXBET " + metadata.getMaxBet() + "\n");
+		str.append( "ATTRIBUTE NUMPLAYERS " + (players == null ? 0 : players.size()) + "\n");
+		str.append( "ATTRIBUTE NUMDECKS " + metadata.getNumDecks() + "\n");
+		return str.toString();
 	}
 	
-
+	/**
+	 * An active game has at least one player in it and an active
+	 * game thread running it. 
+	 * @return True if the game is active, false otherwise
+	 */
+	public boolean isActive() {
+		return players != null && players.size() > 0;
+	}
 }
