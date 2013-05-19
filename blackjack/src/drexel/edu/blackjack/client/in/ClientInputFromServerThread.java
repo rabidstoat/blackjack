@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.text.DefaultCaret;
 
 import drexel.edu.blackjack.client.BlackjackCLClient;
 import drexel.edu.blackjack.server.ResponseCode;
@@ -222,6 +223,8 @@ public class ClientInputFromServerThread extends Thread {
 		textArea = new JTextArea();
 		textArea.setEditable(false);
 		JScrollPane pane = new JScrollPane( textArea );
+		DefaultCaret caret = (DefaultCaret)textArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		frame.add( pane );
 		frame.setLocationRelativeTo( null );
 		frame.pack();
