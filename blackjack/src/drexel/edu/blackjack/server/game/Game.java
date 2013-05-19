@@ -127,6 +127,7 @@ public class Game {
 		str.append( "ATTRIBUTE MAXBET " + metadata.getMaxBet() + "\n");
 		str.append( "ATTRIBUTE NUMPLAYERS " + (players == null ? 0 : players.size()) + "\n");
 		str.append( "ATTRIBUTE NUMDECKS " + metadata.getNumDecks() + "\n");
+		str.append( "ENDGAME" + "\n" );
 		return str.toString();
 	}
 	
