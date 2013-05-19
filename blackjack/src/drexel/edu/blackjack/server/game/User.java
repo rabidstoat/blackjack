@@ -1,7 +1,12 @@
 package drexel.edu.blackjack.server.game;
 
+import java.util.logging.Logger;
+
 import drexel.edu.blackjack.cards.Hand;
 import drexel.edu.blackjack.db.user.UserMetadata;
+import drexel.edu.blackjack.server.BlackjackServerThread;
+import drexel.edu.blackjack.server.ResponseCode;
+import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
  * Think of this as the dynamic instantiation of
@@ -29,6 +34,12 @@ public class User {
 	// Game they are playing
 	private Game game;
 	
+	// Their server thread
+	private BlackjackServerThread thread = null;
+	
+	// For debug output
+	private final static Logger LOGGER = BlackjackLogger.createLogger(User.class .getName()); 
+
 	/***************************************************************
 	 * Constructors go here
 	 **************************************************************/
@@ -128,6 +139,33 @@ public class User {
 		} else if (!userMetadata.equals(other.userMetadata))
 			return false;
 		return true;
+	}
+
+	/**
+	 * Sends a message to the presumably connected user by 
+	 * sending it through to their socket
+	 * 
+	 * @param code
+	 */
+	public void sendMessage(ResponseCode code) {
+		
+		if( thread == null ) {
+			LOGGER.severe( "Had a request to send user " + 
+					(userMetadata == null ? userMetadata.getUsername() : "with no metadata" ) + 
+					" a response, but couldn't find their socket." );
+		} else {
+			thread.sendMessage( code );
+		}
+	}
+
+	/**
+	 * If the user is connected (and they should be), keep a pointer
+	 * to their server thread around, so messages can get sent
+	 * 
+	 * @param blackjackProtocol
+	 */
+	public void setBlackjackServerThread(BlackjackServerThread thread) {
+		this.thread = thread;
 	}
 
 }

@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -120,6 +119,9 @@ public class BlackjackProtocol {
 	// will reflect the amount bet.
 	private Integer bet = null;
 	
+	// Pointer to the server thread, for sending stuff
+	private BlackjackServerThread thread = null;
+	
 	
 	/******************************************************************
 	 * I don't think this is the right set of timers we need. These
@@ -153,7 +155,7 @@ public class BlackjackProtocol {
 	 * already. Since everyone can share that list, it's done
 	 * as static variables.
 	 */
-	public BlackjackProtocol() {
+	public BlackjackProtocol( BlackjackServerThread thread ) {
 		
 		// Only initialize it once
 		if( !isInitialized ) {
@@ -166,6 +168,9 @@ public class BlackjackProtocol {
 		
 		// When we start up, we're waiting for the username, that's the first state
 		state = STATE.WAITING_FOR_USERNAME;
+		
+		// Keep a pointer to the thread
+		this.thread = thread;
 		
 		// And we start the timer
 		setLastCommand( System.currentTimeMillis() );
@@ -358,7 +363,9 @@ public class BlackjackProtocol {
 	 * @param user the user to set
 	 */
 	public void setUser(User user) {
+		// Don't just set them here, insert a reference to their server thread
 		this.user = user;
+		user.setBlackjackServerThread( thread );
 	}
 
 	/**

@@ -95,7 +95,12 @@ public class Game {
 			return false;
 		}
 		
-		return players.add( player );
+		boolean successfullyAdded = players.add( player );
+		if( successfullyAdded ) {
+			GameState.notifyOthersOfJoinedPlayer( players, player );
+		}
+		
+		return successfullyAdded;
 	}
 	
 	/**
@@ -120,6 +125,8 @@ public class Game {
 			LOGGER.severe( "Something went wonky in trying to remove the player from the game." );
 			return null;
 		}
+		
+		GameState.notifyOthersOfDepartedPlayer( players, player );
 		
 		// Were they in a state where they forfeited their bet?
 		// TODO: Implement that stuff, for now, just assume it went okay

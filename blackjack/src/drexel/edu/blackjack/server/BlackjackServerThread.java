@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
@@ -43,7 +42,7 @@ public class BlackjackServerThread extends Thread {
 	public BlackjackServerThread( Socket socket ) {
 		super( "BlackjackServerThread" );
 		this.socket = socket;
-		this.protocol = new BlackjackProtocol();
+		this.protocol = new BlackjackProtocol(this);
 		LOGGER.finer( "Inside a blackjack server thread constructor." );
 	}
 
@@ -83,6 +82,7 @@ public class BlackjackServerThread extends Thread {
 				// They give us the response to send back
 				LOGGER.finer( "Inside a blackjack server thread, about to write some output" );
 				out.println(outputLine);
+				out.flush();
 				
 				// And we read another line
 				LOGGER.finer( "Inside a blackjack server thread, about to block for another read" );
@@ -147,6 +147,7 @@ public class BlackjackServerThread extends Thread {
 			// And, finally, send a response code if needed
 			if( responseCode != null && out != null ) {
 				out.println( responseCode.toString() );
+				out.flush();
 			}
 		} else {
 			LOGGER.warning( "Inside a blackjack server thread, handling a timeout with a null protocol" );
@@ -177,6 +178,23 @@ public class BlackjackServerThread extends Thread {
 			LOGGER.warning( "Unable to close the socket in a blackjack server thread." );
 		}
 		
+	}
+
+	/**
+	 * Sends a response code through the socket by using the
+	 * writer, and sending the toString() of the response
+	 * code
+	 * 
+	 * @param code What to send
+	 */
+	public void sendMessage(ResponseCode code) {
+		
+		if( out == null ) {
+			LOGGER.severe( "Wanted to send a message to some user but the out writer was null." );
+		} else {
+			out.println( code.toString() );
+			out.flush();
+		}
 	}
 	
 }
