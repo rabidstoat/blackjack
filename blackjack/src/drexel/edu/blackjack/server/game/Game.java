@@ -134,7 +134,7 @@ public class Game {
 		}
 		
 		StringBuilder str = new StringBuilder();
-		str.append( RECORD_START_KEYWORD + " " + metadata.getId() + " A friendly game of blackjack\n" );
+		str.append( RECORD_START_KEYWORD + " " + metadata.getId() + " Blackjack\n" );
 		if( isActive() ) {
 			str.append( this.ACTIVE_STATUS_ATTRIBUTE + "\n" );
 		} else {
