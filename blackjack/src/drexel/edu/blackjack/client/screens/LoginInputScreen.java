@@ -38,22 +38,24 @@ public class LoginInputScreen extends AbstractScreen {
 	@Override
 	public void processMessage(ResponseCode code) {
 		
-		// One message we might receive says that the server is ready for the password
-		if( code.hasSameCode( ResponseCode.CODE.WAITING_FOR_PASSWORD ) ) {
-			loginScreenState = ENTER_PASSWORD;
-			displayMenu();
-		} else if( code.hasSameCode(ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS) ) {
-			// Another message says that the login was incorrect
-			System.out.println( "The username and password you supplied is incorrect." );
-			loginScreenState = ENTER_USERNAME;
-			displayMenu();
-		} else if( code.hasSameCode(ResponseCode.CODE.SUCCESSFULLY_AUTHENTICATED ) ) {
-			// This needs to say that they successfully logged in, and move them to the next screen
-			System.out.println( "Successfully logged in. Welcome to the game." );
-			loginScreenState = ENTER_PASSWORD;	// Reset the internal state just in case....
-			showNextScreen();	// Move to the next screen
-		} else {
-			super.handleResponseCode( code );
+		if( this.isActive ) {
+			// One message we might receive says that the server is ready for the password
+			if( code.hasSameCode( ResponseCode.CODE.WAITING_FOR_PASSWORD ) ) {
+				loginScreenState = ENTER_PASSWORD;
+				displayMenu();
+			} else if( code.hasSameCode(ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS) ) {
+				// Another message says that the login was incorrect
+				System.out.println( "The username and password you supplied is incorrect." );
+				loginScreenState = ENTER_USERNAME;
+				displayMenu();
+			} else if( code.hasSameCode(ResponseCode.CODE.SUCCESSFULLY_AUTHENTICATED ) ) {
+				// This needs to say that they successfully logged in, and move them to the next screen
+				System.out.println( "Successfully logged in. Welcome to the game." );
+				loginScreenState = ENTER_PASSWORD;	// Reset the internal state just in case....
+				showNextScreen();	// Move to the next screen
+			} else {
+				super.handleResponseCode( code );
+			}
 		}
 	}
 	
@@ -62,22 +64,25 @@ public class LoginInputScreen extends AbstractScreen {
 	 * to the screen that is appropriate.
 	 */
 	public void displayMenu() {
-		
-		// We only want to show this when they first log in, not
-		// on subsequent attempt to reconnect
-		if( loginScreenState == JUST_STARTED ) {
-			System.out.println( "Welcome to the Blackjack Game!" );
-			loginScreenState = ENTER_USERNAME;
-		} 
-		
-		if( loginScreenState == ENTER_USERNAME ) {
-			System.out.println( "Please enter your username: " );
-		} else if( loginScreenState == ENTER_PASSWORD ) {
-			System.out.println( "Please enter your password: " );
-		} else {
-			// This should never happen
-			System.out.println( "We should never get here in the code. Oh great, you broke it!!!" );
+
+		if( this.isActive ) {
+			// We only want to show this when they first log in, not
+			// on subsequent attempt to reconnect
+			if( loginScreenState == JUST_STARTED ) {
+				System.out.println( "Welcome to the Blackjack Game!" );
+				loginScreenState = ENTER_USERNAME;
+			} 
+			
+			if( loginScreenState == ENTER_USERNAME ) {
+				System.out.println( "Please enter your username: " );
+			} else if( loginScreenState == ENTER_PASSWORD ) {
+				System.out.println( "Please enter your password: " );
+			} else {
+				// This should never happen
+				System.out.println( "We should never get here in the code. Oh great, you broke it!!!" );
+			}
 		}
+		
 	}
 
 	/**
@@ -101,28 +106,33 @@ public class LoginInputScreen extends AbstractScreen {
 
 	@Override
 	public void reset() {
-		
-		// For us, resetting the screen involves prompting for a login
-		System.out.println( "Whoops, the user interface got confused. Let's try this again." );
-		loginScreenState = ENTER_USERNAME;
-		displayMenu();
+	
+		if( this.isActive ) {
+			// For us, resetting the screen involves prompting for a login
+			System.out.println( "Whoops, the user interface got confused. Let's try this again." );
+			loginScreenState = ENTER_USERNAME;
+			displayMenu();
+		}
 		
 	}
 
 	@Override
 	public void handleUserInput(String str) {
 		
-		if( str == null || str.trim().length() == 0 ) {
-			// If they just hit enter, we repeat whatever prompt we're at
-			displayMenu();
-		} else if( loginScreenState == ENTER_USERNAME ) {
-			helper.sendUsername( str.trim() );
-		} else if( loginScreenState == ENTER_PASSWORD ) {
-			helper.sendPassword( str.trim() );
-		} else {
-			// This is weird....
-			reset();
+		if( this.isActive ) {
+			if( str == null || str.trim().length() == 0 ) {
+				// If they just hit enter, we repeat whatever prompt we're at
+				displayMenu();
+			} else if( loginScreenState == ENTER_USERNAME ) {
+				helper.sendUsername( str.trim() );
+			} else if( loginScreenState == ENTER_PASSWORD ) {
+				helper.sendPassword( str.trim() );
+			} else {
+				// This is weird....
+				reset();
+			}
 		}
+
 	}
 
 }
