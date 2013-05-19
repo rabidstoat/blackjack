@@ -181,7 +181,7 @@ public class ClientOutputToServerHelper extends Thread {
 		textArea.setEditable(false);
 		JScrollPane pane = new JScrollPane( textArea );
 		frame.add( pane );
-		frame.setLocationRelativeTo( null );
+		frame.setLocation(100,100);
 		frame.pack();
 		frame.setVisible( true );
 		

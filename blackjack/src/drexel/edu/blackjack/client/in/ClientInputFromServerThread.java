@@ -128,13 +128,17 @@ public class ClientInputFromServerThread extends Thread {
 							multilineMessage = null;
 							deliverMessage( code );
 						} else {
+							multilineMessage.append( "\n" );
 							multilineMessage.append( inputLine );
 						}
 					} else {
 						// If it's a singleline message, we deliver it right away
 						// Otherwise we go into multiline mode
 						ResponseCode code = ResponseCode.getCodeFromString( inputLine );
-						if( code.isMultilineCode() ) {
+						if( code == null ) {
+							LOGGER.severe( "Expected to receive a new response code but instead received something else, so ignoring." );
+							LOGGER.severe( "Received: " + inputLine );
+						} else if( code.isMultilineCode() ) {
 							multilineMessage = new StringBuilder( inputLine );
 							processingMultilineMessage = true;
 						} else {

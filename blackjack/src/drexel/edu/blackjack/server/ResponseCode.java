@@ -227,31 +227,32 @@ public class ResponseCode {
 	 */
 	public static ResponseCode getCodeFromString( String str ) {
 		
-		// Make sure the pattern has been generated for recognizing valid response strings
-		if( validResponsePattern == null ) {
-			validResponsePattern = Pattern.compile("^\\d{3}.*");
-		}
-
-		// Nulls are bad, as are strings not matching our valid response pattern
-		if( str == null || !validResponsePattern.matcher(str).matches() ) {
+		// Nulls are bad, obviously, and we need at least 3 characters for the response code
+		if( str == null || str.length() < 3) {
 			return null;
 		}
 		
-		// Otherwise parse out the text to associate with the response code
+		// Figure out if it starts with a valid 3-digit response code
+		String numberAsString = str.substring(0,3);
+		Integer number = null;
+		try {
+			number = Integer.valueOf( Integer.parseInt( numberAsString ) );
+		} catch( Exception e ) {
+			// Don't worry about reporting this
+		}
+		
+		// We need a number to be set, if not, that's ad
+		if( number == null ) {
+			return null;
+		}
+		
+		// Now we set up the response code
 		ResponseCode code = new ResponseCode();
 		// This just says "and everything after the third character, unless there's nothing
 		// there, in which case just set it to a null
-		code.setText( str.length() > 3 ? str.substring(3) : null );
+		code.setText( str.length() > 3 ? str.substring(3).trim() : null );
+		code.setCode( number );
 
-		// And the code, which we have to interpret as an integer
-		String numberAsString = str.substring(0, 3); 	// 3 because 3-digit code
-		try {
-			code.setCode( Integer.parseInt(numberAsString) );
-		} catch( NumberFormatException e ) {
-			// This is odd. We validated that it was a 3-digit number so this
-			// should technically never happen
-		}
-		
 		return code;
 	}
 	
