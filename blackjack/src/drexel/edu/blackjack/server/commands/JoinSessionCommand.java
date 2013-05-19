@@ -23,7 +23,7 @@ public class JoinSessionCommand extends BlackjackCommand {
 		// Step 0: If either object is null, it's an internal error
 		if (protocol == null || cm == null) {
 			return new ResponseCode(ResponseCode.CODE.INTERNAL_ERROR,
-					"AccountCommand.processCommand() received null arguments")
+					"JoinSessionCommand.processCommand() received null arguments")
 					.toString();
 		}
 
