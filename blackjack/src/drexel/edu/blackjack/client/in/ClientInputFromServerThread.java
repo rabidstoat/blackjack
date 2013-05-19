@@ -80,6 +80,9 @@ public class ClientInputFromServerThread extends Thread {
 				String inputLine = reader.readLine();
 				
 				while ( inputLine != null ) {
+					
+					// If we're debuging
+					LOGGER.info( "<<<< " + inputLine );
 
 					// Send it out to any listeners
 					deliverMessage( inputLine );

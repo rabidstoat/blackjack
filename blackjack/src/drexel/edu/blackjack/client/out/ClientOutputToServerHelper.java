@@ -43,6 +43,9 @@ public class ClientOutputToServerHelper extends Thread {
 	 *********************************************************/
 	public boolean sendRawText( String text ) {
 		
+		// In case we're debugging
+		LOGGER.info( ">>>> " + text );
+		
 		// Can't send a message if we didn't open the writer
 		if( writer == null ) {
 			return false;
