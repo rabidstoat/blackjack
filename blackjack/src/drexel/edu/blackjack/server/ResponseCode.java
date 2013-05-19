@@ -68,6 +68,7 @@ public class ResponseCode {
 		USER_BUSTED( 423, null ),
 		NOT_EXPECTING_HIT( 424, "The server was not expecting a HIT command now. Be patient." ),
 		NOT_EXPECTING_STAND( 425, "The server was not expecting a STAND command now. Be patient." ),
+		ALREADY_IN_SESSION( 426, "Cannot JOINSESSION when already in a session." ),
 
 		UNKNOWN_COMMAND( 500, "That command is unknown to the server." ),
 		UNSUPPORTED_COMMAND( 501, "That command is not supported on this server." ),
