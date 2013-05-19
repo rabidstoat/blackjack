@@ -18,14 +18,15 @@ public class Game {
 	/*******************************************************************************
 	 * These are used in game descriptors
 	 *****************************************************************************/
-	public static final String NUM_DECKS_ATTRIBUTE = "ATTRIBUTE NUMDECKS";
-	public static final String MIN_BET_ATTRIBUTE = "ATTRIBUTE MINBET";
-	public static final String MAX_BET_ATTRIBUTE = "ATTRIBUTE MAXBET";
-	public static final String NUM_PLAYERS_ATTRIBUTE = "ATTRIBUTE NUMPLAYERS";
-	public static final String MIN_PLAYERS_ATTRIBUTE = "ATTRIBUTE MINPLAYERS";
-	public static final String MAX_PLAYERS_ATTRIBUTE = "ATTRIBUTE MAXPLAYERS";
-	public static final String ACTIVE_STATUS_ATTRIBUTE = "ATTRIBUTE STATUS ACTIVE";
-	public static final String INACTIVE_STATUS_ATTRIBUTE = "ATTRIBUTE STATUS INACTIVE";
+	public static final String ATTRIBUTE_KEYWORD = "ATTRIBUTE";
+	public static final String NUM_DECKS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " NUMDECKS";
+	public static final String MIN_BET_ATTRIBUTE = ATTRIBUTE_KEYWORD + " MINBET";
+	public static final String MAX_BET_ATTRIBUTE = ATTRIBUTE_KEYWORD + " MAXBET";
+	public static final String NUM_PLAYERS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " NUMPLAYERS";
+	public static final String MIN_PLAYERS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " MINPLAYERS";
+	public static final String MAX_PLAYERS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " MAXPLAYERS";
+	public static final String ACTIVE_STATUS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " STATUS ACTIVE";
+	public static final String INACTIVE_STATUS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " STATUS INACTIVE";
 	public static final String RECORD_START_KEYWORD = "GAME";
 	public static final String RECORD_END_KEYWORD = "ENDGAME";
 	
