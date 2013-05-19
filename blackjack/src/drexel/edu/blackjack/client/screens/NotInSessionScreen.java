@@ -126,7 +126,11 @@ public class NotInSessionScreen extends AbstractScreen {
 			if( state == JOIN_GAME ) {
 				System.out.println( "Enter the number of the game you wish to join." );
 				System.out.println( "(Or you can type '" + BACK_OPTION + "' to go back to the previous menu.)" );
+				System.out.println( "***********************************************************" );
 			} else {
+				System.out.println( "***********************************************************" );
+				System.out.println( "                Looking for a Game Screen                  " );
+				System.out.println( "***********************************************************" );
 				System.out.println( "Please enter the letter or symbol of the option to perform:" );
 				System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
 				System.out.println( CAPABILITIES_OPTION + ") See what capabilities the game implements (for debug purposes)" );
@@ -134,6 +138,7 @@ public class NotInSessionScreen extends AbstractScreen {
 				System.out.println( ACCOUNT_OPTION + ") Account balance request" );
 				System.out.println( QUIT_OPTION + ") Quit playing" );
 				System.out.println( MENU_OPTION + ") Repeat this menu of options" );
+				System.out.println( "***********************************************************" );
 			}
 		}
 		
@@ -273,6 +278,9 @@ public class NotInSessionScreen extends AbstractScreen {
 
 	private void sendListGamesRequest() {
 		System.out.println( "One moment, fetching a list of games from the server..." );
+		System.out.println( "***********************************************************" );
+		System.out.println( "                  Viewing Games Screen                    " );
+		System.out.println( "***********************************************************" );
 		helper.sendListGamesRequest();
 	}
 

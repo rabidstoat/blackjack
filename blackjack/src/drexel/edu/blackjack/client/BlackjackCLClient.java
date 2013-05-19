@@ -259,5 +259,22 @@ public class BlackjackCLClient {
 		}
 	}
 
+	/**
+	 * Do whatever needs to be done to show the previous interface screen.
+	 * Probably this only makes sense moving from 'in session' to 'not
+	 * in session' user interfaces.
+	 */
+	public void showPreviousScreen() {
+		
+		if( currentScreen == null ) {
+			LOGGER.severe( "Could not showPreviousScreen() because no current screen was set." );
+		} else if( currentScreen.getScreenType() != null && 
+				currentScreen.getScreenType().equals(AbstractScreen.SCREEN_TYPE.IN_SESSION_SCREEN) ) {
+			this.setScreen( NotInSessionScreen.getDefaultScreen(this, input, output) );
+		} else {
+			// This is a weird error
+			LOGGER.severe( "Had a request to move to the next UI screen, but there was no next one defined." );
+		}
+	}
 
 }

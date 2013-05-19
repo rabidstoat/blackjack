@@ -73,14 +73,16 @@ public class LoginInputScreen extends AbstractScreen {
 			// We only want to show this when they first log in, not
 			// on subsequent attempt to reconnect
 			if( loginScreenState == JUST_STARTED ) {
-				System.out.println( "Welcome to the Blackjack Game!" );
+				System.out.println( "***********************************************************" );
+				System.out.println( "              Welcome to the Blackjack Game!" );
+				System.out.println( "***********************************************************" );
 				loginScreenState = ENTER_USERNAME;
 			} 
 			
 			if( loginScreenState == ENTER_USERNAME ) {
-				System.out.println( "Please enter your username: " );
+				System.out.println( ">>>Please enter your username: " );
 			} else if( loginScreenState == ENTER_PASSWORD ) {
-				System.out.println( "Please enter your password: " );
+				System.out.println( ">>>Please enter your password: " );
 			} else {
 				// This should never happen
 				System.out.println( "We should never get here in the code. Oh great, you broke it!!!" );

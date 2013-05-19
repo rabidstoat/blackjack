@@ -136,6 +136,19 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	}
 	
 	/**
+	 * Request that the user interface show the 'previous screen', which is
+	 * based on what the currentScreen is
+	 */
+	public void showPreviousScreen() {
+		
+		if( client == null ) {
+			LOGGER.severe( "Cannot show the previous user interface screen as we don't seem to have a client set." );
+		} else {
+			client.showPreviousScreen();
+		}
+	}
+	
+	/**
 	 * Does the best it can to handle a response code that the
 	 * implementing screen did not handle. This might be because
 	 * it's a 'general error', or it might simply be something

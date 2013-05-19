@@ -3,7 +3,6 @@ package drexel.edu.blackjack.client.screens;
 import drexel.edu.blackjack.client.BlackjackCLClient;
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
-import drexel.edu.blackjack.client.screens.NotInSessionScreen.ListOfGames;
 import drexel.edu.blackjack.server.ResponseCode;
 
 /**
@@ -66,6 +65,9 @@ public class InSessionScreen extends AbstractScreen {
 				// TODO: Yeah
 				reset();
 			} else {
+				System.out.println( "***********************************************************" );
+				System.out.println( "                 Playing Blackjack Screen                  " );
+				System.out.println( "***********************************************************" );
 				System.out.println( "Please enter the letter or symbol of the option to perform:" );
 				System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
 				System.out.println( CAPABILITIES_OPTION + ") See what capabilities the game implements (for debug purposes)" );
@@ -73,6 +75,7 @@ public class InSessionScreen extends AbstractScreen {
 				System.out.println( ACCOUNT_OPTION + ") Account balance request" );
 				System.out.println( QUIT_OPTION + ") Quit playing entirely" );
 				System.out.println( MENU_OPTION + ") Repeat this menu of options" );
+				System.out.println( "***********************************************************" );
 			}
 		}
 		
@@ -118,7 +121,7 @@ public class InSessionScreen extends AbstractScreen {
 				return;
 			}
 			
-			else if( code.hasSameCode( ResponseCode.CODE.INVALID_BET_OUTSIDE_RANGE ) ) {
+			if( code.hasSameCode( ResponseCode.CODE.INVALID_BET_OUTSIDE_RANGE ) ) {
 				// TODO
 			} else if( code.hasSameCode( ResponseCode.CODE.INVALID_BET_TOO_POOR ) ) {
 				// TODO
@@ -127,9 +130,13 @@ public class InSessionScreen extends AbstractScreen {
 			} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_HIT ) ) {
 				// TODO
 			} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_LEFT_SESSION_FORFEIT_BET) ) {
-				// TODO
+				System.out.println( "You left the game mid-play, forfeiting $" + code.getFirstParameterAsString() + "." );
+				state = WATCHING_GAME;	// Reset the internal state just in case....
+				showPreviousScreen();	// Move to the previous screen
 			} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_LEFT_SESSION_NOT_MIDPLAY ) ) {
-				// TODO: Implement
+				System.out.println( "You left the game between hands, and did not forfeit a bet." );
+				state = WATCHING_GAME;	// Reset the internal state just in case....
+				showPreviousScreen();	// Move to the previous screen
 			} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_STAND ) ) {
 				// TODO: Implement
 			} else if( code.hasSameCode( ResponseCode.CODE.TIMEOUT_EXCEEDED_WHILE_BETTING ) ) {
@@ -171,8 +178,7 @@ public class InSessionScreen extends AbstractScreen {
 				} else if( str.trim().equals(ACCOUNT_OPTION) ) {
 					sendAccountRequest();
 				} else if( str.trim().equals(LEAVE_OPTION) ) {
-					//TODO
-					//sendLeaveGameRequest();
+					sendLeaveGameRequest();
 				} else {
 					System.out.println( "Unrecognized user input: " + str );
 					displayMenu();
@@ -182,6 +188,16 @@ public class InSessionScreen extends AbstractScreen {
 				reset();
 			}
 		}
+	}
+
+
+	/**
+	 * Sends a request to leave the session. No prompting
+	 * of the user to confirm, sucks to be them.
+	 */
+	private void sendLeaveGameRequest() {
+		System.out.println( "Exiting you from the game now..." );
+		helper.sendLeaveSessionRequest();
 	}
 
 }
