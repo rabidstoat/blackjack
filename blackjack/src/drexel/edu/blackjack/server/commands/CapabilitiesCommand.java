@@ -269,7 +269,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 	
 	AccountCommand acntc = new AccountCommand();
 	BetCommand betc = new BetCommand();
-    	CommandMetadata metac = new CommandMetadata();
+    	//CommandMetadata metac = new CommandMetadata();
     	HitCommand hitc = new HitCommand();
     	JoinSessionCommand joinc = new JoinSessionCommand();
     	LeaveSessionCommand leavc = new LeaveSessionCommand();
