@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.db.game.GameMetadata;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.util.BlackjackLogger;
@@ -138,5 +137,26 @@ public class Game {
 	 */
 	public boolean isActive() {
 		return players != null && players.size() > 0;
+	}
+	
+	/**
+	 * Gets the game metadata associated with this game
+	 * @return The metadata, or null if not set
+	 */
+	public GameMetadata getMetadata() {
+		return metadata;
+	}
+	
+	/**
+	 * Convenience method that gets the ID from the game
+	 * metadata. If it's not set, this will return null.
+	 * 
+	 * @return The ID from the metadata, or null if not set
+	 */
+	public String getId() {
+		if( metadata != null ) {
+			return metadata.getId();
+		}
+		return null;
 	}
 }
