@@ -1,9 +1,7 @@
 package drexel.edu.blackjack.client.screens;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import drexel.edu.blackjack.client.BlackjackCLClient;
@@ -203,7 +201,7 @@ public class NotInSessionScreen extends AbstractScreen {
 					displayMenu();
 				}
 				
-			} else if( state == this.JOIN_GAME ) {
+			} else if( state == JOIN_GAME ) {
 				
 				processJoinGameResponse( str );
 				
