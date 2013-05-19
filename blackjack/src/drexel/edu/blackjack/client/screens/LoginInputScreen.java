@@ -39,8 +39,12 @@ public class LoginInputScreen extends AbstractScreen {
 	public void processMessage(ResponseCode code) {
 		
 		if( this.isActive ) {
-			// One message we might receive says that the server is ready for the password
-			if( code.hasSameCode( ResponseCode.CODE.WAITING_FOR_PASSWORD ) ) {
+			
+			if( code == null ) {
+				// This is bad
+				reset();
+			} else if( code.hasSameCode( ResponseCode.CODE.WAITING_FOR_PASSWORD ) ) {
+				// One message we might receive says that the server is ready for the password
 				loginScreenState = ENTER_PASSWORD;
 				displayMenu();
 			} else if( code.hasSameCode(ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS) ) {

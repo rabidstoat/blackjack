@@ -56,44 +56,70 @@ public class NotInSessionScreen extends AbstractScreen {
 	@Override
 	public void processMessage(ResponseCode code) {
 
-		/**
-		// One message we might receive says that the server is ready for the password
-		if( code.hasSameCode( ResponseCode.CODE.WAITING_FOR_PASSWORD ) ) {
-			loginScreenState = ENTER_PASSWORD;
+		if( this.isActive ) {
+			// This is bad.
+			if( code == null ) {
+				reset();
+				return;
+			}
+			
+			if( code.hasSameCode( ResponseCode.CODE.VERSION ) ) {
+				displayVersion( code );
+			} else if( code.hasSameCode( ResponseCode.CODE.CAPABILITIES_FOLLOW ) ) {
+				displayCapabilities( code );
+			} else if( code.hasSameCode( ResponseCode.CODE.GAMES_FOLLOW ) ) {
+				displayGameList( code );
+				state = JOIN_GAME;
+			} else if( code.hasSameCode( ResponseCode.CODE.JOIN_SESSION_AT_MAX_PLAYERS ) ) {
+				System.out.println( "The game you selected already has the maximum number of players." );
+				state = MAIN_MENU;
+			} else if( code.hasSameCode( ResponseCode.CODE.JOIN_SESSION_DOES_NOT_EXIST ) ) {
+				System.out.println( "That game no longer is hosted by the server. Sorry about that." );
+				state = MAIN_MENU;
+			} else if( code.hasSameCode( ResponseCode.CODE.JOIN_SESSION_TOO_POOR ) ) {
+				System.out.println( "You don't have enough money in your account to cover the minimum bet." );
+				state = MAIN_MENU;
+			} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_JOINED_SESSION ) ) {
+				System.out.println( "You joined the session, hooray! But I've not implemented this." );
+				// TODO: Implement
+			} else {
+				super.handleResponseCode( code );
+			}
+			
+			// And show them the menu
 			displayMenu();
-		} else if( code.hasSameCode(ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS) ) {
-			// Another message says that the login was incorrect
-			System.out.println( "The username and password you supplied is incorrect." );
-			loginScreenState = ENTER_USERNAME;
-			displayMenu();
-		} else if( code.hasSameCode(ResponseCode.CODE.SUCCESSFULLY_AUTHENTICATED ) ) {
-			// This needs to say that they successfully logged in, and move them to the next screen
-			System.out.println( "Successfully logged in. Welcome to the game." );
-			loginScreenState = ENTER_PASSWORD;	// Reset the internal state just in case....
-			showNextScreen();	// Move to the next screen
-		} else {
-			super.handleResponseCode( code );
 		}
-		**/
-		super.handleResponseCode( code );
+
 	}
-	
+
+	/**
+	 * Display the game list for the user to select from.
+	 * Save it out so that we can send the write 'JOINSESSION'
+	 * command later.
+	 */
+	private void displayGameList( ResponseCode code ) {
+		// TODO: Something a LOT nicer
+		System.out.println( code.getText() );
+	}
+
 	/**
 	 * Used to display whatever sort of command-line 'menu'
 	 * to the screen that is appropriate.
 	 */
 	public void displayMenu() {
 
-		if( state == JOIN_GAME ) {
-			System.out.println( "Have not implemented join game menu yet, whoops!" );
-			state = MAIN_MENU;
-		} else {
-			System.out.println( "Please enter the letter or symbol of the option to perform:" );
-			System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
-			System.out.println( CAPABILITIES_OPTION + ") See what capabilities the game implements (for debug purposes)" );
-			System.out.println( JOIN_OPTION + ") Join a game" );
-			System.out.println( QUIT_OPTION + ") Quit playing" );
-			System.out.println( MENU_OPTION + ") Repeat this menu of options" );
+		if( this.isActive ) {
+			if( state == JOIN_GAME ) {
+				System.out.println( "Have not implemented join game menu yet, whoops!" );
+				state = MAIN_MENU;
+			} else {
+				System.out.println( "Please enter the letter or symbol of the option to perform:" );
+				System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
+				System.out.println( CAPABILITIES_OPTION + ") See what capabilities the game implements (for debug purposes)" );
+				System.out.println( JOIN_OPTION + ") Join a game" );
+				System.out.println( QUIT_OPTION + ") Quit playing" );
+				System.out.println( MENU_OPTION + ") Repeat this menu of options" );
+			}
 		}
 		
 	}
@@ -121,40 +147,42 @@ public class NotInSessionScreen extends AbstractScreen {
 
 	@Override
 	public void reset() {
-		
-		// For us, resetting the screen involves showing the menu again
-		System.out.println( "Whoops, the user interface got confused. Let's try this again." );
-		state = MAIN_MENU;
-		displayMenu();
+
+		if( this.isActive ) {
+			// For us, resetting the screen involves showing the menu again
+			System.out.println( "Whoops, the user interface got confused. Let's try this again." );
+			state = MAIN_MENU;
+			displayMenu();
+		}
 		
 	}
 
 	@Override
 	public void handleUserInput(String str) {
 
-		if( state == MAIN_MENU ) {
+		if( this.isActive ) {
+			if( state == MAIN_MENU ) {
 
-			if( str == null ) {
-				reset();
-			}
-			
-			if( str.trim().equals(CAPABILITIES_OPTION) ) {
-				sendCapabilitiesRequest();
-			} else if( str.trim().equals(JOIN_OPTION) ) {
-				sendListGamesRequest();
-			} else if( str.trim().equals(MENU_OPTION) ) {
-				displayMenu();
-			} else if( str.toCharArray().equals(QUIT_OPTION) ) {
-				quit();
-			} else if( str.toCharArray().equals(VERSION_OPTION) ) {
-				sendVersionRequest();
+				if( str == null ) {
+					reset();
+				} else if( str.trim().equals(CAPABILITIES_OPTION) ) {
+					sendCapabilitiesRequest();
+				} else if( str.trim().equals(JOIN_OPTION) ) {
+					sendListGamesRequest();
+				} else if( str.trim().equals(MENU_OPTION) ) {
+					displayMenu();
+				} else if( str.trim().equals(QUIT_OPTION) ) {
+					quit();
+				} else if( str.trim().equals(VERSION_OPTION) ) {
+					sendVersionRequest();
+				} else {
+					System.out.println( "Unrecognized user input: " + str );
+					displayMenu();
+				}
+				
 			} else {
-				System.out.println( "Unrecognized user input: " + str );
-				displayMenu();
+				System.out.println( "Regretably have not implemented any options here." );
 			}
-			
-		} else {
-			System.out.println( "Regretably have not implemented any options here." );
 		}
 
 	}

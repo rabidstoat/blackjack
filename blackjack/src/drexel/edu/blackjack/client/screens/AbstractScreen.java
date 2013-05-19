@@ -176,4 +176,22 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		}
 	}
 
+	/**
+	 * Print to the screen something about the capabilities
+	 * @param code
+	 */
+	protected void displayCapabilities(ResponseCode code) {
+		// TODO: Make this prettier
+		System.out.println( code.getText() );
+	}
+
+	/**
+	 * Print to the screen something about the version
+	 * @param code
+	 */
+	protected void displayVersion(ResponseCode code) {
+		// TODO: Make this prettier
+		System.out.println( code.getText() );
+	}
+
 }
