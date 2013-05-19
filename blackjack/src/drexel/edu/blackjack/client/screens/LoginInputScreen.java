@@ -24,7 +24,7 @@ public class LoginInputScreen extends AbstractScreen {
 	// And keep a copy to itself for the singleton pattern
 	private static LoginInputScreen loginInputScreen = null;
 	
-	public LoginInputScreen( BlackjackCLClient client, ClientInputFromServerThread thread,
+	private LoginInputScreen( BlackjackCLClient client, ClientInputFromServerThread thread,
 			ClientOutputToServerHelper helper ) {
 		
 		// It starts in the ENTER_USERNAME state, but inactive
