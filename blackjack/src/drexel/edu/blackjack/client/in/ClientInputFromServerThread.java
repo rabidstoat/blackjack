@@ -1,10 +1,18 @@
 package drexel.edu.blackjack.client.in;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Logger;
+
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import drexel.edu.blackjack.client.BlackjackCLClient;
 import drexel.edu.blackjack.server.ResponseCode;
@@ -23,6 +31,12 @@ public class ClientInputFromServerThread extends Thread {
 	/**********************************************************
 	 * Local variables go here
 	 *********************************************************/
+	
+	// A property that is set to "true" if we should display a window with message traffic
+	private final String SHOW_MESSAGE_TRAFFIC 	= "ShowMessages";
+	
+	// If we're showing message traffic, do so in this window....
+	private JTextArea textArea = null;
 	
 	// Need to keep track of what we're reading input from
 	private BufferedReader reader = null;
@@ -54,6 +68,13 @@ public class ClientInputFromServerThread extends Thread {
 		// Record the listener and client
 		this.blackjackClient = blackjackClient;
 		
+		// If they set a certain system property to true, put up a window that
+		// show all message traffic
+		String showMessageTraffic = System.getProperty( SHOW_MESSAGE_TRAFFIC );
+		if( showMessageTraffic != null && showMessageTraffic.equalsIgnoreCase("true") ) {
+			createMessageTrafficWindow();
+		}
+		
 		// Create a reader for the socket
 		try {
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -83,6 +104,13 @@ public class ClientInputFromServerThread extends Thread {
 					
 					// If we're debuging
 					LOGGER.info( "<<<< " + inputLine );
+					
+					// If we're logging
+					if( textArea != null ) {
+						SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd hh:mm:ss");
+						textArea.append( "[" + sdf.format( new Date() ) + "] " + inputLine );
+						textArea.append("\n" );
+					}
 
 					// Send it out to any listeners
 					deliverMessage( inputLine );
@@ -147,6 +175,24 @@ public class ClientInputFromServerThread extends Thread {
 		
 		// If we get this far, it must have worked
 		return true;
+	}
+
+	/**
+	 * Creates a JFrame for printing user messages
+	 */
+	private void createMessageTrafficWindow() {
+		
+		JFrame frame = new JFrame( "Incoming Client Messages" );
+		frame.setPreferredSize( new Dimension(600,400 ) );
+		frame.setLayout( new BorderLayout(5,5) );
+		textArea = new JTextArea();
+		textArea.setEditable(false);
+		JScrollPane pane = new JScrollPane( textArea );
+		frame.add( pane );
+		frame.setLocationRelativeTo( null );
+		frame.pack();
+		frame.setVisible( true );
+		
 	}
 
 	/**
