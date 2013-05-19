@@ -153,8 +153,7 @@ public class ClientInputFromServerThread extends Thread {
 				
 				LOGGER.info( "Apparently the client just disconnected." );
 			} catch (IOException e) {
-				LOGGER.severe( "Something went wrong in our ClientInputFromServerThread for a client" );
-				e.printStackTrace();
+				LOGGER.info( "Apparently the server just shut down." );
 			} finally {
 				// Always nice to clean up after ourselves
 				try {
