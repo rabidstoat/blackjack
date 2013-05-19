@@ -17,9 +17,17 @@ public class User {
 	 * Local variabls go here.
 	 **************************************************************/
 
+	// Their metadata
 	private UserMetadata userMetadata;
+	
+	// Hand they have in the current game
 	private Hand hand;
-	private int bet;
+	
+	// Bet they are currently making (or null if no bet)
+	private Integer bet;
+	
+	// Game they are playing
+	private Game game;
 	
 	/***************************************************************
 	 * Constructors go here
@@ -61,17 +69,33 @@ public class User {
 	public void setHand(Hand hand) {
 		this.hand = hand;
 	}
+
 	/**
 	 * @return the bet
 	 */
-	public int getBet() {
+	public Integer getBet() {
 		return bet;
 	}
+
 	/**
 	 * @param bet the bet to set
 	 */
-	public void setBet(int bet) {
+	public void setBet(Integer bet) {
 		this.bet = bet;
+	}
+
+	/**
+	 * @return the game
+	 */
+	public Game getGame() {
+		return game;
+	}
+
+	/**
+	 * @param game the game to set
+	 */
+	public void setGame(Game game) {
+		this.game = game;
 	}
 
 }
