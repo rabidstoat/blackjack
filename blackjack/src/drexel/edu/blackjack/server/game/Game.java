@@ -16,6 +16,20 @@ import drexel.edu.blackjack.util.BlackjackLogger;
 public class Game {
 
 	/*******************************************************************************
+	 * These are used in game descriptors
+	 *****************************************************************************/
+	public static final String NUM_DECKS_ATTRIBUTE = "ATTRIBUTE NUMDECKS";
+	public static final String MIN_BET_ATTRIBUTE = "ATTRIBUTE MINBET";
+	public static final String MAX_BET_ATTRIBUTE = "ATTRIBUTE MAXBET";
+	public static final String NUM_PLAYERS_ATTRIBUTE = "ATTRIBUTE NUMPLAYERS";
+	public static final String MIN_PLAYERS_ATTRIBUTE = "ATTRIBUTE MINPLAYERS";
+	public static final String MAX_PLAYERS_ATTRIBUTE = "ATTRIBUTE MAXPLAYERS";
+	public static final String ACTIVE_STATUS_ATTRIBUTE = "ATTRIBUTE STATUS ACTIVE";
+	public static final String INACTIVE_STATUS_ATTRIBUTE = "ATTRIBUTE STATUS INACTIVE";
+	public static final String RECORD_START_KEYWORD = "GAME";
+	public static final String RECORD_END_KEYWORD = "ENDGAME";
+	
+	/*******************************************************************************
 	 * private variables
 	 *****************************************************************************/
 	private List<User> players;
@@ -119,15 +133,19 @@ public class Game {
 		}
 		
 		StringBuilder str = new StringBuilder();
-		str.append( "GAME " + metadata.getId() + " A friendly game of blackjack\n" );
-		str.append( "ATTRIBUTE STATUS " + (isActive() ? "ACTIVE" : "INACTIVE") + "\n");
-		str.append( "ATTRIBUTE MINPLAYERS " + metadata.getMinPlayers() + "\n");
-		str.append( "ATTRIBUTE MAXPLAYERS " + metadata.getMaxPlayers() + "\n");
-		str.append( "ATTRIBUTE MINBET " + metadata.getMinBet() + "\n");
-		str.append( "ATTRIBUTE MAXBET " + metadata.getMaxBet() + "\n");
-		str.append( "ATTRIBUTE NUMPLAYERS " + (players == null ? 0 : players.size()) + "\n");
-		str.append( "ATTRIBUTE NUMDECKS " + metadata.getNumDecks() + "\n");
-		str.append( "ENDGAME" + "\n" );
+		str.append( RECORD_START_KEYWORD + " " + metadata.getId() + " A friendly game of blackjack\n" );
+		if( isActive() ) {
+			str.append( this.ACTIVE_STATUS_ATTRIBUTE + "\n" );
+		} else {
+			str.append( this.INACTIVE_STATUS_ATTRIBUTE + "\n" );
+		}
+		str.append( MIN_PLAYERS_ATTRIBUTE + " " + metadata.getMinPlayers() + "\n");
+		str.append( MAX_PLAYERS_ATTRIBUTE + " " + metadata.getMaxPlayers() + "\n");
+		str.append( MIN_BET_ATTRIBUTE + " " + metadata.getMinBet() + "\n");
+		str.append( MAX_BET_ATTRIBUTE + " " + metadata.getMaxBet() + "\n");
+		str.append( NUM_PLAYERS_ATTRIBUTE + " " + (players == null ? 0 : players.size()) + "\n");
+		str.append( NUM_DECKS_ATTRIBUTE + " " + metadata.getNumDecks() + "\n");
+		str.append( RECORD_END_KEYWORD + "\n" );
 		return str.toString();
 	}
 	
