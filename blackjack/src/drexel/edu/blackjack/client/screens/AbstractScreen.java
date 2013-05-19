@@ -150,12 +150,21 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		// Only handle if it's active
 		if( isActive ) {
 			
-			if( code.isError() || code.isMalformed() ) {
+			if( code == null ) {
+				// Internal error or something
+				LOGGER.severe( "Received null code from the server and don't know what to do." );
+				reset();
+			} else if( code.isError() || code.isMalformed() ) {
 				// Internal error? Or syntax error? Just reset the screen
 				LOGGER.warning( "Received unhandled error code of '" + code.toString() + "'." );
 				reset();
 			} else if( code.isInformative() ) {
-				// TODO: Handle general informative codes
+				
+				if( code.hasSameCode(ResponseCode.CODE.VERSION ) ) {
+					displayVersion( code );
+				} else if( code.hasSameCode( ResponseCode.CODE.CAPABILITIES_FOLLOW ) ) {
+					displayCapabilities( code );
+				}
 				LOGGER.info( "Received unhandled informative code of '" + code.toString() + "'." );
 			} else if( code.isGameState() ) {
 				// TODO: Handle game state codes
@@ -181,8 +190,19 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 * @param code
 	 */
 	protected void displayCapabilities(ResponseCode code) {
-		// TODO: Make this prettier
-		System.out.println( code.getText() );
+		
+		// Make sure this is a valid capabilities list first
+		if( code == null ||  
+				!code.hasSameCode( ResponseCode.CODE.CAPABILITIES_FOLLOW ) ) {
+			System.out.println( "Internal error, sorry. Can't display the capabilities list." );
+		} else {
+			System.out.println( "The server supports " + (code.getNumberOfLines()-1) + " protocol commands in this current state." );
+			System.out.println( "They are: " );
+			for( int i = 1; i < code.getNumberOfLines(); i++ ) {
+				System.out.println( i + ". " + code.getMultiline(i) );
+			}
+		}
+				
 	}
 
 	/**
@@ -190,8 +210,13 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 * @param code
 	 */
 	protected void displayVersion(ResponseCode code) {
-		// TODO: Make this prettier
-		System.out.println( code.getText() );
+		// Make sure this is a valid version response first
+		if( code == null ||  
+				!code.hasSameCode( ResponseCode.CODE.VERSION ) ) {
+			System.out.println( "Internal error, sorry. Can't display the version." );
+		} else {
+			System.out.println( "Server version " + code.getText().trim() );
+		}
 	}
 
 }
