@@ -1,12 +1,20 @@
 package drexel.edu.blackjack.server.game;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import drexel.edu.blackjack.db.game.FlatfileGameManager;
+import drexel.edu.blackjack.db.game.GameManagerInterface;
+import drexel.edu.blackjack.db.game.GameMetadata;
+import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
  * The active game coordinator handles the threads that
  * are involved in playing games that are active on the
- * server. 
+ * server.
  * 
  * @author Jennifer
  *
@@ -20,14 +28,20 @@ public class ActiveGameCoordinator {
 	// For the singleton pattern
 	private static ActiveGameCoordinator coordinator = null;
 	
-	// Need something to map game IDs to the game-playing threads.
-	private Map<String,GamePlayingThread> activeGames = null;
+	// Need something to map games to the game-playing threads.
+	private Map<Game,GamePlayingThread> gameToThreadMap = null;
+	
+	// Need something else to map game IDs to the games.
+	private Map<String,Game> idToGameMap = null;
+	
+	// And a logger for errors
+	private final static Logger LOGGER = BlackjackLogger.createLogger(ActiveGameCoordinator.class.getName());
 	
 	/******************************************************************************
 	 * Constructor goes here
 	 *****************************************************************************/
 	private ActiveGameCoordinator() {
-		activeGames = new HashMap<String,GamePlayingThread>();
+		loadGames();
 	}
 
 	/******************************************************************************
@@ -47,21 +61,34 @@ public class ActiveGameCoordinator {
 	}
 	
 	/**
+	 * Returns all the games that are currently loaded.
+	 * 
+	 * @return All the games currently loaded
+	 */
+	public Set<Game> getAllGames() {
+		if( this.gameToThreadMap == null ) {
+			loadGames();
+		}
+		
+		return gameToThreadMap.keySet();
+	}
+	
+	/**
 	 * Given an ID, return the active game corresponding to the
-	 * ID. If no game is actively played, return null.
+	 * ID. If no game is actively loaded, return null.
 	 * 
 	 * @param id An identifier for the game
-	 * @return Either the game itself or, if it's not being played,
+	 * @return Either the game itself or, if it's not loaded,
 	 * a null
 	 */
 	public Game getGame( String id ) {
 		
 		// This shouldn't happen
-		if( activeGames == null ) {
-			activeGames = new HashMap<String,GamePlayingThread>();
+		if( gameToThreadMap == null ) {
+			loadGames();
 		}
-		
-		GamePlayingThread thread = activeGames.get( id );
+				
+		GamePlayingThread thread = gameToThreadMap.get( id );
 		if( thread != null ) {
 			return thread.getGame();
 		}
@@ -91,5 +118,36 @@ public class ActiveGameCoordinator {
 	public Game addPlayer(String sessionName, User user) {
 		// TODO: Implement
 		return null;
+	}
+
+	/******************************************************************************
+	 * Private methods go here
+	 *****************************************************************************/
+
+	/**
+	 * Loads the game metadata from the game manager interface.
+	 * Create a game for each game metadata object. Since they
+	 * initially aren't running, they all point to null threads.
+	 */
+	private void loadGames() {
+		GameManagerInterface gameManager = FlatfileGameManager.getDefaultGameManager();
+		if( gameManager == null ) {
+			LOGGER.severe( "Could not load the games in our game manager, the game manager was null." );
+		} else {
+			
+			// Initialize our maps
+			gameToThreadMap = new HashMap<Game,GamePlayingThread>();
+			idToGameMap = new HashMap<String,Game>();
+
+			// Can only add things from non-null game metadata list
+			List<GameMetadata> gameMetadatas = gameManager.getGames();
+			if( gameMetadatas != null ) {
+				for( GameMetadata metadata : gameMetadatas  ) {
+					Game game = new Game( metadata );
+					gameToThreadMap.put( game, null );
+					idToGameMap.put( game.getId(), game );
+				}
+			}
+		}
 	}
 }
