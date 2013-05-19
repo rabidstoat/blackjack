@@ -21,6 +21,7 @@ import javax.net.ssl.TrustManagerFactory;
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
 import drexel.edu.blackjack.client.screens.AbstractScreen;
+import drexel.edu.blackjack.client.screens.InSessionScreen;
 import drexel.edu.blackjack.client.screens.LoginInputScreen;
 import drexel.edu.blackjack.client.screens.NotInSessionScreen;
 import drexel.edu.blackjack.util.BlackjackLogger;
@@ -248,6 +249,13 @@ public class BlackjackCLClient {
 				currentScreen.getScreenType().equals(AbstractScreen.SCREEN_TYPE.LOGIN_SCREEN) ) {
 			// If we were showing the login screen, now need to show the NotInSessionScreen
 			this.setScreen( NotInSessionScreen.getDefaultScreen(this, input, output) );
+		} else if( currentScreen.getScreenType() != null && 
+				currentScreen.getScreenType().equals(AbstractScreen.SCREEN_TYPE.NOT_IN_SESSION_SCREEN) ) {
+			// If we were showing the NotInSession screen, now need to show the InSessionScreen
+			this.setScreen( InSessionScreen.getDefaultScreen(this, input, output) );
+		} else {
+			// This is a weird error
+			LOGGER.severe( "Had a request to move to the next UI screen, but there was no next one defined." );
 		}
 	}
 

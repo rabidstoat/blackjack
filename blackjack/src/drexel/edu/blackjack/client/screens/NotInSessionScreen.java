@@ -75,13 +75,7 @@ public class NotInSessionScreen extends AbstractScreen {
 				return;
 			}
 			
-			if( code.hasSameCode( ResponseCode.CODE.VERSION ) ) {
-				displayVersion( code );
-			} else if( code.hasSameCode( ResponseCode.CODE.CAPABILITIES_FOLLOW ) ) {
-				displayCapabilities( code );
-			} else if( code.hasSameCode( ResponseCode.CODE.ACCOUNT_BALANCE ) ) {
-				displayAccountBalance( code );
-			} else if( code.hasSameCode( ResponseCode.CODE.GAMES_FOLLOW ) ) {
+			else if( code.hasSameCode( ResponseCode.CODE.GAMES_FOLLOW ) ) {
 				displayGameList( code );
 				state = JOIN_GAME;
 			} else if( code.hasSameCode( ResponseCode.CODE.NO_GAMES_HOSTED ) ) {
@@ -97,8 +91,10 @@ public class NotInSessionScreen extends AbstractScreen {
 				System.out.println( "You don't have enough money in your account to cover the minimum bet." );
 				state = MAIN_MENU;
 			} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_JOINED_SESSION ) ) {
-				System.out.println( "You joined the session, hooray! But I've not implemented this." );
-				// TODO: Implement
+				// This needs to say that they successfully joined a game, and move them to the next screen
+				System.out.println( "Successfully joined the game." );
+				state = MAIN_MENU;	// Reset the internal state just in case....
+				showNextScreen();	// Move to the next screen
 			} else {
 				super.handleResponseCode( code );
 			}

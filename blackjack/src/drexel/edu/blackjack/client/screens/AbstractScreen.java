@@ -167,8 +167,10 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 					displayCapabilities( code );
 				} else if( code.hasSameCode( ResponseCode.CODE.ACCOUNT_BALANCE ) ) {
 					displayAccountBalance( code );
+				} else {
+					LOGGER.info( "Received unhandled informative code of '" + code.toString() + "'." );
 				}
-				LOGGER.info( "Received unhandled informative code of '" + code.toString() + "'." );
+				
 			} else if( code.isGameState() ) {
 				// TODO: Handle game state codes
 				LOGGER.info( "Received unhandled game state code of '" + code.toString() + "'." );
