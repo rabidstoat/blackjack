@@ -88,9 +88,14 @@ public class Game {
 	 * Add a player to the game. 
 	 * @return True if it worked, false otherwise
 	 */
-	public boolean addPlayer(User player) {
-		// TODO: Implement
-		return false;
+	public synchronized boolean addPlayer(User player) {
+		
+		// This would be bad
+		if( player == null || players == null ) {
+			return false;
+		}
+		
+		return players.add( player );
 	}
 	
 	/**
@@ -103,9 +108,24 @@ public class Game {
 	 *  if they weren't in there in the frist place) just return
 	 *  null
 	 */
-	public ResponseCode removePlayer(User player) {
-		// TODO: Implement
-		return null;
+	public synchronized ResponseCode removePlayer(User player) {
+		
+		if( player == null || players == null || !players.contains(player) ) {
+			LOGGER.severe( "Trying to remove " + player + " but it didn't seem they were in this game!" );
+			return null;
+		}
+		
+		// Hopefully we can remove them
+		if (!players.remove( player ) ) {
+			LOGGER.severe( "Something went wonky in trying to remove the player from the game." );
+			return null;
+		}
+		
+		// Were they in a state where they forfeited their bet?
+		// TODO: Implement that stuff, for now, just assume it went okay
+		// TODO: I think we have to not remove them, but also set them 'gone'?
+		return new ResponseCode( ResponseCode.CODE.SUCCESSFULLY_LEFT_SESSION_NOT_MIDPLAY,
+				"Have not coded logic to see if a bet was forfeited.");
 	}
 	
 	/**
@@ -136,9 +156,9 @@ public class Game {
 		StringBuilder str = new StringBuilder();
 		str.append( RECORD_START_KEYWORD + " " + metadata.getId() + " Blackjack\n" );
 		if( isActive() ) {
-			str.append( this.ACTIVE_STATUS_ATTRIBUTE + "\n" );
+			str.append( ACTIVE_STATUS_ATTRIBUTE + "\n" );
 		} else {
-			str.append( this.INACTIVE_STATUS_ATTRIBUTE + "\n" );
+			str.append( INACTIVE_STATUS_ATTRIBUTE + "\n" );
 		}
 		str.append( MIN_PLAYERS_ATTRIBUTE + " " + metadata.getMinPlayers() + "\n");
 		str.append( MAX_PLAYERS_ATTRIBUTE + " " + metadata.getMaxPlayers() + "\n");

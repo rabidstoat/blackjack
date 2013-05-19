@@ -116,8 +116,27 @@ public class ActiveGameCoordinator {
 	 * IF it wasn't, return a null
 	 */
 	public Game addPlayer(String sessionName, User user) {
-		// TODO: Implement
-		return null;
+		
+		if( idToGameMap == null ) {
+			LOGGER.severe( "The idToGameMap in the ActiveGameController is null. It shouldn't be." );
+			return null;
+		}
+		
+		// Look up the game
+		Game game = idToGameMap.get(sessionName);
+		if( game == null ) {
+			LOGGER.severe( "No game corresponded to the request id of '" + sessionName + "'." );
+			return null;
+		}
+		
+		// Make sure there is room to add the player
+		if( game.stillHasRoom() ) {
+			game.addPlayer( user );
+			return game;
+		} else {
+			LOGGER.severe( "Game has no more room. Race condtion?" );
+			return null;
+		}
 	}
 
 	/******************************************************************************
