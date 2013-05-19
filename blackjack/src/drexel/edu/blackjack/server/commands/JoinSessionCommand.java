@@ -1,5 +1,6 @@
 package drexel.edu.blackjack.server.commands;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -121,7 +122,9 @@ public class JoinSessionCommand extends BlackjackCommand {
 
 	@Override
 	public List<String> getRequiredParameterNames() {
-		return null;
+		List<String> names = new ArrayList<String>();
+		names.add( "sessionname" );
+		return names;
 	}
 
 }
