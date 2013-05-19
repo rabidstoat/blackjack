@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import drexel.edu.blackjack.db.game.GameMetadata;
+import drexel.edu.blackjack.server.ResponseCode;
 
 /**
  * Holds information about the blackjack game.
@@ -65,12 +66,28 @@ public class Game {
 		return players.size() < metadata.getMaxPlayers();
 	}
 	
-	public void addPlayer(User player) {
-		
+	/**
+	 * Add a player to the game. 
+	 * @return True if it worked, false otherwise
+	 */
+	public boolean addPlayer(User player) {
+		// TODO: Implement
+		return false;
 	}
 	
-	public void removePlayer(User player) {
-		
+	/**
+	 * Remove a player from the game. A response code has to be
+	 * generated to specify if they forfeited a bet by leaving in
+	 * the current state; if they did forfeit a bet, this routine
+	 * also has to debit the user's bank account. 
+	 * 
+	 *  If something went wrong and they can't be removed (like,
+	 *  if they weren't in there in the frist place) just return
+	 *  null
+	 */
+	public ResponseCode removePlayer(User player) {
+		// TODO: Implement
+		return null;
 	}
 	
 	public String getGameDescriptor() {
