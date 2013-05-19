@@ -23,6 +23,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		
 		LOGIN_SCREEN,
 		NOT_IN_SESSION_SCREEN,
+		IN_SESSION_SCREEN,
 		OTHER_SCREEN 
 		
 	}
@@ -235,6 +236,25 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		} else {
 			System.out.println( "Server version " + code.getText().trim() );
 		}
+	}
+
+	/***********************************************************************************
+	 * Interacts with the server to handle various user requests
+	 **********************************************************************************/
+
+	protected void sendVersionRequest() {
+		System.out.println( "One moment, fetching the version from the server..." );
+		helper.sendVersionRequest();
+	}
+
+	protected void sendAccountRequest() {
+		System.out.println( "One moment, fetching your account balance from the server..." );
+		helper.sendAccountRequest();
+	}
+
+	protected void sendCapabilitiesRequest() {
+		System.out.println( "One moment, fetching a list of capabilities from the server..." );
+		helper.sendCapabilitiesRequest();
 	}
 
 }

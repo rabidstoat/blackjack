@@ -277,24 +277,9 @@ public class NotInSessionScreen extends AbstractScreen {
 		displayMenu();
 	}
 
-	private void sendVersionRequest() {
-		System.out.println( "One moment, fetching the version from the server..." );
-		helper.sendVersionRequest();
-	}
-
-	private void sendAccountRequest() {
-		System.out.println( "One moment, fetching your account balance from the server..." );
-		helper.sendAccountRequest();
-	}
-
 	private void sendListGamesRequest() {
 		System.out.println( "One moment, fetching a list of games from the server..." );
 		helper.sendListGamesRequest();
-	}
-
-	private void sendCapabilitiesRequest() {
-		System.out.println( "One moment, fetching a list of capabilities from the server..." );
-		helper.sendCapabilitiesRequest();
 	}
 
 	private void sendJoinGameRequest( String id ) {
