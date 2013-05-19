@@ -1,9 +1,16 @@
 package drexel.edu.blackjack.client.screens;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
+
 import drexel.edu.blackjack.client.BlackjackCLClient;
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
 import drexel.edu.blackjack.server.ResponseCode;
+import drexel.edu.blackjack.server.game.Game;
 
 /**
  * This is the user interface that shows when the
@@ -30,6 +37,9 @@ public class NotInSessionScreen extends AbstractScreen {
 	
 	// Which of the states the screen is in
 	private int state;
+	
+	// If we read a list of games, keep them here
+	private ListOfGames games = null;
 	
 	// And keep a copy to itself for the singleton pattern
 	private static NotInSessionScreen notInSessionScreen = null;
@@ -70,6 +80,9 @@ public class NotInSessionScreen extends AbstractScreen {
 			} else if( code.hasSameCode( ResponseCode.CODE.GAMES_FOLLOW ) ) {
 				displayGameList( code );
 				state = JOIN_GAME;
+			} else if( code.hasSameCode( ResponseCode.CODE.NO_GAMES_HOSTED ) ) {
+				System.out.println( "Unfortunately, no games are hosted on this server" );
+				state = MAIN_MENU;
 			} else if( code.hasSameCode( ResponseCode.CODE.JOIN_SESSION_AT_MAX_PLAYERS ) ) {
 				System.out.println( "The game you selected already has the maximum number of players." );
 				state = MAIN_MENU;
@@ -98,8 +111,11 @@ public class NotInSessionScreen extends AbstractScreen {
 	 * command later.
 	 */
 	private void displayGameList( ResponseCode code ) {
-		// TODO: Something a LOT nicer
-		System.out.println( code.getText() );
+		
+		games = new ListOfGames( code );
+		for( int i = 0; i < games.size(); i++ ) {
+			System.out.println( (i+1) + ") " + games.get(i) );
+		}
 	}
 
 	/**
@@ -110,8 +126,7 @@ public class NotInSessionScreen extends AbstractScreen {
 
 		if( this.isActive ) {
 			if( state == JOIN_GAME ) {
-				System.out.println( "Have not implemented join game menu yet, whoops!" );
-				state = MAIN_MENU;
+				System.out.println( "Enter the number of the game you wish to join." );
 			} else {
 				System.out.println( "Please enter the letter or symbol of the option to perform:" );
 				System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
@@ -207,4 +222,113 @@ public class NotInSessionScreen extends AbstractScreen {
 		helper.sendCapabilitiesRequest();
 	}
 
+	/**
+	 * This inner class is used to translate a response code into a list of games.
+	 * Here, the 'games' are just strings that describe the game.
+	 * 
+	 * @author Jennifer
+	 */
+	class ListOfGames {
+
+		// This is the list of strings that represent the game, that we can show to a user
+		List<String> games = new ArrayList<String>();
+		// This is a parallel list of IDs, which only the client code has to know about
+		List<String> ids = new ArrayList<String>();
+		
+		protected ListOfGames( ResponseCode code ) {
+			
+			// We keep queueing up game description lines until we
+			// have reached the end for the game, then interpret them
+			String numDecks = null;
+			String minBet = null;
+			String maxBet = null;
+			String gameId = null;
+			String gameDescription = null;
+			
+			if( code != null && code.isMultilineCode() ) {
+				for( int i = 1; i < code.getNumberOfLines(); i++ ) {
+					String currentLine = code.getMultiline(i);
+					if( currentLine != null ) {
+						if( currentLine.startsWith( Game.RECORD_START_KEYWORD ) ) {
+
+							// Figure out the ID and description
+							gameId = null;
+							gameDescription = null;
+							
+							// Use a tokenizer just because
+							StringTokenizer strtok = new StringTokenizer(currentLine);
+							if( strtok.hasMoreTokens() ) {
+								// First token is the word 'GAME', which we don't care about
+								strtok.nextToken();
+								if( strtok.hasMoreTokens() ) {
+									// This token, however, is the ID
+									gameId = strtok.nextToken();
+								}
+							}
+							
+							// Try to figure out what the description should be
+							int index = currentLine.indexOf( gameId, Game.RECORD_START_KEYWORD.length() );
+							gameDescription = currentLine.substring( index + gameId.length() ).trim();
+							
+							// And start gathering attributes
+							minBet = null;
+							maxBet = null;
+							numDecks = null;
+						} else if( currentLine.startsWith( Game.MAX_BET_ATTRIBUTE ) ) {
+							maxBet = currentLine.substring( Game.MAX_BET_ATTRIBUTE.length() ).trim();
+						} else if( currentLine.startsWith( Game.MIN_BET_ATTRIBUTE ) ) {
+							minBet = currentLine.substring( Game.MIN_BET_ATTRIBUTE.length() ).trim();
+						} else if( currentLine.startsWith( Game.NUM_DECKS_ATTRIBUTE ) ) {
+							numDecks = currentLine.substring( Game.NUM_DECKS_ATTRIBUTE.length() ).trim();
+						} else if( currentLine.startsWith( Game.RECORD_END_KEYWORD ) ) {
+							// Finally we can create a string that represents the game!
+							StringBuilder str = new StringBuilder();
+							str.append( gameDescription );
+							str.append( " [" );
+							if( minBet == null && maxBet == null ) {
+								str.append( "Unlimited bet range" );
+							} else if( minBet == null ) {
+								str.append( "Bets up to $" + maxBet );
+							} else if( maxBet == null ) {
+								str.append( "Bets start at $" + minBet );
+							} else {
+								str.append( "Bets from $" + minBet + " - $" + maxBet );
+							}
+							str.append(", " );
+							if( numDecks == null ) {
+								str.append( "with an unspecified number of decks used" );
+							} else {
+								str.append( "with " + numDecks + " deck(s) used" );
+							}
+							str.append( "]" );
+							
+							// We save out both the ID and the human-readable line
+							ids.add( gameId );
+							games.add( str.toString() );
+						}
+					}
+				}
+			}
+		}
+
+		/**
+		 * Get the descriptive game line for the i-th game. THis
+		 * is 0-based, of course.
+		 * 
+		 * @param i Index of the game
+		 * @return Hopefully the game description
+		 */
+		public String get(int i) {
+			return ( games == null ? null : games.get(i) );
+		}
+
+		/**
+		 * Returns the number of games in the list.
+		 * 
+		 * @return Number of games. Might be 0
+		 */
+		public int size() {
+			return (games == null ? 0 : games.size() );
+		}
+	}
 }
