@@ -92,4 +92,48 @@ public class ClientOutputToServerHelper extends Thread {
 		return this.sendRawText( "PASSWORD " + password );
 	}
 
+	/**
+	 * Sends a request to the server asking for the version
+	 */
+	public boolean sendVersionRequest() {
+		return this.sendRawText( "VERSION" );
+	}
+
+	/**
+	 * Sends a request to the server asking for the capabilities
+	 */
+	public boolean sendCapabilitiesRequest() {
+		return this.sendRawText( "CAPABILITIES" );
+	}
+
+	/**
+	 * Sends a request to the server asking for the list of games
+	 */
+	public boolean sendListGamesRequest() {
+		return this.sendRawText( "LISTGAMES" );
+	}
+
+	/**
+	 * Sends a request to the server asking to join a session
+	 */
+	public boolean sendJoinSessionRequest( String sessionName ) {
+		if( sessionName == null ) {
+			return false;
+		}
+		return this.sendRawText( "JOINSESSION " + sessionName );
+	}
+	
+	/**
+	 * Sends a request to the server asking to leave a session
+	 */
+	public boolean sendLeaveSessionRequest() {
+		return this.sendRawText( "LEAVESESSION" );
+	}
+	
+	/**
+	 * Sends a request to the server asking to quit
+	 */
+	public boolean sendQuitRequest() {
+		return this.sendRawText( "QUIT" );
+	}
 }
