@@ -46,6 +46,12 @@ public class ClientInputFromServerThread extends Thread {
 	
 	// Our main client, who we notify if the socket connection closes
 	private BlackjackCLClient blackjackClient = null;
+	
+	// Multi-line messages get built up her
+	private StringBuilder multilineMessage = null;
+	
+	// We set this true if we're processing a multi-line message
+	private boolean processingMultilineMessage = false;
 
 	// And a logger for errors
 	private final static Logger LOGGER = BlackjackLogger.createLogger(ClientInputFromServerThread.class.getName()); 
@@ -112,8 +118,29 @@ public class ClientInputFromServerThread extends Thread {
 						textArea.append("\n" );
 					}
 
-					// Send it out to any listeners
-					deliverMessage( inputLine );
+					// What we due depends on if we're processing a multiline message or not
+					if( this.processingMultilineMessage ) {
+						// If we ARE, then we keep appending to the multi-line message
+						// until we hit a newline all by itself. Then we deliver it
+						if( isEndOfMultilineMessage(inputLine) ) {
+							ResponseCode code = ResponseCode.getCodeFromString( multilineMessage.toString() );
+							processingMultilineMessage = false;
+							multilineMessage = null;
+							deliverMessage( code );
+						} else {
+							multilineMessage.append( inputLine );
+						}
+					} else {
+						// If it's a singleline message, we deliver it right away
+						// Otherwise we go into multiline mode
+						ResponseCode code = ResponseCode.getCodeFromString( inputLine );
+						if( code.isMultilineCode() ) {
+							multilineMessage = new StringBuilder( inputLine );
+							processingMultilineMessage = true;
+						} else {
+							deliverMessage( code );
+						}
+					}
 					
 					// And read the next line
 					inputLine = reader.readLine();
@@ -139,22 +166,26 @@ public class ClientInputFromServerThread extends Thread {
 	}
 
 	/**
-	 * This takes a string that is an input line, creates a response code
-	 * out of it, and then sends it to any listeners who have registered
-	 * interest. If no one has registered interest, send it to the default
-	 * listener.
+	 * A multiline message is terminated with an empty line,
+	 * basically.
 	 * 
-	 * @param inputLine Some text line
+	 * @param inputLine Is this line terminating the multiline
+	 * message?
+	 * @return True if it is, else false
+	 */
+	private boolean isEndOfMultilineMessage(String inputLine) {
+		return inputLine != null && inputLine.trim().length() == 0;
+	}
+
+	/**
+	 * This takes a a response code from the server, and then sends it to 
+	 * to the default listener.
+	 * 
+	 * @param code The response formatted as a response code
 	 * @return True if delivered properly to at least one recipient,
 	 * false otherwise
 	 */
-	private boolean deliverMessage(String inputLine) {
-		
-		// Make sure it's not null
-		if( inputLine == null ) {
-			LOGGER.severe( "Got a null input line. This shouldn't happen! " );
-			return false;
-		}
+	private boolean deliverMessage(ResponseCode code) {
 		
 		// And that someone is listening
 		if( defaultListener == null ) {
@@ -163,10 +194,9 @@ public class ClientInputFromServerThread extends Thread {
 		}
 		
 		// Now, create the response code from the string
-		ResponseCode code = ResponseCode.getCodeFromString( inputLine );
 		if( code == null || code.getCode() == null ) {
 			// This is a problem! It means the input wasn't valid
-			LOGGER.severe( "Received unrecognized input from the server: " + inputLine );
+			LOGGER.severe( "Received unrecognized input from the server: " + code );
 			return false;
 		} else if( defaultListener != null ) {
 			// And send to the non-null listener

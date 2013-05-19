@@ -536,4 +536,15 @@ public class ResponseCode {
 		
 		return false;
 	}
+
+	/**
+	 * Certain response codes inolve multiline responses. If that is
+	 * the case for the current code, return true, else false.
+	 * @return True if a multiline response code, false otherwise
+	 */
+	public boolean isMultilineCode() {
+		
+		return this.getCode() == CODE.CAPABILITIES_FOLLOW.getCode() ||
+				this.getCode() == CODE.GAMES_FOLLOW.getCode();
+	}
 }
