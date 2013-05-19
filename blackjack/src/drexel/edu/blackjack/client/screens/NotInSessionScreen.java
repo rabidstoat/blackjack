@@ -114,7 +114,7 @@ public class NotInSessionScreen extends AbstractScreen {
 		
 		games = new ListOfGames( code );
 		for( int i = 0; i < games.size(); i++ ) {
-			System.out.println( (i+1) + ") " + games.get(i) );
+			System.out.println( (i+1) + ") " + games.getGame(i) );
 		}
 	}
 
@@ -127,6 +127,7 @@ public class NotInSessionScreen extends AbstractScreen {
 		if( this.isActive ) {
 			if( state == JOIN_GAME ) {
 				System.out.println( "Enter the number of the game you wish to join." );
+				System.out.println( "(Or you can type 'back' to go back to the previous menu.)" );
 			} else {
 				System.out.println( "Please enter the letter or symbol of the option to perform:" );
 				System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
@@ -172,6 +173,10 @@ public class NotInSessionScreen extends AbstractScreen {
 		
 	}
 
+	/***********************************************************************************
+	 * These methods process user input
+	 **********************************************************************************/
+
 	@Override
 	public void handleUserInput(String str) {
 
@@ -195,12 +200,70 @@ public class NotInSessionScreen extends AbstractScreen {
 					displayMenu();
 				}
 				
+			} else if( state == this.JOIN_GAME ) {
+				
+				processJoinGameResponse( str );
+				
 			} else {
-				System.out.println( "Regretably have not implemented any options here." );
+				System.out.println( "Uh oh. The UI got into a weird state, resetting it for you." );
+				reset();
 			}
 		}
 
 	}
+
+	/**
+	 * This handles whatever the user typed in for joining a game.
+	 * It had better be a number that is in range!!!
+	 * 
+	 * @param str
+	 */
+	private void processJoinGameResponse(String str) {
+
+		Integer number = null;
+		if( str != null ) {
+			try {
+				number = Integer.valueOf(Integer.parseInt(str));
+			} catch( NumberFormatException e ) {
+				// Too bad, but nothing we need to report now
+			}
+		}
+		
+		// Make sure the number is in range
+		if( number != null && (number < 1 || number > games.size()) ) {
+			number = null;
+		}
+		
+		// Okay, did we get a valid number? 
+		if( number == null ) {
+			// Maybe they just wanted to go back to the previous menu?
+			if( str != null && str.equalsIgnoreCase("back" ) ) {
+				System.out.println( "Returning you to the previous menu." );
+				state = MAIN_MENU;
+				displayMenu();
+			} else {				
+				// If not, force them to try again
+				System.out.println( "You need to enter a number from 1-" + games.size() + "," );
+				System.out.println( "or 'back' to return to the previous menu. Try again." );
+				sendListGamesRequest();
+			}
+		} else {
+			// We got a valid number, so we need to join the game
+			// But which game? Remember, their number was 1 based, our list is 0-based
+			int index = number - 1;
+			String id = games.getId(index);
+			if( id == null ) {
+				System.out.println( "Whoops. Could not find the game to reques due to an internal error!" );
+				reset();
+			} else {
+				sendJoinGameRequest( id );
+			}
+		}
+	}
+
+	/***********************************************************************************
+	 * Interacts with the server to handle various user requests
+	 **********************************************************************************/
 
 	private void quit() {
 		System.out.println( "There is no quitting, mwahahaha!" );
@@ -221,6 +284,15 @@ public class NotInSessionScreen extends AbstractScreen {
 		System.out.println( "One moment, fetching a list of capabilities from the server..." );
 		helper.sendCapabilitiesRequest();
 	}
+
+	private void sendJoinGameRequest( String id ) {
+		System.out.println( "Alerting the server that you wish to join this game..." );
+		helper.sendJoinSessionRequest( id );
+	}
+	
+	/***********************************************************************************
+	 * This is a special helper class.
+	 **********************************************************************************/
 
 	/**
 	 * This inner class is used to translate a response code into a list of games.
@@ -318,8 +390,19 @@ public class NotInSessionScreen extends AbstractScreen {
 		 * @param i Index of the game
 		 * @return Hopefully the game description
 		 */
-		public String get(int i) {
+		public String getGame(int i) {
 			return ( games == null ? null : games.get(i) );
+		}
+
+		/**
+		 * Get the id of the i-th game. THis
+		 * is 0-based, of course.
+		 * 
+		 * @param i Index of the game
+		 * @return Hopefully its ID
+		 */
+		public String getId(int i) {
+			return ( ids == null ? null : ids.get(i) );
 		}
 
 		/**
