@@ -164,6 +164,8 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 					displayVersion( code );
 				} else if( code.hasSameCode( ResponseCode.CODE.CAPABILITIES_FOLLOW ) ) {
 					displayCapabilities( code );
+				} else if( code.hasSameCode( ResponseCode.CODE.ACCOUNT_BALANCE ) ) {
+					displayAccountBalance( code );
 				}
 				LOGGER.info( "Received unhandled informative code of '" + code.toString() + "'." );
 			} else if( code.isGameState() ) {
@@ -201,6 +203,22 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 			for( int i = 1; i < code.getNumberOfLines(); i++ ) {
 				System.out.println( i + ". " + code.getMultiline(i) );
 			}
+		}
+				
+	}
+
+	/**
+	 * Print to the screen something about the account balance
+	 * @param code
+	 */
+	protected void displayAccountBalance(ResponseCode code) {
+		
+		// Make sure this is a valid account balance response first
+		if( code == null ||  
+				!code.hasSameCode( ResponseCode.CODE.ACCOUNT_BALANCE ) ) {
+			System.out.println( "Internal error, sorry. Can't display the account balance." );
+		} else {
+			System.out.println( "Your account balance is $" + code.getFirstParameterAsString() + "." );
 		}
 				
 	}

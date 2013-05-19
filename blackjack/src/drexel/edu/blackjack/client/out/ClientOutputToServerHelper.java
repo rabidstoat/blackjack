@@ -146,6 +146,13 @@ public class ClientOutputToServerHelper extends Thread {
 	}
 
 	/**
+	 * Sends a request to the server asking for the account balance
+	 */
+	public boolean sendAccountRequest() {
+		return this.sendRawText( "ACCOUNT" );
+	}
+
+	/**
 	 * Sends a request to the server asking to join a session
 	 */
 	public boolean sendJoinSessionRequest( String sessionName ) {

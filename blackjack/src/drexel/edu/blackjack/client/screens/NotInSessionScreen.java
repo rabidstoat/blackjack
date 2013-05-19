@@ -34,6 +34,8 @@ public class NotInSessionScreen extends AbstractScreen {
 	private static String CAPABILITIES_OPTION	= "C";
 	private static String QUIT_OPTION			= "Q";
 	private static String MENU_OPTION			= "?";
+	private static String ACCOUNT_OPTION		= "A";
+	private static String BACK_OPTION			= "back";
 	
 	// Which of the states the screen is in
 	private int state;
@@ -77,6 +79,8 @@ public class NotInSessionScreen extends AbstractScreen {
 				displayVersion( code );
 			} else if( code.hasSameCode( ResponseCode.CODE.CAPABILITIES_FOLLOW ) ) {
 				displayCapabilities( code );
+			} else if( code.hasSameCode( ResponseCode.CODE.ACCOUNT_BALANCE ) ) {
+				displayAccountBalance( code );
 			} else if( code.hasSameCode( ResponseCode.CODE.GAMES_FOLLOW ) ) {
 				displayGameList( code );
 				state = JOIN_GAME;
@@ -127,12 +131,13 @@ public class NotInSessionScreen extends AbstractScreen {
 		if( this.isActive ) {
 			if( state == JOIN_GAME ) {
 				System.out.println( "Enter the number of the game you wish to join." );
-				System.out.println( "(Or you can type 'back' to go back to the previous menu.)" );
+				System.out.println( "(Or you can type '" + BACK_OPTION + "' to go back to the previous menu.)" );
 			} else {
 				System.out.println( "Please enter the letter or symbol of the option to perform:" );
 				System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
 				System.out.println( CAPABILITIES_OPTION + ") See what capabilities the game implements (for debug purposes)" );
 				System.out.println( JOIN_OPTION + ") Join a game" );
+				System.out.println( ACCOUNT_OPTION + ") Account balance request" );
 				System.out.println( QUIT_OPTION + ") Quit playing" );
 				System.out.println( MENU_OPTION + ") Repeat this menu of options" );
 			}
@@ -195,6 +200,8 @@ public class NotInSessionScreen extends AbstractScreen {
 					quit();
 				} else if( str.trim().equals(VERSION_OPTION) ) {
 					sendVersionRequest();
+				} else if( str.trim().equals(ACCOUNT_OPTION) ) {
+					sendAccountRequest();
 				} else {
 					System.out.println( "Unrecognized user input: " + str );
 					displayMenu();
@@ -237,14 +244,14 @@ public class NotInSessionScreen extends AbstractScreen {
 		// Okay, did we get a valid number? 
 		if( number == null ) {
 			// Maybe they just wanted to go back to the previous menu?
-			if( str != null && str.equalsIgnoreCase("back" ) ) {
+			if( str != null && str.equalsIgnoreCase(BACK_OPTION) ) {
 				System.out.println( "Returning you to the previous menu." );
 				state = MAIN_MENU;
 				displayMenu();
 			} else {				
 				// If not, force them to try again
 				System.out.println( "You need to enter a number from 1-" + games.size() + "," );
-				System.out.println( "or 'back' to return to the previous menu. Try again." );
+				System.out.println( "or '" + BACK_OPTION + "' to return to the previous menu. Try again." );
 				sendListGamesRequest();
 			}
 		} else {
@@ -273,6 +280,11 @@ public class NotInSessionScreen extends AbstractScreen {
 	private void sendVersionRequest() {
 		System.out.println( "One moment, fetching the version from the server..." );
 		helper.sendVersionRequest();
+	}
+
+	private void sendAccountRequest() {
+		System.out.println( "One moment, fetching your account balance from the server..." );
+		helper.sendAccountRequest();
 	}
 
 	private void sendListGamesRequest() {
