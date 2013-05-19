@@ -113,14 +113,6 @@ public class ResponseCode {
 	private String text = null;
 	
 	/***************************************************************
-	 * Static variables here
-	 **************************************************************/
-
-	// This defines a regular expression for validating a response is valid
-	// (e.g., it begins with a 3-digit number)
-	private static Pattern validResponsePattern;
-	
-	/***************************************************************
 	 * Constructors!
 	 **************************************************************/
 
@@ -528,7 +520,6 @@ public class ResponseCode {
 	 * @return True if just the code part of the ResponseCode
 	 * is equal (ignoring any text differences), false otherwise
 	 */
-	@SuppressWarnings("unused")
 	public boolean hasSameCode( ResponseCode.CODE compareToCode ) {
 		
 		if( compareToCode != null ) {
@@ -547,5 +538,59 @@ public class ResponseCode {
 		
 		return this.getCode() == CODE.CAPABILITIES_FOLLOW.getCode() ||
 				this.getCode() == CODE.GAMES_FOLLOW.getCode();
+	}
+	
+	/**
+	 * If this response code is a multiline message, return one
+	 * of those multiple lines with this method call. It will
+	 * return null if either the index is out of range OR
+	 * if the message isn't multiline.
+	 * 
+	 * @param index 0 is the message code, then starting at index 1
+	 * is the real meat of the response
+	 * @return Null if not a multiline message or index out of range,
+	 * else the line at that index
+	 */
+	public String getMultiline( int index ) {
+		
+		// Has to be a multiline coded message
+		if( !isMultilineCode() ) {
+			return null;
+		}
+		
+		// If the text is null, that's bad
+		if( text == null ) {
+			return null;
+		}
+		
+		// Otherwise we count
+		String[] lines = text.split( "\n" );
+		if( index < 0 || index >= lines.length ) {
+			return null;
+		}
+		
+		return lines[index];
+	}
+	
+	/**
+	 * Get number of lines in the message. Unless this is
+	 * a multiline message, it should be 1. If it's a multiline
+	 * message, it should be > 1
+	 */
+	public int getNumberOfLines() {
+		
+		// If it's not a multiline code, it's one line
+		if( !isMultilineCode() ) {
+			return 1;
+		}
+		
+		// If the text is null, that's bad
+		if( text == null ) {
+			return 0;
+		}
+		
+		// Otherwise we count
+		String[] lines = text.split( "\n" );
+		return lines.length;
 	}
 }
