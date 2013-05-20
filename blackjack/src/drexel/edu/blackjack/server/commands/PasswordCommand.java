@@ -2,20 +2,21 @@ package drexel.edu.blackjack.server.commands;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import drexel.edu.blackjack.db.user.FlatfileUserManager;
 import drexel.edu.blackjack.db.user.UserManagerInterface;
 import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 import drexel.edu.blackjack.server.ResponseCode;
+import drexel.edu.blackjack.server.game.User;
 
 /***/
 
 public class PasswordCommand extends BlackjackCommand {
 
-	private static final String COMMAND_WORD = "PASSWORD password";
+	private static final String COMMAND_WORD = "PASSWORD";
 
 	Set<STATE> validPasswordStates = null;
 	
@@ -44,10 +45,10 @@ public class PasswordCommand extends BlackjackCommand {
 
 		/** Steps 3-4: Error 3: If the PASSWORD password parameter is not exactly one string,
 		 * send an error message.*/
-		if ((cm.getParameters().size() != 1))  {
+		if ((cm.getParameters().size() != 1) || cm.getParameters() == null)  {
 			
-			return new ResponseCode( ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS,
-					"PasswordCommand.processCommand() received invalid  parameter").toString();
+			return new ResponseCode( ResponseCode.CODE.SYNTAX_ERROR,
+					"Must include a single parameter indicating password").toString();
 		}
 		
 		//Get username from parameter protocol passed
@@ -63,11 +64,18 @@ public class PasswordCommand extends BlackjackCommand {
 		 * If login-credentials valid, record which user is connected and send a 'success' message.*/
 		
 		if(userManager.loginUser(username, password) == null) {
-
+			
+			protocol.setState(STATE.WAITING_FOR_USERNAME);
+			
 			return new ResponseCode( ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS, 
-					"PasswordCommand.loginCredentialsCommand() received invalid login credentials").toString();
-
+					"PasswordCommand.loginCredentialsCommand() received invalid login credentials; try logging in again.").toString();
 		}
+		/**Associate the new user with the protocol*/
+		
+		User user = new User(userManager.loginUser(username, password));
+			
+		protocol.setUser(user);
+		
 		/**Step 7: Update state. The client has authenticated but is not in a session*/
 		
 		protocol.setState(STATE.NOT_IN_SESSION);
@@ -76,7 +84,7 @@ public class PasswordCommand extends BlackjackCommand {
 		
 		return new ResponseCode( ResponseCode.CODE.SUCCESSFULLY_AUTHENTICATED, 
 				"PasswordCommand.loginCredentialsCommand() received valid login credentials; " +
-				"still not in session" + protocol.getUser() ).toString();
+				"still not in session" ).toString();
 	}
 	
 	@Override
@@ -98,24 +106,15 @@ public class PasswordCommand extends BlackjackCommand {
 	 * and pass back -in an ArrayList- the only parameter PASSWORD command word is allowed
 	 * to have.
 	 * 
-	 * @return parameter The List with just one string, the username command-word
+	 * @return parameter The List with just one string, the password command-word
 	 * parameter.
 	 */
 	@Override
-	public ArrayList<String> getRequiredParameterNames() {
+	public List<String> getRequiredParameterNames() {
 		
-		//Parse the command word
-		StringTokenizer strtok = new StringTokenizer(COMMAND_WORD);
-		
-			String command = strtok.nextToken();	// command word is always first token
-			
-			String par = strtok.nextToken(); //parameter is the next token
-		
-			//Add parameter string par to list and return the list.
-			ArrayList<String> parameter = new ArrayList<String>();
-		parameter.add(par);
-		
-		return parameter;	
+		List<String> names = new ArrayList<String>();
+		names.add( "password" );
+		return names;
 	}
 	
 	@Override
