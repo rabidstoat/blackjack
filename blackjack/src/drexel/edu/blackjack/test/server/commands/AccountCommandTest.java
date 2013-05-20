@@ -72,20 +72,20 @@ public class AccountCommandTest {
 		User richUser = new User( richUserMetadata );
 
 		// Now that I have my users, I can create my protocol states that I want to test
-		nonauthorizedStateProtocol = new BlackjackProtocol();
+		nonauthorizedStateProtocol = new BlackjackProtocol( null );
 		nonauthorizedStateProtocol.setUser( poorUser );
 		nonauthorizedStateProtocol.setState( STATE.WAITING_FOR_PASSWORD );
 
-		authorizedStateProtocolPoorUser = new BlackjackProtocol();
+		authorizedStateProtocolPoorUser = new BlackjackProtocol( null );
 		authorizedStateProtocolPoorUser.setUser( poorUser );
 		authorizedStateProtocolPoorUser.setState( STATE.IN_SESSION_AS_OBSERVER );
 
-		authorizedStateProtocolRichUser = new BlackjackProtocol();
+		authorizedStateProtocolRichUser = new BlackjackProtocol( null );
 		authorizedStateProtocolRichUser.setUser( richUser );
 		authorizedStateProtocolRichUser.setState( STATE.NOT_IN_SESSION );
 
 		// IF I forget to set the user, this will be an invalid protocol
-		authorizedStateProtocolNoUser = new BlackjackProtocol();
+		authorizedStateProtocolNoUser = new BlackjackProtocol( null );
 		authorizedStateProtocolNoUser.setState( STATE.IN_SESSION_AS_OBSERVER );
 	}
 
