@@ -43,7 +43,7 @@ public class UsernameCommand extends BlackjackCommand {
 			
 			/** Steps 3-4: If the USERNAME username parameter is not exactly one string,
 			 * send an error message; otherwise .*/
-			if ((cm.getParameters().size() != 1 || cm.getParameters() == null ))  {
+			if ((cm.getParameters().size() == null || cm.getParameters() != 1 ))  {
 				
 				return new ResponseCode( ResponseCode.CODE.SYNTAX_ERROR ,
 						"Must include a single parameter indicating username").toString();
