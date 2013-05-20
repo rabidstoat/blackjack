@@ -31,11 +31,28 @@
 	<!-- How we compile the code -->
     <target depends="init" name="compile">
         <echo message="Compile ${ant.project.name}: ${ant.file}"/>
-        <javac includeantruntime="false" destdir="bin" source="${source}" target="${target}">
-            <src path="src"/>
+        <javac includeantruntime="false" destdir="bin" source="${source}" target="${target}" srcdir="src" excludes="**/*Test.java">
             <classpath refid="blackjack.classpath"/>
         </javac>
     </target>
+
+    <target depends="compile" name="compile-test">
+        <javac srcdir="src" includes="**/*Test.java" destdir="bin" source="${source}" target="${target}">
+            <classpath refid="blackjack.classpath"/>
+        </javac>
+    </target>
+
+    <target depends="compile-test" name="test">
+        <junit>
+            <classpath>
+                <pathelement location="bin" />
+            </classpath>
+            <batchtest>
+                <fileset dir="src" include="**/*Test.java"/>
+            </batchtest>
+        </junit>
+    </target>
+
 
 	<!-- Runs the server, with only SEVERE log messages shown -->
     <target depends="compile" name="run-server">
