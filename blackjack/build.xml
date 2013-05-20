@@ -44,11 +44,9 @@
 
     <target depends="compile-test" name="test">
         <junit>
-            <classpath>
-                <pathelement location="bin" />
-            </classpath>
+            <classpath refid="blackjack.classpath"/>
             <batchtest>
-                <fileset dir="src" include="**/*Test.java"/>
+                <fileset dir="src"/>
             </batchtest>
         </junit>
     </target>
