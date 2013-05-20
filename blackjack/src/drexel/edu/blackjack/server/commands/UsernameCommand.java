@@ -3,8 +3,8 @@ package drexel.edu.blackjack.server.commands;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
@@ -12,7 +12,7 @@ import drexel.edu.blackjack.server.ResponseCode;
 
 public class UsernameCommand extends BlackjackCommand {
 
-	private static final String COMMAND_WORD = "USERNAME username";
+	private static final String COMMAND_WORD = "USERNAME";
 
 	Set<STATE> validUsernameStates = null;
 
@@ -43,11 +43,12 @@ public class UsernameCommand extends BlackjackCommand {
 			
 			/** Steps 3-4: If the USERNAME username parameter is not exactly one string,
 			 * send an error message; otherwise .*/
-			if ((cm.getParameters().size() != 1))  {
+			if ((cm.getParameters().size() != 1 || cm.getParameters() == null ))  {
 				
-				return new ResponseCode( ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS,
-						"UsernameCommand.processCommand() received invalid username parameter").toString();
+				return new ResponseCode( ResponseCode.CODE.SYNTAX_ERROR ,
+						"Must include a single parameter indicating username").toString();
 			}
+			
 			/**Steps 6-8: Finally, if USERNAME command has only one parameter:*/
 			
 			/**6: Set the username for user of this protocol instance */
@@ -94,20 +95,10 @@ public class UsernameCommand extends BlackjackCommand {
 		 * @return parameter The List with just one string, the username command-word
 		 * parameter.
 		 */
-		public ArrayList<String> getRequiredParameterNames() {
-
-			//Parse the command word
-			StringTokenizer strtok = new StringTokenizer(COMMAND_WORD);
-			
-				String command = strtok.nextToken();	// command word is always first token
-				
-				String par = strtok.nextToken(); //parameter is the next token
-			
-				//Add parameter string par to list and return the list.
-				ArrayList<String> parameter = new ArrayList<String>();
-			parameter.add(par);
-			
-			return parameter;
+		public List<String> getRequiredParameterNames() {
+			List<String> names = new ArrayList<String>();
+			names.add( "username" );
+			return names;
 		}
 
 		@Override
