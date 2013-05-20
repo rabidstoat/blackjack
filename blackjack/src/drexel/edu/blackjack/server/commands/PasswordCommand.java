@@ -45,7 +45,7 @@ public class PasswordCommand extends BlackjackCommand {
 
 		/** Steps 3-4: Error 3: If the PASSWORD password parameter is not exactly one string,
 		 * send an error message.*/
-		if ((cm.getParameters().size() != 1) || cm.getParameters() == null)  {
+		if ((cm.getParameters().size() == null) || cm.getParameters() != 1)  {
 			
 			return new ResponseCode( ResponseCode.CODE.SYNTAX_ERROR,
 					"Must include a single parameter indicating password").toString();
