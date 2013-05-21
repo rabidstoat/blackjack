@@ -69,6 +69,8 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		String stateName = state.name();
 		state = Enum.valueOf(STATE.class, stateName.toUpperCase());
 		
+		capabilitiesList.append("101 Capability List follows \n");
+		
 		switch ( state ) {
 		
 		/**
@@ -90,7 +92,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		case WAITING_FOR_USERNAME: 
 			
 			//Minimum capabilities which MUST be listed
-			capabilitiesList.append("101 Capability List follows \n");
+		//	capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );		
 			capabilitiesList.append( quitc.getCommandWord() );
@@ -102,7 +104,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		
 		case WAITING_FOR_PASSWORD:
 			//Minimum capabilities which MUST be listed
-			capabilitiesList.append("101 Capability List follows \n");
+		//	capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
@@ -114,7 +116,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		
 		case NOT_IN_SESSION:
 			//Minimum capabilities which MUST be listed
-			capabilitiesList.append("101 Capability List follows \n");
+		//	capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
@@ -127,7 +129,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			
 		case IN_SESSION_AS_OBSERVER:
 			//Minimum capabilities which MUST be listed
-			capabilitiesList.append("101 Capability List follows \n");
+		//	capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
@@ -139,7 +141,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			
 		case IN_SESSION_AWAITING_BETS:
 			//Minimum capabilities which MUST be listed
-			capabilitiesList.append("101 Capability List follows \n");
+		//	capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
@@ -151,7 +153,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			
 		case IN_SESSION_BEFORE_YOUR_TURN:
 			//Minimum capabilities which MUST be listed
-			capabilitiesList.append("101 Capability List follows \n");
+		//	capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
@@ -162,7 +164,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			
 		case IN_SESSION_AND_YOUR_TURN:
 			//Minimum capabilities which MUST be listed
-			capabilitiesList.append("101 Capability List follows \n");
+		//	capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
@@ -175,7 +177,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			
 		case IN_SESSION_DEALER_BLACKJACK:
 			//Minimum capabilities which MUST be listed
-			capabilitiesList.append("101 Capability List follows \n");
+		//	capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
@@ -186,7 +188,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			
 		case IN_SESSION_AFTER_YOUR_TURN:
 			//Minimum capabilities which MUST be listed
-			capabilitiesList.append("101 Capability List follows \n");
+		//	capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
@@ -198,7 +200,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			
 		case IN_SESSION_SERVER_PROCESSING:
 			//Minimum capabilities which MUST be listed
-			capabilitiesList.append("101 Capability List follows \n");
+		//	capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
@@ -210,7 +212,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		
 		default:
 			//Minimum capabilities which MUST be listed
-			capabilitiesList.append("101 Capability List follows \n");
+		//	capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
