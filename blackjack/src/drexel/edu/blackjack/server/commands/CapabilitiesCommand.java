@@ -61,6 +61,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 	 * @return capabilitiesList The list of all allowed commands in client state is in.*/
 	
 	public StringBuilder getCapabilitiesInState(BlackjackProtocol.STATE clientState) {
+	
 		
 		StringBuilder capabilitiesList = new StringBuilder();
 		
@@ -68,9 +69,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		
 		String stateName = state.name();
 		state = Enum.valueOf(STATE.class, stateName.toUpperCase());
-		
-		capabilitiesList.append("101 Capability List follows \n");
-		
+		capabilitiesList.append("101 Capability List for state " + state + " follows:\n");
 		switch ( state ) {
 		
 		/**
@@ -92,92 +91,128 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		case WAITING_FOR_USERNAME: 
 			
 			//Minimum capabilities which MUST be listed
-		//	capabilitiesList.append("101 Capability List follows \n");
+			//capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
-			capabilitiesList.append( this.getCommandWord() );		
+			capabilitiesList.append( "\n" );
+			capabilitiesList.append( this.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( quitc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			
 			
 			//Additional Capabilities listed allowed in specific state client is in currently
 			capabilitiesList.append( userc.getCommandWord() );
 			capabilitiesList.append( "\n" );
+			break;
 		
 		case WAITING_FOR_PASSWORD:
 			//Minimum capabilities which MUST be listed
-		//	capabilitiesList.append("101 Capability List follows \n");
+			
 			capabilitiesList.append( versc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( this.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( quitc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			
 			//Additional Capabilities listed allowed in specific state client is in currently
 			capabilitiesList.append( userc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( pwrdc.getCommandWord() );
 			capabilitiesList.append( "\n" );
+			break;
 		
 		case NOT_IN_SESSION:
 			//Minimum capabilities which MUST be listed
-		//	capabilitiesList.append("101 Capability List follows \n");
+			//capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( this.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( quitc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			
 			//Additional Capabilities listed allowed in specific state client is in currently
 			capabilitiesList.append( acntc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( lstGmc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( joinc.getCommandWord() );			
 			capabilitiesList.append( "\n" );
+			break;
 			
 		case IN_SESSION_AS_OBSERVER:
 			//Minimum capabilities which MUST be listed
-		//	capabilitiesList.append("101 Capability List follows \n");
+			//capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( this.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( quitc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			
 			//Additional Capabilities listed allowed in specific state client is in currently
 			capabilitiesList.append( joinc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( leavc.getCommandWord() );
 			capabilitiesList.append( "\n" );
+			break;
 			
 		case IN_SESSION_AWAITING_BETS:
 			//Minimum capabilities which MUST be listed
-		//	capabilitiesList.append("101 Capability List follows \n");
+			//capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( this.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( quitc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			
 			//Additional Capabilities listed allowed in specific state client is in currently
 			capabilitiesList.append( betc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( leavc.getCommandWord() );
 			capabilitiesList.append( "\n" );
+			break;
 			
 		case IN_SESSION_BEFORE_YOUR_TURN:
 			//Minimum capabilities which MUST be listed
-		//	capabilitiesList.append("101 Capability List follows \n");
+			//capabilitiesList.append("101 Capability List follows \n");
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( versc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( this.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( quitc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			
 			//Additional Capabilities listed allowed in specific state client is in currently
 			capabilitiesList.append( leavc.getCommandWord() );
 			capabilitiesList.append( "\n" );
+			break;
 			
 		case IN_SESSION_AND_YOUR_TURN:
 			//Minimum capabilities which MUST be listed
-		//	capabilitiesList.append("101 Capability List follows \n");
+			//capabilitiesList.append("101 Capability List follows \n");
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( quitc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			
 			//Additional Capabilities listed allowed in specific state client is in currently
 			capabilitiesList.append( stndc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( hitc.getCommandWord());
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( leavc.getCommandWord() );
 			capabilitiesList.append( "\n" );
+			break;
 			
 		case IN_SESSION_DEALER_BLACKJACK:
 			//Minimum capabilities which MUST be listed
-		//	capabilitiesList.append("101 Capability List follows \n");
+			//capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
@@ -185,11 +220,13 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			//Additional Capabilities listed allowed in specific state client is in currently
 			capabilitiesList.append( leavc.getCommandWord() );
 			capabilitiesList.append( "\n" );
+			break;
 			
 		case IN_SESSION_AFTER_YOUR_TURN:
 			//Minimum capabilities which MUST be listed
-		//	capabilitiesList.append("101 Capability List follows \n");
+			//capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
+			capabilitiesList.append("\n");
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
 			
@@ -200,7 +237,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			
 		case IN_SESSION_SERVER_PROCESSING:
 			//Minimum capabilities which MUST be listed
-		//	capabilitiesList.append("101 Capability List follows \n");
+			//capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
@@ -212,7 +249,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		
 		default:
 			//Minimum capabilities which MUST be listed
-		//	capabilitiesList.append("101 Capability List follows \n");
+			//capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( quitc.getCommandWord() );
