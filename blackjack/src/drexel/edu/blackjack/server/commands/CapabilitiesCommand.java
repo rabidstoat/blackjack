@@ -45,12 +45,12 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		/**Step 8: Generate a response listing the capabilities allowed.*/
 		
 		return 	new ResponseCode( ResponseCode.CODE.CAPABILITIES_FOLLOW,
-				"UsernameCommand.processCommand() List of capabilities allowed in this state \n" 
-				+ this.getCapabilitiesInState( protocol.getState()) ).toString();	
+				"UsernameCommand.processCommand() List of capabilities allowed in state: " +
+				protocol.getState() + "\n" + this.getCapabilitiesInState( protocol.getState()) ).toString();	
 	}
 	
 	
-	/**This method returns a list of Capabilities for the state client is in currently.
+	/**This method returns a list of Capabilities for the state, client is in currently.
 	 * 1. It checks the state client is in currently by passing a BlackjackProtocol.STATE
 	 * parameter to the method.
 	 * 2. It uses an enum switch statement to list minimal (MUST) commands and other commands
@@ -69,8 +69,10 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		
 		String stateName = state.name();
 		state = Enum.valueOf(STATE.class, stateName.toUpperCase());
-		capabilitiesList.append("101 Capability List for state " + state + " follows:\n");
+		
 		switch ( state ) {
+		
+		//capabilitiesList.append("101 Capability List for state " + state +  "follows:\n");
 		
 		/**
 		 * Abbreviations of command names:
@@ -87,18 +89,16 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		 * UsernameCommand userc
 		 * VersionCommand versc 
 		 */
- 
+		
 		case WAITING_FOR_USERNAME: 
 			
 			//Minimum capabilities which MUST be listed
-			//capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append( "\n" );
 			capabilitiesList.append( this.getCommandWord() );
 			capabilitiesList.append( "\n" );
 			capabilitiesList.append( quitc.getCommandWord() );
 			capabilitiesList.append( "\n" );
-			
 			
 			//Additional Capabilities listed allowed in specific state client is in currently
 			capabilitiesList.append( userc.getCommandWord() );
@@ -214,8 +214,11 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			//Minimum capabilities which MUST be listed
 			//capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( this.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( quitc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			
 			//Additional Capabilities listed allowed in specific state client is in currently
 			capabilitiesList.append( leavc.getCommandWord() );
@@ -228,8 +231,9 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			capabilitiesList.append( versc.getCommandWord() );
 			capabilitiesList.append("\n");
 			capabilitiesList.append( this.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( quitc.getCommandWord() );
-			
+			capabilitiesList.append( "\n" );
 			//Additional Capabilities listed allowed in specific state client is in currently
 			capabilitiesList.append( leavc.getCommandWord() );
 			capabilitiesList.append( "\n" );
@@ -239,9 +243,11 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			//Minimum capabilities which MUST be listed
 			//capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( this.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( quitc.getCommandWord() );
-			
+			capabilitiesList.append( "\n" );
 			//Additional Capabilities listed allowed in specific state client is in currently
 			capabilitiesList.append( leavc.getCommandWord() );
 			capabilitiesList.append( "\n" );
@@ -251,8 +257,12 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			//Minimum capabilities which MUST be listed
 			//capabilitiesList.append("101 Capability List follows \n");
 			capabilitiesList.append( versc.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( this.getCommandWord() );
+			capabilitiesList.append( "\n" );
 			capabilitiesList.append( quitc.getCommandWord() );
+			break; 
+			
 			
 		}
 		
@@ -305,8 +315,8 @@ public class CapabilitiesCommand extends BlackjackCommand {
 	 * The Commands
 	 * ***********************************************************************************/
 	
-	AccountCommand acntc = new AccountCommand();
-	BetCommand betc = new BetCommand();
+		AccountCommand acntc = new AccountCommand();
+		BetCommand betc = new BetCommand();
     	HitCommand hitc = new HitCommand();
     	JoinSessionCommand joinc = new JoinSessionCommand();
     	LeaveSessionCommand leavc = new LeaveSessionCommand();
@@ -316,11 +326,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
     	StandCommand stndc = new StandCommand();
     	UnknownCommand uknwc = new UnknownCommand();
     	UsernameCommand userc = new UsernameCommand();
-	VersionCommand versc = new VersionCommand();
-	
-	
-	
-	
+    	VersionCommand versc = new VersionCommand();
 	
 
 }
