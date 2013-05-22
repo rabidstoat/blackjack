@@ -14,8 +14,28 @@ public class CapabilitiesCommand extends BlackjackCommand {
 	private static final String COMMAND_WORD = "CAPABILITIES";
 	
 	Set<STATE> validStates = null;
-
-	/**@param protocol The protocol connection that made that
+	
+	/*************************************************************************************
+	 * The BlackjackCommand subclasses have a getValidStates() method each, with the 
+	 * set of valid states in which the command can be called. 
+	 * ***********************************************************************************/
+	
+		Set<STATE> acntc = new AccountCommand().getValidStates();
+		Set<STATE> betc = new BetCommand().getValidStates();
+    	Set<STATE> hitc = new HitCommand().getValidStates();
+    	Set<STATE> joinc = new JoinSessionCommand().getValidStates();
+    	Set<STATE> leavc = new LeaveSessionCommand().getValidStates();
+    	Set<STATE> lstGmc = new ListgamesCommand().getValidStates();
+    	Set<STATE> pwrdc = new PasswordCommand().getValidStates();
+    	Set<STATE> quitc = new QuitCommand().getValidStates();
+    	Set<STATE> stndc = new StandCommand().getValidStates();
+    	Set<STATE> uknwc = new UnknownCommand().getValidStates();
+    	Set<STATE> userc = new UsernameCommand().getValidStates();
+    	Set<STATE> versc = new VersionCommand().getValidStates();
+    	
+    /********************************************************************************/
+	
+    /**@param protocol The protocol connection that made that
 	 * command. From there the user, state, and all sorts of
 	 * good information can be found.
 	 * @param cm Information derived from the client associated
@@ -47,67 +67,40 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		
 		return 	new ResponseCode( ResponseCode.CODE.CAPABILITIES_FOLLOW,
 				"UsernameCommand.processCommand() List of capabilities allowed in state: " +
-				protocol.getState() + "\n" + this.getCapabilitiesInState( protocol.getState()) ).toString();	
+				"\n" + this.getCapabilitiesInState( protocol.getState()) ).toString();	
 	}
 	
-	
-	/**This method returns a list of Capabilities for the state, client is in currently.
-	 * 1. It checks the state client is in currently by passing a BlackjackProtocol.STATE
-	 * parameter to the method.
-	 * 2. It uses an enum switch statement to list minimal (MUST) commands and other commands
-	 * allowed in each state.
-	 * 3. It returns the commands allowed in the state the client is curently.
-	 * 4. Default state is the minimal (MUST) list as per BJP,v_1.0 p.31.   
-	 * @param clientState The state client is in currently.
-	 * @return capabilitiesList The list of all allowed commands in client state is in.*/
-	
-	/*************************************************************************************
-	 * The Commands
-	 * ***********************************************************************************/
-	
-	AccountCommand acntc = new AccountCommand();
-	BetCommand betc = new BetCommand();
-    	HitCommand hitc = new HitCommand();
-    	JoinSessionCommand joinc = new JoinSessionCommand();
-    	LeaveSessionCommand leavc = new LeaveSessionCommand();
-    	ListgamesCommand lstGmc = new ListgamesCommand();
-    	PasswordCommand pwrdc = new PasswordCommand();
-    	QuitCommand quitc = new QuitCommand();
-    	StandCommand stndc = new StandCommand();
-    	UnknownCommand uknwc = new UnknownCommand();
-    	UsernameCommand userc = new UsernameCommand();
-    	VersionCommand versc = new VersionCommand();
-	
-	
-    	/**@param the current client
+    	/**@param clientState the current client state
     	 * @return theCommand the commands allowed in client's current state.*/
-    	public HashSet<String> getCapabilitiesInState(BlackjackProtocol.STATE clientState) {
+    	
+		public HashSet<String> getCapabilitiesInState(BlackjackProtocol.STATE clientState) {
 		
-    		/**This set holds the next getValidStates() set belonging to a
-    		 * specific BlackjackCommand subclass. */
+    		/**This set used to hold the getValidStates() set belonging to a
+    		 * specific BlackjackCommand subclass, during iteration. */
     		
     		Set<STATE> aSetOfAllowedStates;
     		
-    		/**The hash set returns the commands allowed in each state*/
+    		/**HashSet theCommand returns the commands allowed in each state*/
     		
-    		HashSet<String> theCommand = new HashSet<String>();
+    		HashSet<String> theCommands = new HashSet<String>();
     		
-    		/**This array holds a List of all 'getValidStates() methods of all commands  */
+    	/**HashSet commandAllGetValidStates holds a set of all 'getValidStates() 
+    	* methods of all commands  */
 		
-		ArrayList<Set<STATE>> commandAllGetValidStates = new ArrayList<Set<STATE>>();
+		HashSet<Set<STATE>> commandAllGetValidStates = new HashSet<Set<STATE>>();
 		
-		commandAllGetValidStates.add( acntc.getValidStates() );
-		commandAllGetValidStates.add( betc.getValidStates() );
-		commandAllGetValidStates.add( hitc.getValidStates() );
-		commandAllGetValidStates.add( joinc.getValidStates() );
-		commandAllGetValidStates.add( leavc.getValidStates() );
-		commandAllGetValidStates.add( lstGmc.getValidStates() );
-		commandAllGetValidStates.add( pwrdc.getValidStates() );
-		commandAllGetValidStates.add( quitc.getValidStates() );
-		commandAllGetValidStates.add( stndc.getValidStates() );
-		commandAllGetValidStates.add( uknwc.getValidStates() );
-		commandAllGetValidStates.add( userc.getValidStates() );
-		commandAllGetValidStates.add( versc.getValidStates() );
+		commandAllGetValidStates.add( acntc );
+		commandAllGetValidStates.add( betc );
+		commandAllGetValidStates.add( hitc );
+		commandAllGetValidStates.add( joinc );
+		commandAllGetValidStates.add( leavc );
+		commandAllGetValidStates.add( lstGmc );
+		commandAllGetValidStates.add( pwrdc );
+		commandAllGetValidStates.add( quitc );
+		commandAllGetValidStates.add( stndc );
+		commandAllGetValidStates.add( uknwc );
+		commandAllGetValidStates.add( userc );
+		commandAllGetValidStates.add( versc );
 		
 		Iterator<Set<STATE>> itr1 = commandAllGetValidStates.iterator();
 		
@@ -115,9 +108,10 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			
 			aSetOfAllowedStates = itr1.next();
 		
-			/**Now iterate through this set of states in this getValidStates() returned set;
+			/**Iterate through this set of states in the getValidStates() returned set;
 			 * If one of these states -from this command's getValidStates() set-
 			 *  is equal to the client state then add this command to the hash set. 
+			 *  
 			 *  Iterate through the whole List of getValidStates() methods
 			 *  from all commands and find which commands are allowed in this state. Add then
 			 *  finally, return the commands allowed in the state client is in.
@@ -142,10 +136,10 @@ public class CapabilitiesCommand extends BlackjackCommand {
 				
 			}
 			//else add this command to the string builder to be returned.
-			theCommand.add(this.toString());		
+			theCommands.add(this.toString());		
 		}
 	}
-		return theCommand;
+		return theCommands;
   }	
 
 	@Override
