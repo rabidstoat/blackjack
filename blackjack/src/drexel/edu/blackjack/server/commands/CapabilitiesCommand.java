@@ -20,8 +20,8 @@ public class CapabilitiesCommand extends BlackjackCommand {
 	 * set of valid states in which the command can be called. 
 	 * ***********************************************************************************/
 	
-		Set<STATE> acntc = new AccountCommand().getValidStates();
-		Set<STATE> betc = new BetCommand().getValidStates();
+	Set<STATE> acntc = new AccountCommand().getValidStates();
+	Set<STATE> betc = new BetCommand().getValidStates();
     	Set<STATE> hitc = new HitCommand().getValidStates();
     	Set<STATE> joinc = new JoinSessionCommand().getValidStates();
     	Set<STATE> leavc = new LeaveSessionCommand().getValidStates();
