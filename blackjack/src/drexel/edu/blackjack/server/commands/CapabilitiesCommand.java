@@ -85,7 +85,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
     		HashSet<String> theCommands = new HashSet<String>();
     		
     	/**HashSet commandAllGetValidStates holds a set of all 'getValidStates() 
-    	* methods of all commands  */
+    	* methods of all commands */
 		
 		HashSet<Set<STATE>> commandAllGetValidStates = new HashSet<Set<STATE>>();
 		
