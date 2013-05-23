@@ -80,7 +80,6 @@ public class ClientInputFromServerThread extends Thread {
 	 * This is the meat of the thread, the run() method
 	 *********************************************************/
 	
-	// TODO: Handle multi-line messages
 	@Override
 	public void run() {
 		
