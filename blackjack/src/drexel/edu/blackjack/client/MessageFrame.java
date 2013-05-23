@@ -52,7 +52,9 @@ public class MessageFrame extends JFrame implements MessagesFromServerListener, 
 		// Document goes in a text pane
 		JTextPane textPane = new JTextPane(doc)
 		{
-		    public boolean getScrollableTracksViewportWidth()
+			private static final long serialVersionUID = -6439520365442219830L;
+
+			public boolean getScrollableTracksViewportWidth()
 		    {
 		        return getUI().getPreferredSize(this).width <= getParent().getSize().width;
 		    }
