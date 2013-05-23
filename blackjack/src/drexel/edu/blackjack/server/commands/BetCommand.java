@@ -75,10 +75,13 @@ public class BetCommand extends BlackjackCommand {
 
 	@Override
 	public Set<STATE> getValidStates() {
-		validStates = new HashSet<STATE>();
+		
+		if( validStates == null ) {
+			validStates = new HashSet<STATE>();
 
-		//States where Bet command is allowed
-		validStates.add(STATE.IN_SESSION_AWAITING_BETS);
+			//States where Bet command is allowed
+			validStates.add(STATE.IN_SESSION_AWAITING_BETS);
+		}
 		
 		return validStates;
 	}

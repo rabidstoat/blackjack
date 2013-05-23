@@ -15,6 +15,8 @@ public class LeaveSessionCommand extends BlackjackCommand {
 
 	private static final String COMMAND_WORD = "LEAVESESSION";
 
+	private Set<STATE> validStates = null;
+
 	public String processCommand(BlackjackProtocol protocol, CommandMetadata cm) {
 		// Step 0: If either object is null, it's an internal error
 		if (protocol == null || cm == null) {
@@ -92,15 +94,18 @@ public class LeaveSessionCommand extends BlackjackCommand {
 
 	@Override
 	public Set<STATE> getValidStates() {
-		Set<STATE> validStates = new HashSet<STATE>();
-		// Available in any of the IN_SESSION states
-		validStates.add( STATE.IN_SESSION_AFTER_YOUR_TURN );
-		validStates.add( STATE.IN_SESSION_AND_YOUR_TURN );
-		validStates.add( STATE.IN_SESSION_AS_OBSERVER );
-		validStates.add( STATE.IN_SESSION_AWAITING_BETS );
-		validStates.add( STATE.IN_SESSION_BEFORE_YOUR_TURN );
-		validStates.add( STATE.IN_SESSION_DEALER_BLACKJACK );
-		validStates.add( STATE.IN_SESSION_SERVER_PROCESSING);
+		
+		if( validStates == null ) {
+			validStates = new HashSet<STATE>();
+			// Available in any of the IN_SESSION states
+			validStates.add( STATE.IN_SESSION_AFTER_YOUR_TURN );
+			validStates.add( STATE.IN_SESSION_AND_YOUR_TURN );
+			validStates.add( STATE.IN_SESSION_AS_OBSERVER );
+			validStates.add( STATE.IN_SESSION_AWAITING_BETS );
+			validStates.add( STATE.IN_SESSION_BEFORE_YOUR_TURN );
+			validStates.add( STATE.IN_SESSION_DEALER_BLACKJACK );
+			validStates.add( STATE.IN_SESSION_SERVER_PROCESSING);
+		}
 		return validStates;
 	}
 

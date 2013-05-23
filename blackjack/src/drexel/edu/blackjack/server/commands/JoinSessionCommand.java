@@ -19,6 +19,8 @@ public class JoinSessionCommand extends BlackjackCommand {
 
 	private static final String COMMAND_WORD = "JOINSESSION";
 
+	private Set<STATE> validStates = null;
+
 	public String processCommand(BlackjackProtocol protocol, CommandMetadata cm) {
 
 		// Step 0: If either object is null, it's an internal error
@@ -114,9 +116,11 @@ public class JoinSessionCommand extends BlackjackCommand {
 
 	@Override
 	public Set<STATE> getValidStates() {
-		// Only valid if NOT_IN_SESSION
-		Set<STATE> validStates = new HashSet<STATE>();
-		validStates.add( STATE.NOT_IN_SESSION );
+		if( validStates == null ) {
+			// Only valid if NOT_IN_SESSION
+			validStates = new HashSet<STATE>();
+			validStates.add( STATE.NOT_IN_SESSION );
+		}
 		return validStates;
 	}
 
