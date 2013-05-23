@@ -2,10 +2,9 @@ package drexel.edu.blackjack.client.out;
 
 /**
  * This is an interface that classes which respond to messages
- * from the server need to implement. A class is able to add
- * themselves as a listener for certain response codes. When
- * they do, they get notified when the server sends a response
- * matching that code.
+ * destined to the server need to implement. A class is able to add
+ * themselves as a listener for these messages. When
+ * they do, they get notified when a message is sent to the server.
  * 
  * @author Jennifer
  *
