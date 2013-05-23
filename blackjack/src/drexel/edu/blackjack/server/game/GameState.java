@@ -37,10 +37,12 @@ public class GameState {
 			UserMetadata metadata = departedPlayer.getUserMetadata();
 			String updateString = (metadata == null ? "Some User" : metadata.getFullname() ) + " left the game.";
 
-			// And then send it to all the remaining players
-			for( User remainingPlayer : remainingPlayers ) {
-				ResponseCode code = new ResponseCode( ResponseCode.CODE.INFORMATIVE_MESSAGE, updateString );
-				remainingPlayer.sendMessage( code );
+			// And then send it to all the remaining players; better synchronize
+			synchronized( remainingPlayers ) {
+				for( User remainingPlayer : remainingPlayers ) {
+					ResponseCode code = new ResponseCode( ResponseCode.CODE.INFORMATIVE_MESSAGE, updateString );
+					remainingPlayer.sendMessage( code );
+				}
 			}
 		}
 	}
@@ -64,9 +66,11 @@ public class GameState {
 			String updateString = (metadata == null ? "?Some User?" : metadata.getFullname() ) + " joined the game.";
 
 			// And then send it to all the remaining players
-			for( User remainingPlayer : otherPlayers ) {
-				ResponseCode code = new ResponseCode( ResponseCode.CODE.INFORMATIVE_MESSAGE, updateString );
-				remainingPlayer.sendMessage( code );
+			synchronized( otherPlayers ) {
+				for( User remainingPlayer : otherPlayers ) {
+					ResponseCode code = new ResponseCode( ResponseCode.CODE.INFORMATIVE_MESSAGE, updateString );
+					remainingPlayer.sendMessage( code );
+				}
 			}
 		}
 	}	
