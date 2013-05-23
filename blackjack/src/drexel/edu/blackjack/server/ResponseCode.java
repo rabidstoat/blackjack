@@ -73,8 +73,16 @@ public class ResponseCode {
 		UNSUPPORTED_COMMAND( 501, "That command is not supported on this server." ),
 		SYNTAX_ERROR( 502, "That command had a syntax error." ),	
 		
-		INFORMATIVE_MESSAGE( 600, null ),
-		USER_RESPONSE_NEEDED_MESSAGE( 601, null );
+		PLAYER_JOINED( 620, null ),
+		PLAYER_LEFT( 621, null ),
+		PLAYER_BET( 622, null ),
+		PLAYER_ACTION( 623, null ),
+		CARD_DEALT(624, null ),
+		UPDATED_HAND( 625, null),
+		GAME_OUTCOME( 626, null ),
+		
+		REQUEST_FOR_BET( 720, "What amount do you wish to bet?" ),
+		REQUEST_FOR_GAME_ACTION( 721, "What game action would you like to take?" );
 
 		// 3-digit response code
 		private final int code;
@@ -440,6 +448,28 @@ public class ResponseCode {
 	public boolean isCommandComplete() {
 		
 		return code != null && code >= 200 && code < 300;
+		
+	}
+
+	/** 
+	 * A game updated code is in the 6xx range
+	 * 
+	 * @return True if it represents a game update message, else false
+	 */
+	public boolean isGameUpate() {
+		
+		return code != null && code >= 600 && code < 700;
+		
+	}
+
+	/** 
+	 * A game action request command is in the 7xx range
+	 * 
+	 * @return True if it represents a game action request, else false
+	 */
+	public boolean isGameActionRequest() {
+		
+		return code != null && code >= 700 && code < 800;
 		
 	}
 
