@@ -84,7 +84,10 @@
     <target depends="compile" name="run-client-local">
         <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
     	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
-            <classpath refid="blackjack.classpath"/>
+			<permissions>
+				<grant class="java.security.AllPermission"/>
+			</permissions>            
+			<classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="SEVERE"/>
     		<sysproperty key="ShowMessages" value="true"/>
     	</java>
@@ -95,7 +98,10 @@
     <target depends="compile" name="run-client-local-warning">
         <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
     	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
-            <classpath refid="blackjack.classpath"/>
+			<permissions>
+				<grant class="java.security.AllPermission"/>
+			</permissions>            
+    	    <classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="WARNING"/>
     		<sysproperty key="ShowMessages" value="true"/>
     	</java>
@@ -106,7 +112,10 @@
     <target depends="compile" name="run-client-local-info">
         <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
     	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
-            <classpath refid="blackjack.classpath"/>
+			<permissions>
+				<grant class="java.security.AllPermission"/>
+			</permissions>            
+    	    <classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="INFO"/>
     		<sysproperty key="ShowMessages" value="true"/>
     	</java>
