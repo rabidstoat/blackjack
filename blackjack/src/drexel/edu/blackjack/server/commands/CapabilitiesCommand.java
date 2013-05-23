@@ -15,25 +15,11 @@ public class CapabilitiesCommand extends BlackjackCommand {
 	
 	Set<STATE> validStates = null;
 	
-	/*************************************************************************************
-	 * The BlackjackCommand subclasses have a getValidStates() method each, with the 
-	 * set of valid states in which the command can be called. 
-	 * ***********************************************************************************/
+	StringBuilder capabilities = new StringBuilder();
 	
-	Set<STATE> acntc = new AccountCommand().getValidStates();
-	Set<STATE> betc = new BetCommand().getValidStates();
-    	Set<STATE> hitc = new HitCommand().getValidStates();
-    	Set<STATE> joinc = new JoinSessionCommand().getValidStates();
-    	Set<STATE> leavc = new LeaveSessionCommand().getValidStates();
-    	Set<STATE> lstGmc = new ListgamesCommand().getValidStates();
-    	Set<STATE> pwrdc = new PasswordCommand().getValidStates();
-    	Set<STATE> quitc = new QuitCommand().getValidStates();
-    	Set<STATE> stndc = new StandCommand().getValidStates();
-    	Set<STATE> uknwc = new UnknownCommand().getValidStates();
-    	Set<STATE> userc = new UsernameCommand().getValidStates();
-    	Set<STATE> versc = new VersionCommand().getValidStates();
-    	
-    /********************************************************************************/
+	public CapabilitiesCommand() {	
+		
+	}
 	
     /**@param protocol The protocol connection that made that
 	 * command. From there the user, state, and all sorts of
@@ -48,99 +34,54 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		//Step 0: If either object is null, it's an internal error
 		if (protocol == null || cm == null) {
 			return new ResponseCode( ResponseCode.CODE.INTERNAL_ERROR,
-				"UsernameCommand.processCommand() received null arguments").toString();
+				"CapabilitiesCommand.processCommand() received null arguments").toString();
 		}
 
 		/**Step 1-2: Return an error if not in valid state for CAPABILITIES command:
 		 * These steps are ignored in this command; a client may execute this command
-		 * at any state in the protocol, including the non-authenticated state.  */
+		 * at any state in the protocol, including the non-authenticated state.  */	
 		
-		/**Step 3-4* /
-		
-		
-		/**Step 7: Update state: Send client back to the state client is currently */
+		//Step 7: Update state: Send client back to the state client is currently
 		
 		protocol.setState(protocol.getState());
 		
-		
 		/**Step 8: Generate a response listing the capabilities allowed.*/
 		
-		return 	new ResponseCode( ResponseCode.CODE.CAPABILITIES_FOLLOW,
-				"UsernameCommand.processCommand() List of capabilities allowed in state: " +
-				"\n" + this.getCapabilitiesInState( protocol.getState()) ).toString();	
-	}
-	
-    	/**@param clientState the current client state
-    	 * @return theCommand the commands allowed in client's current state.*/
-    	
-		public HashSet<String> getCapabilitiesInState(BlackjackProtocol.STATE clientState) {
+		// 1. Get set of all valid commands, in any state
+		Set<BlackjackCommand> commands = protocol.getAllValidCommands();
 		
-    		/**This set used to hold the getValidStates() set belonging to a
-    		 * specific BlackjackCommand subclass, during iteration. */
-    		
-    		Set<STATE> aSetOfAllowedStates;
-    		
-    		/**HashSet theCommand returns the commands allowed in each state*/
-    		
-    		HashSet<String> theCommands = new HashSet<String>();
-    		
-    	/**HashSet commandAllGetValidStates holds a set of all 'getValidStates() 
-    	* methods of all commands */
+		// 2. Get the current state
+		STATE currentState = protocol.getState(); 
+		 
+		BlackjackCommand command;
+		 
+		STATE state;
 		
-		HashSet<Set<STATE>> commandAllGetValidStates = new HashSet<Set<STATE>>();
-		
-		commandAllGetValidStates.add( acntc );
-		commandAllGetValidStates.add( betc );
-		commandAllGetValidStates.add( hitc );
-		commandAllGetValidStates.add( joinc );
-		commandAllGetValidStates.add( leavc );
-		commandAllGetValidStates.add( lstGmc );
-		commandAllGetValidStates.add( pwrdc );
-		commandAllGetValidStates.add( quitc );
-		commandAllGetValidStates.add( stndc );
-		commandAllGetValidStates.add( uknwc );
-		commandAllGetValidStates.add( userc );
-		commandAllGetValidStates.add( versc );
-		
-		Iterator<Set<STATE>> itr1 = commandAllGetValidStates.iterator();
-		
-		while( itr1.hasNext() ) {
+		//Iterate through all valid blackjack commands. 
+		Iterator<BlackjackCommand> itr = commands.iterator();
+		while( itr.hasNext() ) {
+			command = itr.next();
 			
-			aSetOfAllowedStates = itr1.next();
-		
-			/**Iterate through this set of states in the getValidStates() returned set;
-			 * If one of these states -from this command's getValidStates() set-
-			 *  is equal to the client state then add this command to the hash set. 
-			 *  
-			 *  Iterate through the whole List of getValidStates() methods
-			 *  from all commands and find which commands are allowed in this state. Add then
-			 *  finally, return the commands allowed in the state client is in.
-			 **/
+			//Get the states in which command is valid
+			Set<STATE> stateSet = command.getValidStates();
 			
-			//String theState takes the next state value contained in allowedCommandStates set.
-			String theState;
-		
-			Iterator<STATE> itr2 = aSetOfAllowedStates.iterator();
-			while( itr2.hasNext() ) {
-			theState = itr2.next().toString();
-			
-			//The string builder that will add the command if one of the states-allowed found is equal
-			//to the clientState passed in to the method.
-			
-			
-			int compareClientState = clientState.toString().compareTo(theState.toString());
-			
-			//If the strings are not equal move to next state in set and compare.
-			if(!(compareClientState == 0) ) {
-				itr2.next();
+			//Iterate through the states valid for the command in current iteration
+			Iterator<STATE> itr2 = stateSet.iterator();
+			state = itr2.next();
+			//If the set of states contains the current state
+			if(state.equals(currentState)) {
 				
+				//append to string builder:the command word, a space, and any parameters. 
+				capabilities.append( command.getCommandWord() + " " + command.getRequiredParameterNames());
+						
 			}
-			//else add this command to the string builder to be returned.
-			theCommands.add(this.toString());		
+			
 		}
+			
+		return 	new ResponseCode( ResponseCode.CODE.CAPABILITIES_FOLLOW,
+				"CapabilitiesCommand.processCommand() List of capabilities allowed in state: " +
+				"\n" + capabilities.toString()).toString();	
 	}
-		return theCommands;
-  }	
 
 	@Override
 	public String getCommandWord() {
