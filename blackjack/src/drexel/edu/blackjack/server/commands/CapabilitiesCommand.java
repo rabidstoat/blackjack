@@ -47,12 +47,13 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		// 1. Get set of all valid commands, in any state
 		Set<BlackjackCommand> commands = protocol.getAllValidCommands();
 		
+		
 		// 2. Get the current state
 		STATE currentState = protocol.getState(); 
 		 
 		BlackjackCommand command;
 		 
-		STATE state;
+		//STATE state;
 		
 		//Iterate through all valid blackjack commands. 
 		Iterator<BlackjackCommand> itr = commands.iterator();
@@ -62,17 +63,23 @@ public class CapabilitiesCommand extends BlackjackCommand {
 			//Get the states in which command is valid
 			Set<STATE> stateSet = command.getValidStates();
 			
+			if(stateSet.contains(currentState)){
+				//append to string builder:the command word, a space, and any parameters. 
+				capabilities.append( command.getCommandWord() + " " + command.getRequiredParameterNames());
+				}
+			
+			/**
 			//Iterate through the states valid for the command in current iteration
 			Iterator<STATE> itr2 = stateSet.iterator();
+			while( itr2.hasNext() ) {
 			state = itr2.next();
 			//If the set of states contains the current state
 			if(state.equals(currentState)) {
 				
 				//append to string builder:the command word, a space, and any parameters. 
-				capabilities.append( command.getCommandWord() + " " + command.getRequiredParameterNames());
-						
+				capabilities.append( command.getCommandWord() + " " + command.getRequiredParameterNames());			
 			}
-			
+		   } */
 		}
 			
 		return 	new ResponseCode( ResponseCode.CODE.CAPABILITIES_FOLLOW,
