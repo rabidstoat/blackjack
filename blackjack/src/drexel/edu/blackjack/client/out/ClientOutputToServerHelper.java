@@ -60,10 +60,12 @@ public class ClientOutputToServerHelper extends Thread {
 		
 		// Any listeners?
 		if( listeners != null ) {
-			synchronized( listeners ) {
-				for( MessagesToServerListener listener : listeners ) {
-					listener.sendingToServer( text );
-				}
+			Object[] copy;
+			synchronized( this ) {
+				copy = listeners.toArray();
+			}
+			for( int i = 0; i < copy.length; i++ ) {
+				((MessagesToServerListener)copy[i]).sendingToServer( text );
 			}
 		}
 		
@@ -173,10 +175,7 @@ public class ClientOutputToServerHelper extends Thread {
 	 * @param listener The listener
 	 * @return True if added okay, false otherwise
 	 */
-	public boolean addListener( MessagesToServerListener listener ) {
-		if( listeners == null ) {
-			listeners = new HashSet<MessagesToServerListener>();
-		}
+	synchronized public boolean addListener( MessagesToServerListener listener ) {
 		return listeners.add(listener);
 	}
 	
@@ -185,10 +184,7 @@ public class ClientOutputToServerHelper extends Thread {
 	 * @param listener The listener
 	 * @return True if removed okay, false otherwise
 	 */
-	public boolean removeListener( MessagesToServerListener listener ) {
-		if( listeners == null ) {
-			listeners = new HashSet<MessagesToServerListener>();
-		}
+	synchronized public boolean removeListener( MessagesToServerListener listener ) {
 		return listeners.remove(listener);
 	}
 	
