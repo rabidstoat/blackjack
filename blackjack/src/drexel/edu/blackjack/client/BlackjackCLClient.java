@@ -62,6 +62,9 @@ public class BlackjackCLClient {
 	// Finally, the port that the server will run on
 	private static final int PORT						= 55555;
 	
+	// This system property is set true if we should show the message frae
+	private static final String SHOW_MESSAGES			= "ShowMessages";
+	
 	// Our logger
 	private final static Logger LOGGER = BlackjackLogger.createLogger(BlackjackCLClient.class .getName()); 
 	
@@ -146,6 +149,12 @@ public class BlackjackCLClient {
 
             // Set the screen to the login input screen
             setScreen( LoginInputScreen.getDefaultScreen( this, input, output ) );
+            
+            // Set up the messages frame
+            if( "true".equals(System.getProperty(SHOW_MESSAGES)) ) {
+            	MessageFrame.getDefaultMessageFrame().setLocationRelativeTo(null);
+            	MessageFrame.getDefaultMessageFrame().setVisible(true);
+            }
 
             // Loop through as long as we have input
             String fromUser = stdIn.readLine();

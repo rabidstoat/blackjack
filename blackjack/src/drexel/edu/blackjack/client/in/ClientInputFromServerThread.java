@@ -1,21 +1,15 @@
 package drexel.edu.blackjack.client.in;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.text.DefaultCaret;
-
 import drexel.edu.blackjack.client.BlackjackCLClient;
+import drexel.edu.blackjack.client.MessageFrame;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
@@ -32,18 +26,12 @@ public class ClientInputFromServerThread extends Thread {
 	/**********************************************************
 	 * Local variables go here
 	 *********************************************************/
-	
-	// A property that is set to "true" if we should display a window with message traffic
-	private final String SHOW_MESSAGE_TRAFFIC 	= "ShowMessages";
-	
-	// If we're showing message traffic, do so in this window....
-	private JTextArea textArea = null;
-	
+
 	// Need to keep track of what we're reading input from
 	private BufferedReader reader = null;
 
-	// Only one listener at a time
-	private MessagesFromServerListener defaultListener = null;
+	// Multiple listeners
+	private Set<MessagesFromServerListener> listeners = null;
 	
 	// Our main client, who we notify if the socket connection closes
 	private BlackjackCLClient blackjackClient = null;
@@ -75,12 +63,9 @@ public class ClientInputFromServerThread extends Thread {
 		// Record the listener and client
 		this.blackjackClient = blackjackClient;
 		
-		// If they set a certain system property to true, put up a window that
-		// show all message traffic
-		String showMessageTraffic = System.getProperty( SHOW_MESSAGE_TRAFFIC );
-		if( showMessageTraffic != null && showMessageTraffic.equalsIgnoreCase("true") ) {
-			createMessageTrafficWindow();
-		}
+		// A listener for message traffic
+		listeners = new HashSet<MessagesFromServerListener>();
+		addListener( MessageFrame.getDefaultMessageFrame() );
 		
 		// Create a reader for the socket
 		try {
@@ -112,13 +97,6 @@ public class ClientInputFromServerThread extends Thread {
 					// If we're debuging
 					LOGGER.info( "<<<< " + inputLine );
 					
-					// If we're logging
-					if( textArea != null ) {
-						SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd hh:mm:ss");
-						textArea.append( "[" + sdf.format( new Date() ) + "] " + inputLine );
-						textArea.append("\n" );
-					}
-
 					// What we due depends on if we're processing a multiline message or not
 					if( this.processingMultilineMessage ) {
 						// If we ARE, then we keep appending to the multi-line message
@@ -127,7 +105,7 @@ public class ClientInputFromServerThread extends Thread {
 							ResponseCode code = ResponseCode.getCodeFromString( multilineMessage.toString() );
 							processingMultilineMessage = false;
 							multilineMessage = null;
-							deliverMessage( code );
+							deliverMessageFromServer( code );
 						} else {
 							multilineMessage.append( "\n" );
 							multilineMessage.append( inputLine );
@@ -143,7 +121,7 @@ public class ClientInputFromServerThread extends Thread {
 							multilineMessage = new StringBuilder( inputLine );
 							processingMultilineMessage = true;
 						} else {
-							deliverMessage( code );
+							deliverMessageFromServer( code );
 						}
 					}
 					
@@ -189,22 +167,22 @@ public class ClientInputFromServerThread extends Thread {
 	 * @return True if delivered properly to at least one recipient,
 	 * false otherwise
 	 */
-	private boolean deliverMessage(ResponseCode code) {
+	private boolean deliverMessageFromServer(ResponseCode code) {
 		
-		// And that someone is listening
-		if( defaultListener == null ) {
-			LOGGER.severe( "Internal error, no current default listener in ClientInputFromServerThread." );
-			return false;
-		}
-		
-		// Now, create the response code from the string
-		if( code == null || code.getCode() == null ) {
-			// This is a problem! It means the input wasn't valid
-			LOGGER.severe( "Received unrecognized input from the server: " + code );
-			return false;
-		} else if( defaultListener != null ) {
-			// And send to the non-null listener
-			defaultListener.receivedMessage( code );
+		if( listeners != null && listeners.size() > 0 ) {
+			// Now, create the response code from the string
+			if( code == null || code.getCode() == null ) {
+				// This is a problem! It means the input wasn't valid
+				LOGGER.severe( "Received unrecognized input from the server: " + code );
+				return false;
+			} else {
+				// And send to the listeners
+				synchronized( listeners ) {
+					for( MessagesFromServerListener listener : listeners ) {
+						listener.receivedMessage( code );
+					}
+				}
+			}
 		}
 		
 		// If we get this far, it must have worked
@@ -212,30 +190,21 @@ public class ClientInputFromServerThread extends Thread {
 	}
 
 	/**
-	 * Creates a JFrame for printing user messages
+	 * Register a listener
+	 * @param listener Who to register
+	 * @return True if added successfully, false otherwise
 	 */
-	private void createMessageTrafficWindow() {
-		
-		JFrame frame = new JFrame( "Incoming Client Messages" );
-		frame.setPreferredSize( new Dimension(600,400 ) );
-		frame.setLayout( new BorderLayout(5,5) );
-		textArea = new JTextArea();
-		textArea.setEditable(false);
-		JScrollPane pane = new JScrollPane( textArea );
-		DefaultCaret caret = (DefaultCaret)textArea.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-		frame.add( pane );
-		frame.setLocationRelativeTo( null );
-		frame.pack();
-		frame.setVisible( true );
-		
+	public boolean addListener(MessagesFromServerListener listener) {
+		return listeners.add( listener );
 	}
 
 	/**
-	 * @param defaultListener the defaultListener to set
+	 * Unregister a listener
+	 * @param listener Who to unregister
+	 * @return True if removed successfully, false otherwise
 	 */
-	public void setDefaultListener(MessagesFromServerListener defaultListener) {
-		this.defaultListener = defaultListener;
+	public boolean removeListener(MessagesFromServerListener listener) {
+		return listeners.remove( listener );
 	}
 
 }

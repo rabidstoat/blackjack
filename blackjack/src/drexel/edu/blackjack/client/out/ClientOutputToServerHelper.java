@@ -1,18 +1,13 @@
 package drexel.edu.blackjack.client.out;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
+import drexel.edu.blackjack.client.MessageFrame;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
@@ -25,12 +20,9 @@ public class ClientOutputToServerHelper extends Thread {
 	/**********************************************************
 	 * Local variables go here
 	 *********************************************************/
-	
-	// A property that is set to "true" if we should display a window with message traffic
-	private final String SHOW_MESSAGE_TRAFFIC 	= "ShowMessages";
-	
-	// If we're showing message traffic, do so in this window....
-	private JTextArea textArea = null;
+
+	// For listeners
+	private Set<MessagesToServerListener> listeners = null;
 	
 	// Need to keep track of what we're writing output to
 	private PrintWriter writer = null;
@@ -44,20 +36,17 @@ public class ClientOutputToServerHelper extends Thread {
 
 	public ClientOutputToServerHelper( Socket socket ) {
 		super( "ClientOutputToServerThread" );
+		
+		// Add the message frame as a listener
+		listeners = new HashSet<MessagesToServerListener>();
+		addListener( MessageFrame.getDefaultMessageFrame() );
+		
 		try {
 			writer = new PrintWriter(socket.getOutputStream(), true);
 		} catch (IOException e) {
 			LOGGER.severe( "Had an error trying to open a writer to our established socket." );
 			e.printStackTrace();
-		}
-		
-		// If they set a certain system property to true, put up a window that
-		// show all message traffic
-		String showMessageTraffic = System.getProperty( SHOW_MESSAGE_TRAFFIC );
-		if( showMessageTraffic != null && showMessageTraffic.equalsIgnoreCase("true") ) {
-			createMessageTrafficWindow();
-		}
-		
+		}		
 	}
 
 	/**********************************************************
@@ -68,11 +57,13 @@ public class ClientOutputToServerHelper extends Thread {
 		// In case we're debugging
 		LOGGER.info( ">>>> " + text );
 		
-		// If we're logging
-		if( textArea != null ) {
-			SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd hh:mm:ss");
-			textArea.append( "[" + sdf.format( new Date() ) + "] " + text );
-			textArea.append("\n" );
+		// Any listeners?
+		if( listeners != null ) {
+			synchronized( listeners ) {
+				for( MessagesToServerListener listener : listeners ) {
+					listener.sendingToServer( text );
+				}
+			}
 		}
 		
 		// Can't send a message if we didn't open the writer
@@ -177,22 +168,27 @@ public class ClientOutputToServerHelper extends Thread {
 	}
 	
 	/**
-	 * Creates a JFrame for printing user messages
+	 * Add a listener for messages going out to the server
+	 * @param listener The listener
+	 * @return True if added okay, false otherwise
 	 */
-	private void createMessageTrafficWindow() {
-		
-		JFrame frame = new JFrame( "Outgoing Client Messages" );
-		frame.setPreferredSize( new Dimension(600,400 ) );
-		frame.setLayout( new BorderLayout(5,5) );
-		textArea = new JTextArea();
-		textArea.setEditable(false);
-		JScrollPane pane = new JScrollPane( textArea );
-		frame.add( pane );
-		frame.setLocation(100,100);
-		frame.pack();
-		frame.setVisible( true );
-		
+	public boolean addListener( MessagesToServerListener listener ) {
+		if( listeners == null ) {
+			listeners = new HashSet<MessagesToServerListener>();
+		}
+		return listeners.add(listener);
 	}
-
-
+	
+	/**
+	 * Remove a listener for messages going out to the server
+	 * @param listener The listener
+	 * @return True if removed okay, false otherwise
+	 */
+	public boolean removeListener( MessagesToServerListener listener ) {
+		if( listeners == null ) {
+			listeners = new HashSet<MessagesToServerListener>();
+		}
+		return listeners.remove(listener);
+	}
+	
 }

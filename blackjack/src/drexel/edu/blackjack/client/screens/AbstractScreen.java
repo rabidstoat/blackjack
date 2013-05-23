@@ -116,7 +116,9 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		
 		// If you're activating yourself, set yourself up as the default listener
 		if( isActive ) {
-			clientThread.setDefaultListener( this );
+			clientThread.addListener( this );
+		} else { 
+			clientThread.removeListener( this );
 		}
 		
 		this.isActive = isActive;
