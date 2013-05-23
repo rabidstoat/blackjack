@@ -17,9 +17,6 @@ public class CapabilitiesCommand extends BlackjackCommand {
 	
 	StringBuilder capabilities = new StringBuilder();
 	
-	public CapabilitiesCommand() {	
-		
-	}
 	
     /**@param protocol The protocol connection that made that
 	 * command. From there the user, state, and all sorts of
