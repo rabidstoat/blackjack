@@ -1,6 +1,7 @@
 package drexel.edu.blackjack.server.game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -49,7 +50,7 @@ public class Game {
 	 * @param metadata
 	 */
 	public Game(GameMetadata metadata) {
-		players = new ArrayList<User>();
+		players = Collections.synchronizedList(new ArrayList<User>());
 		state = new GameState();
 		currentPlayer = null;
 		this.metadata = metadata;
