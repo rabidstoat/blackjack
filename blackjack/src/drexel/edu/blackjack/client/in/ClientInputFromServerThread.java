@@ -167,16 +167,16 @@ public class ClientInputFromServerThread extends Thread {
 	 * false otherwise
 	 */
 	private boolean deliverMessageFromServer(ResponseCode code) {
-		
-		if( listeners != null && listeners.size() > 0 ) {
-			// Now, create the response code from the string
-			if( code == null || code.getCode() == null ) {
-				// This is a problem! It means the input wasn't valid
-				LOGGER.severe( "Received unrecognized input from the server: " + code );
-				return false;
-			} else {
-				// And send to the listeners
-				synchronized( listeners ) {
+
+		synchronized( listeners ) {
+			if( listeners != null && listeners.size() > 0 ) {
+				// Now, create the response code from the string
+				if( code == null || code.getCode() == null ) {
+					// This is a problem! It means the input wasn't valid
+					LOGGER.severe( "Received unrecognized input from the server: " + code );
+					return false;
+				} else {
+					// And send to the listeners
 					for( MessagesFromServerListener listener : listeners ) {
 						listener.receivedMessage( code );
 					}
@@ -194,7 +194,13 @@ public class ClientInputFromServerThread extends Thread {
 	 * @return True if added successfully, false otherwise
 	 */
 	public boolean addListener(MessagesFromServerListener listener) {
-		return listeners.add( listener );
+		
+		boolean result;
+		synchronized( listeners ) {
+			result = listeners.add( listener );
+		}
+		return result;
+		
 	}
 
 	/**
@@ -203,7 +209,11 @@ public class ClientInputFromServerThread extends Thread {
 	 * @return True if removed successfully, false otherwise
 	 */
 	public boolean removeListener(MessagesFromServerListener listener) {
-		return listeners.remove( listener );
+		boolean result;
+		synchronized( listeners ) {
+			result = listeners.remove( listener );
+		}
+		return result;
 	}
 
 }
