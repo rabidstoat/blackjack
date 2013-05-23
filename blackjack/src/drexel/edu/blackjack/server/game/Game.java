@@ -1,8 +1,5 @@
 package drexel.edu.blackjack.server.game;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.logging.Logger;
 
 import drexel.edu.blackjack.db.game.GameMetadata;
@@ -34,9 +31,7 @@ public class Game {
 	/*******************************************************************************
 	 * private variables
 	 *****************************************************************************/
-	private List<User> players;
 	private GameState state;
-	private User currentPlayer;
 	private GameMetadata metadata;
 	private final static Logger LOGGER = BlackjackLogger.createLogger(Game.class.getName()); 
 	
@@ -50,10 +45,10 @@ public class Game {
 	 * @param metadata
 	 */
 	public Game(GameMetadata metadata) {
-		players = Collections.synchronizedList(new ArrayList<User>());
-		state = new GameState();
-		currentPlayer = null;
 		this.metadata = metadata;
+		if( metadata != null && metadata.getId() != null ) {
+			state = new GameState( metadata.getId() );
+		}
 	}
 	
 	/*******************************************************************************
@@ -70,11 +65,6 @@ public class Game {
 	 */
 	public boolean stillHasRoom() {
 		
-		// This shouldn't happen
-		if( players == null ) {
-			players = new ArrayList<User>();
-		}
-		
 		// If we don't have metadata it's a weird error state, so 
 		// assume we don't have room. This shouldn't happen either.
 		if( metadata == null ) {
@@ -82,7 +72,7 @@ public class Game {
 		}
 		
 		// Make a comparison here
-		return players.size() < metadata.getMaxPlayers();
+		return state.getNumberOfPresentPlayers() < metadata.getMaxPlayers();
 	}
 	
 	/**
@@ -92,13 +82,13 @@ public class Game {
 	public synchronized boolean addPlayer(User player) {
 		
 		// This would be bad
-		if( player == null || players == null ) {
+		if( player == null ) {
 			return false;
 		}
 		
-		boolean successfullyAdded = players.add( player );
-		if( successfullyAdded ) {
-			GameState.notifyOthersOfJoinedPlayer( players, player );
+		boolean successfullyAdded = state.addPlayer(player);
+		if( successfullyAdded && state != null ) {
+			state.notifyOthersOfJoinedPlayer( player );
 		}
 		
 		return successfullyAdded;
@@ -111,27 +101,27 @@ public class Game {
 	 * also has to debit the user's bank account. 
 	 * 
 	 *  If something went wrong and they can't be removed (like,
-	 *  if they weren't in there in the frist place) just return
+	 *  if they weren't in there in the first place) just return
 	 *  null
 	 */
-	public synchronized ResponseCode removePlayer(User player) {
+	public ResponseCode removePlayer(User player) {
 		
-		if( player == null || players == null || !players.contains(player) ) {
-			LOGGER.severe( "Trying to remove " + player + " but it didn't seem they were in this game!" );
+		if( player == null ) {
+			LOGGER.severe( "Trying to remove a null player is not allowed." );
 			return null;
 		}
 		
 		// Hopefully we can remove them
-		if (!players.remove( player ) ) {
+		if( !state.removePlayer(player) ) {
 			LOGGER.severe( "Something went wonky in trying to remove the player from the game." );
 			return null;
 		}
 		
-		GameState.notifyOthersOfDepartedPlayer( players, player );
+		state.notifyOthersOfDepartedPlayer( player );
 		
 		// Were they in a state where they forfeited their bet?
-		// TODO: Implement that stuff, for now, just assume it went okay
-		// TODO: I think we have to not remove them, but also set them 'gone'?
+		// TODO: Implement the distinction between being midplay, and not
+		// being midplay. FOr now, just assume not midplay
 		return new ResponseCode( ResponseCode.CODE.SUCCESSFULLY_LEFT_SESSION_NOT_MIDPLAY,
 				"Have not coded logic to see if a bet was forfeited.");
 	}
@@ -172,7 +162,7 @@ public class Game {
 		str.append( MAX_PLAYERS_ATTRIBUTE + " " + metadata.getMaxPlayers() + "\n");
 		str.append( MIN_BET_ATTRIBUTE + " " + metadata.getMinBet() + "\n");
 		str.append( MAX_BET_ATTRIBUTE + " " + metadata.getMaxBet() + "\n");
-		str.append( NUM_PLAYERS_ATTRIBUTE + " " + (players == null ? 0 : players.size()) + "\n");
+		str.append( NUM_PLAYERS_ATTRIBUTE + " " + state.getNumberOfPresentPlayers() + "\n");
 		str.append( NUM_DECKS_ATTRIBUTE + " " + metadata.getNumDecks() + "\n");
 		str.append( RECORD_END_KEYWORD + "\n" );
 		return str.toString();
@@ -184,7 +174,7 @@ public class Game {
 	 * @return True if the game is active, false otherwise
 	 */
 	public boolean isActive() {
-		return players != null && players.size() > 0;
+		return state.getNumberOfPresentPlayers() > 0;
 	}
 	
 	/**
