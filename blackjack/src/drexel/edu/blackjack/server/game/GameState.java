@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import drexel.edu.blackjack.client.in.MessagesFromServerListener;
 import drexel.edu.blackjack.db.user.UserMetadata;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.util.BlackjackLogger;
@@ -28,11 +29,9 @@ public class GameState {
 	// And a logger for errors
 	private final static Logger LOGGER = BlackjackLogger.createLogger(GameState.class.getName()); 
 
-	private enum STATUS {
+	protected enum STATUS {
 		ACTIVE,		// The user is an active participant
-		OBSERVER,	// The user is in the session, but as an observer
-		GONE,		// The user was in the session, but has left during this round
-		RETURNED	// The user was in the session, left, and returned while in the same round
+		OBSERVER	// The user is in the session, but as an observer
 	}
 	
 	// An ordered list of players involved in the game. Gameplay will
@@ -41,13 +40,6 @@ public class GameState {
 	
 	// The current player in terms of play
 	private User currentPlayer		= null;
-	
-	// This list parallels the players list. It is a way of associating a 
-	// status with a User. I can't just store it in the User object, as it
-	// related to the User in the context of a game session. A User could be
-	// ACTIVE in one session, and GONE in another game session. Later, they
-	// might be ACTIVE in multiple sessions.
-	private List<STATUS> statuses	= null;
 	
 	// Every game has an identifier
 	private String gameId			= null;
@@ -66,7 +58,6 @@ public class GameState {
 	public GameState( String gameId ) {
 		this.gameId = gameId;
 		players = Collections.synchronizedList(new ArrayList<User>());
-		statuses = Collections.synchronizedList(new ArrayList<STATUS>());
 	}
 
 	/*********************************************************************
@@ -86,7 +77,7 @@ public class GameState {
 	public void notifyOthersOfDepartedPlayer(User departedPlayer) {
 		
 		// They can't be null, that's bad
-		if( departedPlayer != null && players != null && statuses != null ) {
+		if( departedPlayer != null && players != null ) {
 			
 			// Need to formulate the ResponseCode that we would send
 			StringBuilder str = new StringBuilder( gameId );
@@ -98,17 +89,16 @@ public class GameState {
 				str.append( metadata.getUsername() );
 			}
 
-			// And then send it to all the remaining players who are not: a) this
-			// user; or, b) GONE. We need to first create a list of these users
-			// in a synchronized block
-			User[] copy = getCopyOfPlayersExcept(departedPlayer);
+			// And then send it to all the remaining players. We make a
+			// copy of them in a synchronized block to avoid deadlocking
+			User[] copy = getCopyOfPlayers();
 			
 			// If copy is non-null, we can send our messages
 			if( copy != null ) {
 				ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_LEFT, str.toString() );
 				for( int i = 0; i < copy.length; i++ ) {
 					User user = ((User)copy[i]);
-					if( user != null ) {
+					if( user != null && !user.hasSameUsername(departedPlayer)) {
 						user.sendMessage( code );
 					}
 				}
@@ -125,7 +115,7 @@ public class GameState {
 	public void notifyOthersOfJoinedPlayer( User newPlayer) {
 		
 		// They can't be null, that's bad
-		if( newPlayer != null && players != null && statuses != null ) {
+		if( newPlayer != null && players != null ) {
 			
 			// Need to formulate the ResponseCode that we would send
 			StringBuilder str = new StringBuilder( gameId );
@@ -137,17 +127,16 @@ public class GameState {
 				str.append( metadata.getUsername() );
 			}
 
-			// And then send it to all the remaining players who are not: a) this
-			// user; or, b) GONE. We need to first create a list of these users
-			// in a synchronized block
-			User[] copy = getCopyOfPlayersExcept(newPlayer);
+			// And then send it to all the remaining players. We make a
+			// copy of them in a synchronized block to avoid deadlocking
+			User[] copy = getCopyOfPlayers();
 			
 			// If copy is non-null, we can send our messages
 			if( copy != null ) {
 				ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_JOINED, str.toString() );
 				for( int i = 0; i < copy.length; i++ ) {
 					User user = ((User)copy[i]);
-					if( user != null ) {
+					if( user != null && !user.hasSameUsername(newPlayer)) {
 						user.sendMessage( code );
 					}
 				}
@@ -165,58 +154,47 @@ public class GameState {
 	 */
 	synchronized public boolean addPlayer( User player ) {
 
-		// First, see if they are already there
-		int index = players.indexOf(player);
-		if( index != -1 ) {
-			// Aha, they have returned!
-			statuses.set( index, STATUS.RETURNED );
-			return true;
-		} 
+		// Assume that we'll fail
+		boolean status = false;
 		
-		// Add the user to the end, in the OBSERVER status
-		boolean success = players.add( player );
-		success = success && statuses.add( STATUS.OBSERVER );
+		if( player != null ) {		
+			// Add them to the list of players
+			status = players.add( player );
+			
+			// If that worked, note that they are an observe
+			if( status ) {
+				// Set the user's status to OBSERVER
+				player.setStatus( STATUS.OBSERVER );
+			}
+		}
 		
-		// Some more consistency checking
-		success = success && (statuses.size() == players.size());
-		return success;
+		// Return the status
+		return status;
 	}
 
 	/**
 	 * Removes a player to the tracking within the game state.
-	 * It's important to note that this does NOT actually
-	 * remove the player from the list! It merely changes
-	 * their status to GONE. It is up to the game playing
-	 * thread to later notify the GameState that it can
-	 * safely remove players who are GONE (presumably at
-	 * the end of the round).
+	 * If they've placed a bet, it'll be automatically forfeited
+	 * as it was already deducted from their account
 	 */
 	synchronized public boolean removePlayer( User player ) {
 		
-		// Find the index of the User
-		int index = players.indexOf( player );
-		if( index == -1 ) {
-			LOGGER.severe( "Could not find the user " + player + " in the game state to remove!" );
-			return false;
+		// Assume that we'll fail
+		boolean status = false;
+		
+		if( player != null ) {		
+			// Remove them from the list of players
+			status = players.remove( player );
 		}
 		
-		// The corresponding status better exist!
-		if( index >= statuses.size() ) {
-			LOGGER.severe( "Could not find the status for the user " + player + " in the game state to remove!" );
-			return false;
-		}
-		
-		// Now remove both of them
-		boolean success = (players.remove(index) != null);
-		success = success && (statuses.remove(index) != null);
-
-		// Some more consistency checking
-		success = success && (statuses.size() == players.size());
-		return success;
+		// Return the status
+		return status;
 	}
 	
 	/**
 	 * Return a pointer to the current player
+	 * 
+	 * @return Who the current player is. May be null.
 	 */
 	synchronized public User getCurrentPlayer() {
 		return currentPlayer;
@@ -236,8 +214,7 @@ public class GameState {
 	synchronized public void startNewRound() {
 		
 		// Need to have valid lists
-		if( players != null || statuses != null ) {
-			removeGonePlayers();
+		if( players != null ) {
 			makeAllPlayersActive();
 			currentPlayer = null;
 		}
@@ -251,12 +228,18 @@ public class GameState {
 	 * players with an ACTIVE status, it is set to null.
 	 */
 	synchronized public void advanceCurrentPlayer() {
+		
 		if( players == null ) {
+			// If there aren't players, the current player is null
 			currentPlayer = null;
 		} else if( currentPlayer == null ) {
+			// Otherwise we try to find the first active player (may be null!)
 			currentPlayer = getFirstActivePlayerFrom( 0 );
 		} else {
+			// Or else we find the current player's index
 			int index = players.indexOf( currentPlayer );
+			
+			// And look for someone active beyond them (may be null!)
 			if( index == -1 ) {
 				LOGGER.severe( "Could not advance current player as we could not find them in the list." );
 			} else {
@@ -266,11 +249,11 @@ public class GameState {
 	}
 	
 	/** 
-	 * Returns the number of players who are present (i.e., not
-	 * of GONE status) in the game stae
+	 * Returns the number of players, without regard to their
+	 * status as observer or active
 	 */
-	synchronized public int getNumberOfPresentPlayers() {
-		return getNumberOfPresentPlayersExcept(null);
+	synchronized public int getNumberOfPlayers() {
+		return (players == null ? 0 : players.size() );
 	}
 	
 	/*********************************************************************
@@ -278,21 +261,15 @@ public class GameState {
 	 ********************************************************************/
 
 	/**
-	 * Walk through the players/statuses lists, and if
-	 * a player has a status o GONE or RETURNED, turn
-	 * them to ACTIVE.
+	 * Walk through the players, and mark them all as ACTIVE.
 	 * 
 	 * TODO: I'm worried about this method and synchronization
 	 */
 	private void makeAllPlayersActive() {
-		
-		if( statuses != null ) {
-			for( int i = 0; i < statuses.size(); i++ ) {
-				STATUS status = statuses.get(i);
-				if( status != null && 
-						(status.equals(STATUS.OBSERVER) || status.equals(STATUS.RETURNED)) ) {
-					statuses.set( i, STATUS.ACTIVE );
-				}
+
+		if( players != null ) {
+			for( User player : players ) {
+				player.setStatus( STATUS.ACTIVE );
 			}
 		}
 	}
@@ -318,149 +295,42 @@ public class GameState {
 			startingIndex = 0;
 		}
 		
-		if( statuses == null || players == null ) {
+		// No players? Must be a null active one
+		if( players == null ) {
 			return null;
 		}
 		
 		// Cycle through
-		for( int i = startingIndex; i < statuses.size(); i++ ) {
-			STATUS status = statuses.get(i);
+		for( User player : players ) {
+			STATUS status = player.getStatus();
 			if( status != null && status.equals(STATUS.ACTIVE ) ) {
-				if( i >= players.size() ) {
-					LOGGER.severe( "Could not find a user at index " + i + " where we expected." );
-				} else {
-					return players.get(i);
-				}
+				return player;
 			}
 		}
 		
 		// If we got here, we found nothing and need to return null
 		return null;
 	}
-
+	
 	/**
-	 * Removes gone players by actually removing them
-	 * (and their corresponding status) from the list
+	 * Get a copy of all the players, in an array list, while
+	 * synchronized. That way we can add and remove players to
+	 * our less and not run into concurrency issues
 	 * 
-	 * TODO: I'm worried about synchronization but the
-	 * original method is synchronized, if this is
-	 * synchronized too will there be deadlock?
+	 * @return A list of the players
 	 */
-	private void removeGonePlayers() {
-		
-		if( players != null && statuses != null && players.size() == statuses.size() ) {
-			
-			// First create a set of these users to remove
-			Set<User> playersToRemove = new HashSet<User>();
-			for( int i = 0; i < players.size(); i++ ) {
-				STATUS thisStatus = statuses.get(i);
-				if( thisStatus != null && thisStatus.equals(STATUS.GONE ) ) {
-					playersToRemove.add( players.get(i) );
-				}
+	synchronized private User[] getCopyOfPlayers() {
+
+		User[] users = null;
+		if( players != null ) {
+			Object[] copy = players.toArray();
+			users = new User[copy.length];
+			for( int i = 0; i < copy.length; i++ ) {
+				users[i] = (User)copy[i];
 			}
-			
-			// Now go through and remove them
-			for( User playerToRemove : playersToRemove ) {
-				int index = players.indexOf( playerToRemove );
-				if( index == -1 ) {
-					LOGGER.severe( "Thought we should truly remove " + playerToRemove + 
-							" but they are no longer in the list." );
-				} else {
-					players.remove(index);
-					statuses.remove(index);
-				}
-			}
-		}		
+		}
+		return users;
 	}
 
-	/**
-	 * Looks at the player list and returns how many players have a
-	 * status of OBSERVER, RETURNED, or ACTIVE. Do not include the
-	 * passed in player, if present, in the list.
-	 * 
-	 * Will return 0 if there are no players of this type. Will return
-	 * -1 if there was an internal error.
-	 * 
-	 * @param exceptPlayer If null, this parameter is ignored. If non-null,
-	 * then the count of active players will not include this player
-	 * among it
-	 * @return The number of active players, excluding any player who
-	 * is passed as the parameter, or else -1 if an internal error
-	 * occurred in processing this
-	 */
-	private int getNumberOfPresentPlayersExcept(User exceptPlayer) {
-		
-		// There must be none if everything is null
-		if( players == null || statuses == null ) {
-			return 0;
-		}
-		
-		// Lists not equal is a problem
-		if( players.size() != statuses.size() ) {
-			return -1;
-		}
-		
-		// Otherwise step through and increment a count
-		int count = 0;
-		for( int i = 0; i < statuses.size(); i++ ) {
-			STATUS status = statuses.get(i);
-			if( status != null && !status.equals(STATUS.GONE ) ) {
-				User player = players.get(i);
-				if( player != null ) {
-					// If the except player is null, always count
-					if( exceptPlayer == null ){
-						count++;
-					} else {
-						// Otherwise, compare usernames, and only count if not the same
-						if( !exceptPlayer.hasSameUsername(player) ) {
-							count++;
-						}
-					}
-				}
-			}
-		}
-		
-		return count;
-	}
 
-	/**
-	 * Does this player have the gone status?
-	 * 
-	 * @param player Player in question
-	 * @return True if they are gone, and false otherwise
-	 */
-	private boolean isGone(User player) {
-		if( player != null && players != null && statuses != null ) {
-			int index = players.indexOf(player);
-			if( index >= 0 && index < statuses.size() ) {
-				STATUS status = statuses.get(index);
-				if( status != null ) {
-					return status.equals(STATUS.GONE);
-				}
-			}
-		}
-		
-		return false;
-	}
-
-	/**
-	 * This synchronized method is used to get a copy of the users
-	 * who are in the game session (that is, not of status GONE) and --
-	 * if the playerToExclude is non-null -- excluding the playerToExclude
-	 *  
-	 * @param playerToExclude Don't include them in the list, regardless of status
-	 * @return An array of players in the game state that don't have
-	 * a GONE staus. If playerToExclude is not null, exclude that player in the list
-	 */
-	synchronized private User[] getCopyOfPlayersExcept( User playerToExclude  ) {
-		int ultimateSize = getNumberOfPresentPlayersExcept(playerToExclude );
-		User[] copy = new User[ultimateSize];
-		int index = 0;
-		for( User player : players ) {
-			if( !isGone(player) && !player.hasSameUsername(playerToExclude ) ) {
-				copy[index++] = player;
-			}
-		}
-		return copy;
-	}
 }

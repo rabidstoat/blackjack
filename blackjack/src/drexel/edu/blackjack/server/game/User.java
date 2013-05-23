@@ -34,6 +34,9 @@ public class User {
 	// Game they are playing
 	private Game game;
 	
+	// Their status within that game
+	private GameState.STATUS status;
+	
 	// Their server thread
 	private BlackjackServerThread thread = null;
 	
@@ -183,6 +186,22 @@ public class User {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Used for other people to set the user's status. Typically the
+	 * game will set the status on the user as they move between
+	 * observer and active status
+	 */
+	protected void setStatus( GameState.STATUS status ) {
+		this.status = status;
+	}
+	
+	/**
+	 * Return the status in the game of this player
+	 */
+	protected GameState.STATUS getStatus() {
+		return status;
 	}
 
 }

@@ -72,7 +72,7 @@ public class Game {
 		}
 		
 		// Make a comparison here
-		return state.getNumberOfPresentPlayers() < metadata.getMaxPlayers();
+		return state.getNumberOfPlayers() < metadata.getMaxPlayers();
 	}
 	
 	/**
@@ -162,7 +162,7 @@ public class Game {
 		str.append( MAX_PLAYERS_ATTRIBUTE + " " + metadata.getMaxPlayers() + "\n");
 		str.append( MIN_BET_ATTRIBUTE + " " + metadata.getMinBet() + "\n");
 		str.append( MAX_BET_ATTRIBUTE + " " + metadata.getMaxBet() + "\n");
-		str.append( NUM_PLAYERS_ATTRIBUTE + " " + state.getNumberOfPresentPlayers() + "\n");
+		str.append( NUM_PLAYERS_ATTRIBUTE + " " + state.getNumberOfPlayers() + "\n");
 		str.append( NUM_DECKS_ATTRIBUTE + " " + metadata.getNumDecks() + "\n");
 		str.append( RECORD_END_KEYWORD + "\n" );
 		return str.toString();
@@ -174,7 +174,7 @@ public class Game {
 	 * @return True if the game is active, false otherwise
 	 */
 	public boolean isActive() {
-		return state.getNumberOfPresentPlayers() > 0;
+		return state.getNumberOfPlayers() > 0;
 	}
 	
 	/**
