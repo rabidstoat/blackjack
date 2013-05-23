@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -63,8 +64,9 @@ public class ClientInputFromServerThread extends Thread {
 		// Record the listener and client
 		this.blackjackClient = blackjackClient;
 		
-		// A listener for message traffic
-		listeners = new HashSet<MessagesFromServerListener>();
+		// A listener for message traffic; need to create a synchronized set for our
+		// multithreaded environment
+		listeners = Collections.synchronizedSet(new HashSet<MessagesFromServerListener>());
 		addListener( MessageFrame.getDefaultMessageFrame() );
 		
 		// Create a reader for the socket
@@ -195,11 +197,7 @@ public class ClientInputFromServerThread extends Thread {
 	 */
 	public boolean addListener(MessagesFromServerListener listener) {
 		
-		boolean result;
-		synchronized( listeners ) {
-			result = listeners.add( listener );
-		}
-		return result;
+		return listeners.add( listener );
 		
 	}
 
@@ -209,11 +207,9 @@ public class ClientInputFromServerThread extends Thread {
 	 * @return True if removed successfully, false otherwise
 	 */
 	public boolean removeListener(MessagesFromServerListener listener) {
-		boolean result;
-		synchronized( listeners ) {
-			result = listeners.remove( listener );
-		}
-		return result;
+
+		return listeners.remove( listener );
+
 	}
 
 }

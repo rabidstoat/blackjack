@@ -3,6 +3,7 @@ package drexel.edu.blackjack.client.out;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -37,8 +38,8 @@ public class ClientOutputToServerHelper extends Thread {
 	public ClientOutputToServerHelper( Socket socket ) {
 		super( "ClientOutputToServerThread" );
 		
-		// Add the message frame as a listener
-		listeners = new HashSet<MessagesToServerListener>();
+		// Add the message frame as a listener; needs to be explicitly made synchronized
+		listeners = Collections.synchronizedSet(new HashSet<MessagesToServerListener>());
 		addListener( MessageFrame.getDefaultMessageFrame() );
 		
 		try {

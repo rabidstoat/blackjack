@@ -1,5 +1,6 @@
 package drexel.edu.blackjack.server.timeouts;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -50,8 +51,8 @@ public class IdleTimeoutDaemon extends Thread {
 	
 	private IdleTimeoutDaemon() {
 	
-		// Need somewhere to store the threads
-		clientThreads = new HashSet<BlackjackServerThread>();
+		// Need somewhere to store the threads, and it better be synchronized
+		clientThreads = Collections.synchronizedSet(new HashSet<BlackjackServerThread>());
 		
 		// And need to establish the timeouts that we are monitoring
 		etsablishTimeoutMap();
@@ -123,50 +124,55 @@ public class IdleTimeoutDaemon extends Thread {
 			
 			// Keep a list of threads that need to be removed. We can't
 			// remove them while we're iterating through them, though
-			Set<BlackjackServerThread> threadsToReap = new HashSet<BlackjackServerThread>();
+			Set<BlackjackServerThread> threadsToReap = Collections.synchronizedSet(
+					new HashSet<BlackjackServerThread>() );
 			
 			// Cycle through all of the connections
-			for( BlackjackServerThread thread : clientThreads ) {
-				
-				// First looked for closed sockets that we need to remove
-				if( !thread.isAlive() || ( thread.getSocket() != null && thread.getSocket().isClosed()) ) {
-					LOGGER.info( "Found a dead client connection thread to remove." );
-					threadsToReap.add(thread);
-				} else if( thread.getProtocol() != null ) {
-					// Then look for a relevant timer based on state
-					LOGGER.finer( "Thread state is: " + thread.getProtocol().getState() );
-					TimeoutDefinition timeout = this.timeoutMap.get( thread.getProtocol().getState() );
-					if( timeout != null ) {
-						
-						LOGGER.finer( "Found a timeout definition for the state." );
-						
-						// Figure out how much time has passed since the relevant timer
-						long currentTime = System.currentTimeMillis();
-						long delta = 0;
-						if( timeout.getType() == TimeoutDefinition.TYPE.LAST_COMMAND &&
-								thread.getProtocol() != null &&
-								thread.getProtocol().getLastCommand() != null ) {
-							delta = currentTime - thread.getProtocol().getLastCommand();
-						} else if( timeout.getType() == TimeoutDefinition.TYPE.TIMER &&
-								thread.getProtocol() != null &&
-								thread.getProtocol().getTimer() != null ) {
-							delta = currentTime - thread.getProtocol().getTimer();
+			synchronized( clientThreads ) {
+				for( BlackjackServerThread thread : clientThreads ) {
+					
+					// First looked for closed sockets that we need to remove
+					if( !thread.isAlive() || ( thread.getSocket() != null && thread.getSocket().isClosed()) ) {
+						LOGGER.info( "Found a dead client connection thread to remove." );
+						threadsToReap.add(thread);
+					} else if( thread.getProtocol() != null ) {
+						// Then look for a relevant timer based on state
+						LOGGER.finer( "Thread state is: " + thread.getProtocol().getState() );
+						TimeoutDefinition timeout = this.timeoutMap.get( thread.getProtocol().getState() );
+						if( timeout != null ) {
+							
+							LOGGER.finer( "Found a timeout definition for the state." );
+							
+							// Figure out how much time has passed since the relevant timer
+							long currentTime = System.currentTimeMillis();
+							long delta = 0;
+							if( timeout.getType() == TimeoutDefinition.TYPE.LAST_COMMAND &&
+									thread.getProtocol() != null &&
+									thread.getProtocol().getLastCommand() != null ) {
+								delta = currentTime - thread.getProtocol().getLastCommand();
+							} else if( timeout.getType() == TimeoutDefinition.TYPE.TIMER &&
+									thread.getProtocol() != null &&
+									thread.getProtocol().getTimer() != null ) {
+								delta = currentTime - thread.getProtocol().getTimer();
+							}
+							
+							LOGGER.finer( "The delta on the thread is " + delta );
+							LOGGER.finer( "The timeout value is " + timeout.getTimeoutInMilliseconds() );
+							
+							// If it's more than the timeout, we have to do something
+							if( delta > timeout.getTimeoutInMilliseconds() ) {
+								thread.handleTimeout( timeout.getNewState(), timeout.getResponseCode() );
+							}
 						}
-						
-						LOGGER.finer( "The delta on the thread is " + delta );
-						LOGGER.finer( "The timeout value is " + timeout.getTimeoutInMilliseconds() );
-						
-						// If it's more than the timeout, we have to do something
-						if( delta > timeout.getTimeoutInMilliseconds() ) {
-							thread.handleTimeout( timeout.getNewState(), timeout.getResponseCode() );
-						}
-					}
-				}				
+					}				
+				}
 			}
 			
 			// Now remove the threads we marked to reap
-			for( BlackjackServerThread threadToReap : threadsToReap ) {
-				clientThreads.remove(threadToReap);
+			synchronized( threadsToReap ) {
+				for( BlackjackServerThread threadToReap : threadsToReap ) {
+					clientThreads.remove(threadToReap);
+				}
 			}
 		}
 	}
