@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -20,6 +19,10 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * server. It doesn't actually do anything with it. Instead,
  * it passes it off to listeners who have registered interest
  * in particular response codes.
+ * 
+ * Synchronization techniques modeled after reading this
+ * extremely old (but perhaps still relevant) article:
+ * http://www.javaworld.com/jw-03-1999/jw-03-toolbox.html 
  * 
  * @author Jennifer
  */
@@ -178,15 +181,12 @@ public class ClientInputFromServerThread extends Thread {
 				LOGGER.severe( "Received unrecognized input from the server: " + code );
 				return false;
 			} else {
-				// And send to the listeners -- when written as a for loop it was causing a
-				// ConcurrentModificationException. Since the javadocs explicitly show
-				// an iterator I will use the iterator explicitly. Sigh. It still
-				// didn't help!
-				synchronized( listeners ) {
-					Iterator<MessagesFromServerListener> i = listeners.iterator(); // Must be in the synchronized block
-				    while (i.hasNext()) {
-						i.next().receivedMessage( code );
-				    }				    
+				Object[] copy;
+				synchronized( this) {
+					copy = listeners.toArray();
+				}
+				for( int i = 0; i < copy.length; i++ ) {
+					((MessagesFromServerListener)copy[i]).receivedMessage(code);
 				}
 			}
 		}
