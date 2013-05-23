@@ -433,6 +433,17 @@ public class ResponseCode {
 	}
 
 	/** 
+	 * A command completed code is anything in the 2xx range.
+	 * 
+	 * @return True if it represents an completed command, else false
+	 */
+	public boolean isCommandComplete() {
+		
+		return code != null && code >= 200 && code < 300;
+		
+	}
+
+	/** 
 	 * An informative code is anything in the 1xx range.
 	 * 
 	 * @return True if it represents an informative

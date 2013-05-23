@@ -189,6 +189,14 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 			} else if( code.isGameState() ) {
 				// TODO: Handle game state codes
 				LOGGER.info( "Received unhandled game state code of '" + code.toString() + "'." );
+			} else if( code.isCommandComplete() ) {
+				
+				if( code.hasSameCode(ResponseCode.CODE.SUCCESSFULLY_QUIT ) ) {
+					quitTheGame();
+				} else {
+					LOGGER.info( "Received unhandled command-complete code of '" + code.toString() + "'." );
+				}
+				
 			} else {
 				// TODO: Not sure what to do here
 				LOGGER.info( "Received some other unhandled code of '" + code.toString() + "'." );
@@ -223,6 +231,13 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 			}
 		}
 				
+	}
+	
+	/**
+	 * Server acknowledges a quit, so we can cleanly exit
+	 */
+	protected void quitTheGame() {
+		client.notifyOfShutdown();
 	}
 
 	/**

@@ -272,8 +272,8 @@ public class NotInSessionScreen extends AbstractScreen {
 	 **********************************************************************************/
 
 	private void quit() {
-		System.out.println( "There is no quitting, mwahahaha!" );
-		displayMenu();
+		System.out.println( "One moment, informing the server of your departure..." );
+		helper.sendQuitRequest();
 	}
 
 	private void sendListGamesRequest() {
