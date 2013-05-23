@@ -83,7 +83,7 @@
 	<!-- with only SEVERE log messages shown -->
     <target depends="compile" name="run-client-local">
         <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
-    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient" fork="true">
+    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
             <classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="SEVERE"/>
     		<sysproperty key="ShowMessages" value="true"/>
@@ -94,7 +94,7 @@
 	<!-- with WARNING and above log messages shown -->
     <target depends="compile" name="run-client-local-warning">
         <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
-    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient" fork="true">
+    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
             <classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="WARNING"/>
     		<sysproperty key="ShowMessages" value="true"/>
@@ -105,7 +105,7 @@
 	<!-- with INFO and above log messages shown -->
     <target depends="compile" name="run-client-local-info">
         <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
-    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient" fork="true">
+    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
             <classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="INFO"/>
     		<sysproperty key="ShowMessages" value="true"/>
