@@ -1,5 +1,8 @@
 package drexel.edu.blackjack.client.screens;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 import drexel.edu.blackjack.client.BlackjackCLClient;
@@ -187,6 +190,12 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 				}
 				
 			} else if( code.isGameState() ) {
+				
+				if( code.hasSameCode(ResponseCode.CODE.PLAYER_JOINED ) ) {
+					displayPlayerMovement( code );
+				} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_LEFT ) ) {
+					displayPlayerMovement( code );
+				}
 				// TODO: Handle game state codes
 				LOGGER.info( "Received unhandled game state code of '" + code.toString() + "'." );
 			} else if( code.isCommandComplete() ) {
@@ -232,7 +241,55 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		}
 				
 	}
-	
+
+	/**
+	 * This handles codes about players entering or leaving the
+	 * game. The first variable is the game ID. The second variable
+	 * is the username.
+	 * 
+	 * @param code Hopefully of type ResponseCode.CODE.PLAYER_JOINED
+	 * or ResponseCode.CODE.PLAYER_LEFT
+	 */
+	private void displayPlayerMovement(ResponseCode code) {
+		
+		if( code != null  ) {
+			
+			// Start with their username
+			StringBuilder str = new StringBuilder( "The player " );
+			List<String> params = code.getParameters();
+			if( params == null || params.size() < 2 ) {
+				str.append( "(unknown)" );
+			} else {
+				String username = params.get(1);
+				str.append( username == null ? "(unknown)" : username );
+			}
+			
+			// Have they left or joined?
+			str.append( " has " );
+			if( code.hasSameCode(ResponseCode.CODE.PLAYER_JOINED) ) {
+				str.append( "joined" );
+			} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_LEFT) ) {
+				str.append( "left" );
+			} else { 
+				str.append( "performed an unknown action in " );
+			}
+			str.append( " the game." );
+			
+			// Display to the string
+			updateStatus( str.toString() );
+		}
+	}
+
+	/**
+	 * Does whatever to update the user as to a status, which can
+	 * be displayed as a text string
+	 * @param str
+	 */
+	private void updateStatus(String str) {
+		SimpleDateFormat sdf = new SimpleDateFormat( "hh:mm:ss");
+		System.out.println( "UPDATE " + sdf.format( new Date() ) + ": " + str );
+	}
+
 	/**
 	 * Server acknowledges a quit, so we can cleanly exit
 	 */
@@ -251,7 +308,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 				!code.hasSameCode( ResponseCode.CODE.ACCOUNT_BALANCE ) ) {
 			System.out.println( "Internal error, sorry. Can't display the account balance." );
 		} else {
-			System.out.println( "Your account balance is $" + code.getFirstParameterAsString() + "." );
+			updateStatus( "Your account balance is $" + code.getFirstParameterAsString() + "." );
 		}
 				
 	}
@@ -266,7 +323,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 				!code.hasSameCode( ResponseCode.CODE.VERSION ) ) {
 			System.out.println( "Internal error, sorry. Can't display the version." );
 		} else {
-			System.out.println( "Server version " + code.getText().trim() );
+			updateStatus( "Server version " + code.getText().trim() );
 		}
 	}
 

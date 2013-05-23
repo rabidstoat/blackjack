@@ -1,5 +1,7 @@
 package drexel.edu.blackjack.server;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -397,6 +399,36 @@ public class ResponseCode {
 		return parameter;
 	}
 	
+	/**
+	 * The text of the response code might just be optional text, but in some
+	 * cases the 'words' should be interpreted as parameters to the response.
+	 * Return this tokenized list of words, if present. (Note that if the 
+	 * response code doesn't have parameters, this method doesn't really make 
+	 * sense to use, though it will still return something.)
+	 * 
+	 * @return The parameters of the response string, or null if there is
+	 * nothing that could be interpreted as a parameter
+	 */
+	public List<String> getParameters() {
+		
+		// Will try to return in this
+		List<String> params = null;
+		
+		// By tokenizing this
+		String text = getText();
+		
+		// Only can parse out a parameter if there's some text
+		if( text != null ) {
+			StringTokenizer strtok = new StringTokenizer(text);
+			params = new ArrayList<String>();;
+			while( strtok.hasMoreTokens() ) {
+				params.add( strtok.nextToken() );
+			}
+		}
+		
+		return params;
+	}
+
 	/*************************************************************************************
 	 * For figuring out things about this type of response code
 	 ************************************************************************************/
