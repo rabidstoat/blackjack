@@ -168,4 +168,21 @@ public class User {
 		this.thread = thread;
 	}
 
+	/**
+	 * This is basically equality based on username value
+	 * 
+	 * @return True if the usernames are both non-null
+	 * and identical, false otherwise
+	 */
+	public boolean hasSameUsername(User player) {
+		if( player != null && player.getUserMetadata() != null &&
+				player.getUserMetadata().getUsername() != null &&
+				this.getUserMetadata() != null &&
+				this.getUserMetadata().getUsername() != null ) {
+			return this.getUserMetadata().getUsername().equals( player.getUserMetadata().getUsername() );
+		}
+		
+		return false;
+	}
+
 }
