@@ -162,10 +162,51 @@ public class ActiveGameCoordinator {
 			if( gameMetadatas != null ) {
 				for( GameMetadata metadata : gameMetadatas  ) {
 					Game game = new Game( metadata );
-					gameToThreadMap.put( game, null );
+					gameToThreadMap.put( game, new GamePlayingThread( game ) );
 					idToGameMap.put( game.getId(), game );
 				}
 			}
 		}
+	}
+
+	/**
+	 * Requests that a game be started. This only makes sense to do IF
+	 * the game is not already started!
+	 */
+	public boolean startGame(String gameId) {
+		
+		boolean status = false;
+		
+		// First, get the game playing thread
+		Game game = this.idToGameMap.get(gameId);
+		if( game == null ) {
+			LOGGER.severe( "Requested to start game with ID '" + gameId + "' but could not find the game in the controller." );
+		} else {
+			GamePlayingThread thread = this.gameToThreadMap.get(game);
+			if( thread == null ) {
+				LOGGER.severe( "Requested to start game with ID '" + gameId + "' but could not find its thread in the controller." );
+			} else if ( thread.isAlive() ) {
+				LOGGER.severe( "Requested to start game with ID '" + gameId + "' but it was already started." );	
+			} else {
+				// Now, either we're starting it for the first time (good!) or it's been started
+				// once before and exited (bad!). We know it's the latter case if we get an exception
+				try {
+					LOGGER.info( "Started the thread for the first time for '" + gameId + "'." );
+					thread.start();
+					status = true;
+				} catch( IllegalThreadStateException e) {
+					// We're going to assume we're here because the thread 
+					// was started, and exited, once before. So we have
+					// to create a new thread to associate with this game
+					thread = new GamePlayingThread( game );
+					this.gameToThreadMap.put( game, thread );
+					LOGGER.info( "Started the thread for a subsequent time for '" + gameId + "." );
+					thread.start();
+					status = true;
+				}
+			}
+		}
+		
+		return status;
 	}
 }

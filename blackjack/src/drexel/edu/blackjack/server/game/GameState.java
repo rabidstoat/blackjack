@@ -158,10 +158,15 @@ public class GameState {
 			// Add them to the list of players
 			status = players.add( player );
 			
-			// If that worked, note that they are an observe
+			// If that worked, note that they are an observer
 			if( status ) {
 				// Set the user's status to OBSERVER
 				player.setStatus( STATUS.OBSERVER );
+				
+				// If they're the first person in the game, though, it needs to be started
+				if( players.size() == 1 ) {
+					ActiveGameCoordinator.getDefaultActiveGameCoordinator().startGame( this.gameId );
+				}
 			}
 		}
 		

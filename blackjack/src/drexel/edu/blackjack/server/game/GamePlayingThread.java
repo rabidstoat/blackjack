@@ -38,6 +38,11 @@ public class GamePlayingThread extends Thread {
 	public Game getGame() {
 		return game;
 	}
+	
+	@Override
+	public void run() {
+		System.out.println( "Starting the game playing thread for " + (game == null ? "a null game" : game.getId() ) );
+	}
 
 	/************************************************************
 	 * Private methods
