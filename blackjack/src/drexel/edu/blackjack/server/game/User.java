@@ -7,6 +7,7 @@ import drexel.edu.blackjack.db.user.UserMetadata;
 import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.BlackjackServerThread;
 import drexel.edu.blackjack.server.ResponseCode;
+import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
@@ -219,6 +220,37 @@ public class User {
 	 */
 	protected GameState.STATUS getStatus() {
 		return status;
+	}
+
+	/**
+	 * A user has specified a bet if they have a non-null protocol
+	 * object somewhere, and there is a bet value set on it.
+	 */
+	public boolean hasSpecifiedBet() {
+		
+		if( thread != null && thread.getProtocol() != null ) {
+			return thread.getProtocol().getBet() != null;
+		}
+		
+		// THis would be bad
+		return false;
+	}
+
+	/**
+	 * If a user is forced to timeout while betting, they
+	 * have their state changed to not being in a session,
+	 * and a response sent to them alerting them of this
+	 */
+	public void forceTimeoutWhileBetting() {
+		
+		// First change the state
+		if( thread != null && thread.getProtocol() != null ) {
+			thread.getProtocol().setState( STATE.NOT_IN_SESSION );
+		}
+		
+		// THen send the response code
+		ResponseCode code = new ResponseCode( ResponseCode.CODE.TIMEOUT_EXCEEDED_WHILE_BETTING );
+		this.sendMessage( code );
 	}
 
 }

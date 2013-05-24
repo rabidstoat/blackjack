@@ -143,6 +143,32 @@ public class GameState {
 	}	
 	
 	/**
+	 * Cycles through the players. If it finds a player
+	 * who is active who does not have a bet value
+	 * set on the connection protocol, you have
+	 * outstanding bets that are being waited for
+	 * 
+	 * @return True if there is some active player
+	 * who has no bet specified
+	 */
+	public boolean outstandingBets() {
+	
+		User[] users = getCopyOfPlayers();
+		for( User user : users ) {
+			// If the user is active
+			if( user.getStatus() != null && user.getStatus().equals(STATUS.ACTIVE) ) {
+				// Return true if they don't have a bet set
+				if( !user.hasSpecifiedBet() ) {
+					return true;
+				}
+			}
+		}
+		
+		// If we got this far, we're okay
+		return false;
+	}
+	
+	/**
 	 * Adds a player to the tracking within the game state. Newly
 	 * added players are entered in the OBSERVER state, unless...
 	 * 
@@ -342,6 +368,34 @@ public class GameState {
 			}
 		}
 		return users;
+	}
+
+	/**
+	 * Looks at all the players who are active. If there are any
+	 * who don't have their bet set, they need to be idle-bumped
+	 */
+	public void removeActivePlayersWithNoBet() {
+		
+		// Grab the users
+		User[] users = getCopyOfPlayers();
+		
+		// If array is non-null, we can look and see if any users haven't bet
+		if( users != null ) {
+			for( int i = 0; i < users.length; i++ ) {
+				User user = ((User)users[i]);
+				
+				// If the user is active...
+				if( user != null && user.getStatus() != null && user.getStatus().equals(STATUS.ACTIVE) ) {
+					
+					// And they placed no bet
+					if( user.getBet() == null ) {
+						// Force them to idle timeout
+						user.forceTimeoutWhileBetting();
+					}
+				}
+			}
+		}
+
 	}
 
 

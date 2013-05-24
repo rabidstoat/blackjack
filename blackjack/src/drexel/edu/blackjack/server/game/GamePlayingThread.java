@@ -20,6 +20,9 @@ public class GamePlayingThread extends Thread {
 	// A game playing thread is responsible for one and only one game
 	private Game game = null;
 	
+	// Controls our perpetual game-playing loop
+	private boolean stillPlaying = true;
+	
 	private final static Logger LOGGER = BlackjackLogger.createLogger( GamePlayingThread.class.getName() );
 
 	/************************************************************
@@ -53,11 +56,42 @@ public class GamePlayingThread extends Thread {
 		if( game == null ) {
 			LOGGER.severe( "Somehow in a game playing thread with a null game." );
 		} else {
-			game.start();
+			bigGameLoop();
 		}
 	}
 
 	/************************************************************
 	 * Private methods
 	 ***********************************************************/
+	
+	/**
+	 * The big game loop moves through the steps of a
+	 * round of cards. It periodically gets interrupts
+	 * about things external to the game loop that are
+	 * happening. Sometimes it realizes that there are
+	 * no more players, and nothing else to do, and it
+	 * finally ends.
+	 */
+	private void bigGameLoop() {
+		
+		stillPlaying = true;
+
+		// This loops through until something sets this to false somewhere
+		while( stillPlaying ) {
+			
+			// Start a new round, and ask for bets
+			game.startNewRound();
+			
+			// Wait for the bets to be placed
+			game.waitForBetsToBePlaced();
+			
+			// People who didn't bet in time get idled out
+			game.removeActivePlayersWithNoBets();
+			
+			// For now, we just do this once
+			stillPlaying = false;
+		}
+		
+		System.out.println( "Done with the big game loop." );
+	}
 }

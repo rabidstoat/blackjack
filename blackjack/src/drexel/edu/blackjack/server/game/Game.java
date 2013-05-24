@@ -31,8 +31,23 @@ public class Game {
 	/*******************************************************************************
 	 * private variables
 	 *****************************************************************************/
+	
+	// This holds all of our dynamic game information
 	private GameState state;
+	
+	// This holds all of our static game information
 	private GameMetadata metadata;
+	
+	// Constant
+	private int SECOND_IN_MILLISECONDS	= 1000;
+	
+	// We give people up to this long to place their bets
+	private int BETTING_WAIT_TIME		= 60 * SECOND_IN_MILLISECONDS;
+	
+	// We check every this many ms to see if everyone has bet yet
+	private int SWEEP_DELAY				= 500;
+	
+	// And of course our logger
 	private final static Logger LOGGER = BlackjackLogger.createLogger(Game.class.getName()); 
 	
 	/*******************************************************************************
@@ -202,12 +217,55 @@ public class Game {
 	 * Starting the game involves starting a new round
 	 * of play, then requesting bets.
 	 */
-	public void start() {
+	public void startNewRound() {
 		if( state == null ) {
-			LOGGER.severe( "Trying to start a game with a null state can't be good..." );
+			LOGGER.severe( "Trying to start a new round with a null state can't be good..." );
 		} else {
 			// This will set players active and set the current player
 			state.startNewRound();
 		}
 	}
+
+	/**
+	 * This starts up a loop for BETTING_WAIT_TIME milliseconds,
+	 * checking periodically to see if all the ACTIVE players have
+	 * placed their bets yet.
+	 */
+	public void waitForBetsToBePlaced() {
+
+		if( state == null ) {
+			LOGGER.severe( "In waitingForBetsToBePlaced(), somehow have a null state object." );
+			return;
+		}
+		
+		// This is when we started this whole process
+		long start = System.currentTimeMillis();
+		
+		// This is how long we've been waiting up until now
+		long delta = System.currentTimeMillis() - start;
+		
+		while( state.outstandingBets() && delta < BETTING_WAIT_TIME ) {
+			
+			// Sleep a while to give them time to check
+			try {
+				Thread.sleep( SWEEP_DELAY );
+			} catch( InterruptedException e ) {
+				// It's just waking us up
+			}
+			
+			// Recalculate delta before checking again
+			delta = System.currentTimeMillis() - start;
+		}
+	}
+
+	/**
+	 * Looks at all the players who are active. If there are any
+	 * who don't have their bet set, they need to be idle-bumped
+	 */
+	public void removeActivePlayersWithNoBets() {
+		if( state != null ) {
+			state.removeActivePlayersWithNoBet();
+		}
+	}
+	
 }
