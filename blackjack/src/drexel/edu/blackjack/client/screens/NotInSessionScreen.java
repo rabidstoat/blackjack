@@ -83,18 +83,23 @@ public class NotInSessionScreen extends AbstractScreen {
 			else if( code.hasSameCode( ResponseCode.CODE.GAMES_FOLLOW ) ) {
 				displayGameList( code );
 				state = JOIN_GAME;
+				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.NO_GAMES_HOSTED ) ) {
 				System.out.println( "Unfortunately, no games are hosted on this server" );
 				state = MAIN_MENU;
+				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.JOIN_SESSION_AT_MAX_PLAYERS ) ) {
 				System.out.println( "The game you selected already has the maximum number of players." );
 				state = MAIN_MENU;
+				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.JOIN_SESSION_DOES_NOT_EXIST ) ) {
 				System.out.println( "That game no longer is hosted by the server. Sorry about that." );
 				state = MAIN_MENU;
+				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.JOIN_SESSION_TOO_POOR ) ) {
 				System.out.println( "You don't have enough money in your account to cover the minimum bet." );
 				state = MAIN_MENU;
+				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_JOINED_SESSION ) ) {
 				// This needs to say that they successfully joined a game, and move them to the next screen
 				System.out.println( "Successfully joined the game." );
@@ -104,9 +109,6 @@ public class NotInSessionScreen extends AbstractScreen {
 			} else {
 				super.handleResponseCode( code );
 			}
-			
-			// And show them the menu
-			displayMenu();
 		}
 
 	}
