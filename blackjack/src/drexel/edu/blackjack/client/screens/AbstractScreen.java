@@ -188,6 +188,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 				} else {
 					LOGGER.info( "Received unhandled informative code of '" + code.toString() + "'." );
 				}
+				displayMenu();
 				
 			} else if( code.isGameState() ) {
 				
@@ -195,20 +196,25 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 					displayPlayerMovement( code );
 				} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_LEFT ) ) {
 					displayPlayerMovement( code );
+				} else {
+					// TODO: Handle game state codes
+					LOGGER.info( "Received unhandled game state code of '" + code.toString() + "'." );
 				}
-				// TODO: Handle game state codes
-				LOGGER.info( "Received unhandled game state code of '" + code.toString() + "'." );
+				displayMenu();
+				
 			} else if( code.isCommandComplete() ) {
 				
 				if( code.hasSameCode(ResponseCode.CODE.SUCCESSFULLY_QUIT ) ) {
 					quitTheGame();
 				} else {
 					LOGGER.info( "Received unhandled command-complete code of '" + code.toString() + "'." );
+					displayMenu();
 				}
 				
 			} else {
 				// TODO: Not sure what to do here
 				LOGGER.info( "Received some other unhandled code of '" + code.toString() + "'." );
+				displayMenu();
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import drexel.edu.blackjack.cards.Hand;
 import drexel.edu.blackjack.db.user.UserMetadata;
+import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.BlackjackServerThread;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.util.BlackjackLogger;
@@ -169,6 +170,22 @@ public class User {
 	 */
 	public void setBlackjackServerThread(BlackjackServerThread thread) {
 		this.thread = thread;
+	}
+	
+	/**
+	 * Sets the state on the protocol object associated with this user's
+	 * connection. 
+	 * 
+	 * @return True if it was successful, otherwise false
+	 */
+	public boolean setProtocolState( BlackjackProtocol.STATE state ) {
+		
+		if( thread != null && thread.getProtocol() != null ) {
+			thread.getProtocol().setState( state );
+			return true;
+		}
+		
+		return false;
 	}
 
 	/**

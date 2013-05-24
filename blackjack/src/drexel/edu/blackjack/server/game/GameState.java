@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import drexel.edu.blackjack.db.user.UserMetadata;
+import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
@@ -225,6 +226,7 @@ public class GameState {
 			// Request bids from all players
 			for( User player : players ) {
 				ResponseCode code = new ResponseCode( ResponseCode.CODE.REQUEST_FOR_BET );
+				player.setProtocolState( BlackjackProtocol.STATE.IN_SESSION_AWAITING_BETS );
 				player.sendMessage(code);
 			}
 		}

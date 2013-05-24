@@ -121,17 +121,20 @@ public class InSessionScreen extends AbstractScreen {
 			// This is bad.
 			if( code == null ) {
 				reset();
-				return;
-			}
-			
-			if( code.hasSameCode( ResponseCode.CODE.INVALID_BET_OUTSIDE_RANGE ) ) {
-				// TODO
+			} else if( code.hasSameCode( ResponseCode.CODE.INVALID_BET_OUTSIDE_RANGE ) ) {
+				System.out.println( "Your bet was outside the range allowed in the game." );
+				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.INVALID_BET_TOO_POOR ) ) {
-				// TODO
+				System.out.println( "Your account is not large enough for that bet." );
+				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_BET ) ) {
-				// TODO
+				System.out.println( "Your bet amount has been deducted from your account." );
+				state = WATCHING_GAME;
+				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_HIT ) ) {
 				// TODO
+				System.out.println( "Need to implement the response to a successful hit." );
+				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_LEFT_SESSION_FORFEIT_BET) ) {
 				System.out.println( "You left the game mid-play, forfeiting $" + code.getFirstParameterAsString() + "." );
 				state = WATCHING_GAME;	// Reset the internal state just in case....
@@ -141,23 +144,31 @@ public class InSessionScreen extends AbstractScreen {
 				state = WATCHING_GAME;	// Reset the internal state just in case....
 				showPreviousScreen();	// Move to the previous screen
 			} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_STAND ) ) {
-				// TODO: Implement
+				// TODO
+				System.out.println( "Need to implement the response to a successful stand." );
+				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.TIMEOUT_EXCEEDED_WHILE_BETTING ) ) {
-				// TODO: Implement
+				System.out.println( "You did not place a bet in time, and have been removed from the game. No money was lost." );
+				state = WATCHING_GAME;	// Reset the internal state just in case....
+				showPreviousScreen();	// Move to the previous screen
 			} else if( code.hasSameCode( ResponseCode.CODE.TIMEOUT_EXCEEDED_WHILE_PLAYING ) ) {
-				// TODO: Implement
+				// TODO: Something better here
+				System.out.println( "You did not choose your play in time, and have been removed from the game." );
+				state = WATCHING_GAME;	// Reset the internal state just in case....
+				showPreviousScreen();	// Move to the previous screen
 			} else if( code.hasSameCode( ResponseCode.CODE.USER_BUSTED ) ) {
-				// TODO: Implement
+				System.out.println( "You BUSTED. That's over 21, and you have lost." );
+				state = WATCHING_GAME;
+				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.REQUEST_FOR_BET ) ) {
 				state = NEED_BET;
+				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.REQUEST_FOR_GAME_ACTION ) ) {
 				state = NEED_PLAY;
+				displayMenu();
 			} else {
 				super.handleResponseCode( code );
 			}
-			
-			// And show them the menu
-			displayMenu();
 		}
 	}	
 
@@ -221,7 +232,6 @@ public class InSessionScreen extends AbstractScreen {
 			reset();
 		} else {
 			// Try to interpret the amount as a number
-			System.out.println( "Trying to interpret user bet of " + str );
 			Integer bet = null;
 			try {
 				bet = Integer.parseInt(str.trim());
