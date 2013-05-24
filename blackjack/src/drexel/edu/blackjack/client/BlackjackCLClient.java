@@ -335,5 +335,16 @@ public class BlackjackCLClient {
 	public ClientSideGame getCurrentGame() {
 		return currentGame;
 	}
+	
+	/**
+	 * If the message frame is showing, hide it. If it's
+	 * hiding, show it.
+	 */
+	public void toggleMessageFrame() {
+		MessageFrame frame = MessageFrame.getDefaultMessageFrame();
+		if( frame != null ) {
+			frame.setVisible( !frame.isVisible() );
+		}
+	}
 
 }

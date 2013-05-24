@@ -31,6 +31,7 @@ public class InSessionScreen extends AbstractScreen {
 	private static String QUIT_OPTION			= "Q";
 	private static String MENU_OPTION			= "?";
 	private static String ACCOUNT_OPTION		= "A";
+	private static String TOGGLE_MONITOR_OPTION	= "T";
 	private static String INFO_OPTION			= "I";
 	
 	// Which of the states the screen is in
@@ -84,12 +85,13 @@ public class InSessionScreen extends AbstractScreen {
 					System.out.println( playingBlackjackStatusLine() );
 					System.out.println( "***********************************************************" );
 					System.out.println( "Please enter the letter or symbol of the option to perform:" );
-					System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
-					System.out.println( CAPABILITIES_OPTION + ") See what capabilities the game implements (for debug purposes)" );
 					System.out.println( LEAVE_OPTION + ") Leave the game" );
 					System.out.println( ACCOUNT_OPTION + ") Account balance request" );
 					System.out.println( INFO_OPTION + ") Info about the game" );
 					System.out.println( QUIT_OPTION + ") Quit playing entirely" );
+					System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
+					System.out.println( CAPABILITIES_OPTION + ") See what capabilities the game implements (for debug purposes)" );
+					System.out.println( TOGGLE_MONITOR_OPTION + ") Toggle the message monitor window (for debug purposes)" );
 					System.out.println( MENU_OPTION + ") Repeat this menu of options" );
 					System.out.println( "***********************************************************" );
 				}
@@ -246,6 +248,8 @@ public class InSessionScreen extends AbstractScreen {
 						reset();
 					} else if( str.trim().equals(CAPABILITIES_OPTION) ) {
 						sendCapabilitiesRequest();
+					} else if( str.trim().equals(TOGGLE_MONITOR_OPTION) ) {
+						toggleMessageMonitorFrame();
 					} else if( str.trim().equals(MENU_OPTION) ) {
 						displayMenu();
 					} else if( str.trim().equals(QUIT_OPTION) ) {

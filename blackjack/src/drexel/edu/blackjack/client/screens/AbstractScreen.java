@@ -334,7 +334,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	}
 
 	/***********************************************************************************
-	 * Interacts with the server to handle various user requests
+	 * Interacts with the server as needed to handle various user requests
 	 **********************************************************************************/
 
 	protected void sendVersionRequest() {
@@ -352,4 +352,9 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		helper.sendCapabilitiesRequest();
 	}
 
+	protected void toggleMessageMonitorFrame() {
+		if( client != null ) {
+			client.toggleMessageFrame();
+		}
+	}
 }

@@ -34,6 +34,7 @@ public class NotInSessionScreen extends AbstractScreen {
 	private static String QUIT_OPTION			= "Q";
 	private static String MENU_OPTION			= "?";
 	private static String ACCOUNT_OPTION		= "A";
+	private static String TOGGLE_MONITOR_OPTION	= "T";
 	private static String BACK_OPTION			= "back";
 	
 	// Which of the states the screen is in
@@ -215,11 +216,12 @@ public class NotInSessionScreen extends AbstractScreen {
 				System.out.println( "                Looking for a Game Screen                  " );
 				System.out.println( "***********************************************************" );
 				System.out.println( "Please enter the letter or symbol of the option to perform:" );
-				System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
-				System.out.println( CAPABILITIES_OPTION + ") See what capabilities the game implements (for debug purposes)" );
 				System.out.println( JOIN_OPTION + ") Join a game" );
 				System.out.println( ACCOUNT_OPTION + ") Account balance request" );
 				System.out.println( QUIT_OPTION + ") Quit playing" );
+				System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
+				System.out.println( CAPABILITIES_OPTION + ") See what capabilities the game implements (for debug purposes)" );
+				System.out.println( TOGGLE_MONITOR_OPTION + ") Toggle the message monitor window (for debug purposes)" );
 				System.out.println( MENU_OPTION + ") Repeat this menu of options" );
 				System.out.println( "***********************************************************" );
 			}
@@ -284,6 +286,8 @@ public class NotInSessionScreen extends AbstractScreen {
 					sendVersionRequest();
 				} else if( str.trim().equals(ACCOUNT_OPTION) ) {
 					sendAccountRequest();
+				} else if( str.trim().equals(TOGGLE_MONITOR_OPTION) ) {
+					toggleMessageMonitorFrame();
 				} else {
 					System.out.println( "Unrecognized user input: " + str );
 					displayMenu();
