@@ -25,6 +25,7 @@ public class Game {
 	public static final String MAX_PLAYERS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " MAXPLAYERS";
 	public static final String ACTIVE_STATUS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " STATUS ACTIVE";
 	public static final String INACTIVE_STATUS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " STATUS INACTIVE";
+	public static final String RULE_KEYWORD = "RULE"; 
 	public static final String RECORD_START_KEYWORD = "GAME";
 	public static final String RECORD_END_KEYWORD = "ENDGAME";
 	
@@ -48,7 +49,7 @@ public class Game {
 	private int SWEEP_DELAY				= 500;
 	
 	// And of course our logger
-	private final static Logger LOGGER = BlackjackLogger.createLogger(Game.class.getName()); 
+	private final static Logger LOGGER = BlackjackLogger.createLogger(Game.class.getName());
 	
 	/*******************************************************************************
 	 * Constructor
@@ -179,6 +180,11 @@ public class Game {
 		str.append( MAX_BET_ATTRIBUTE + " " + metadata.getMaxBet() + "\n");
 		str.append( NUM_PLAYERS_ATTRIBUTE + " " + state.getNumberOfPlayers() + "\n");
 		str.append( NUM_DECKS_ATTRIBUTE + " " + metadata.getNumDecks() + "\n");
+		if( metadata.getRules() != null ) {
+			for( String rule : metadata.getRules() ) {
+				str.append( RULE_KEYWORD + " " + rule + "\n" );
+			}
+		}
 		str.append( RECORD_END_KEYWORD + "\n" );
 		return str.toString();
 	}
