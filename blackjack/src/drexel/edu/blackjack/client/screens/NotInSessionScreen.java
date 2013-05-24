@@ -2,7 +2,6 @@ package drexel.edu.blackjack.client.screens;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -43,6 +42,10 @@ public class NotInSessionScreen extends AbstractScreen {
 	// Once we read a list of games, need a way to map from their menu
 	// number, to their ID (which is needed for joining the session)
 	private Map<Integer,String> menuNumberToGameIdMap = new HashMap<Integer,String>();
+	
+	// When the user requests to join a game, keep track of it here. If the join
+	// request is successful the client will need to be informed which game
+	private String requestedGameId = null;
 	
 	// And keep a copy to itself for the singleton pattern
 	private static NotInSessionScreen notInSessionScreen = null;
@@ -95,6 +98,7 @@ public class NotInSessionScreen extends AbstractScreen {
 				// This needs to say that they successfully joined a game, and move them to the next screen
 				System.out.println( "Successfully joined the game." );
 				state = MAIN_MENU;	// Reset the internal state just in case....
+				client.setCurrentGameById( requestedGameId );
 				showNextScreen();	// Move to the next screen
 			} else {
 				super.handleResponseCode( code );
@@ -185,7 +189,7 @@ public class NotInSessionScreen extends AbstractScreen {
 					} else if( currentLine.startsWith( Game.RECORD_END_KEYWORD ) ) {
 						// We need to create, and cache, a ClientSideGame
 						ClientSideGame game = new ClientSideGame( gameId, numDecks,
-								rules, minBet, maxBet, "A game of blackjack" );
+								rules, minBet, maxBet, gameDescription );
 						map.put( gameId, game );
 					}
 				}
@@ -363,6 +367,8 @@ public class NotInSessionScreen extends AbstractScreen {
 
 	private void sendJoinGameRequest( String id ) {
 		System.out.println( "Alerting the server that you wish to join this game..." );
+		// Remember to track it internally
+		requestedGameId = id;
 		helper.sendJoinSessionRequest( id );
 	}	
 }

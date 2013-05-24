@@ -77,6 +77,9 @@ public class BlackjackCLClient {
 	// Keeps track of the games that the client knows about
 	private Map<String,ClientSideGame> gameMap = new HashMap<String,ClientSideGame>();
 	
+	// And the current game they're in, if known
+	private ClientSideGame currentGame = null;
+	
 	// ALong with the input and output
 	private ClientOutputToServerHelper output = null;
 	private ClientInputFromServerThread input = null;
@@ -301,8 +304,36 @@ public class BlackjackCLClient {
 		return gameMap;
 	}
 	
+	/**
+	 * The client keeps track of games in a hash map
+	 * 
+	 * @param gameMap Set that map
+	 */
 	public void setGameMap( Map<String,ClientSideGame> gameMap ) {
 		this.gameMap = gameMap;
+	}
+
+	/**
+	 * Sometimes (hopefully always) the client is told which game
+	 * the user is playing. This is so information can be presented
+	 * to the user about the game, if needed.
+	 *  
+	 * @param gameId Should be to a valid game in a previously
+	 * set game map
+	 */
+	public void setCurrentGameById(String gameId) {
+		currentGame = (gameMap == null ? null : gameMap.get(gameId) );
+	}
+	
+	/**
+	 * Returns the game the player is currently (or most
+	 * recently) are playing. This shouldn't be null if
+	 * things are working right, but it might be.
+	 * 
+	 * @return The game that the user is playing
+	 */
+	public ClientSideGame getCurrentGame() {
+		return currentGame;
 	}
 
 }
