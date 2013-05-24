@@ -207,18 +207,26 @@ public class GameState {
 	 * is being started. A few things are done here:
 	 * 
 	 * <ol>
-	 * <li>Players with GONE status can be removed
-	 * <li>Players with OBSERVER or RETURNED status
-	 *     can be set to ACTIVE
+	 * <li>All players are set to ACTIVE status
 	 * <li>The currentPlayer is set to null
+	 * <li>Requests for bids are made of all players
 	 * </ol>
 	 */
 	synchronized public void startNewRound() {
 		
 		// Need to have valid lists
 		if( players != null ) {
+			// Sets up all players active
 			makeAllPlayersActive();
+			
+			// Reset the starting player
 			currentPlayer = null;
+			
+			// Request bids from all players
+			for( User player : players ) {
+				ResponseCode code = new ResponseCode( ResponseCode.CODE.REQUEST_FOR_BET );
+				player.sendMessage(code);
+			}
 		}
 	}
 

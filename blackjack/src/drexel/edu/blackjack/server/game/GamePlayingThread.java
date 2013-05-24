@@ -1,5 +1,9 @@
 package drexel.edu.blackjack.server.game;
 
+import java.util.logging.Logger;
+
+import drexel.edu.blackjack.util.BlackjackLogger;
+
 /**
  * This is the class that actually handles playing a 
  * game by requesting bets, dealing cards, requesting
@@ -15,6 +19,8 @@ public class GamePlayingThread extends Thread {
 	
 	// A game playing thread is responsible for one and only one game
 	private Game game = null;
+	
+	private final static Logger LOGGER = BlackjackLogger.createLogger( GamePlayingThread.class.getName() );
 
 	/************************************************************
 	 * Constructor
@@ -41,7 +47,14 @@ public class GamePlayingThread extends Thread {
 	
 	@Override
 	public void run() {
-		System.out.println( "Starting the game playing thread for " + (game == null ? "a null game" : game.getId() ) );
+		LOGGER.info( "Starting the game playing thread for " + (game == null ? "a null game" : game.getId() ) );
+		
+		// First off, need to start the game and send 'gimme your bet' messages to all the players
+		if( game == null ) {
+			LOGGER.severe( "Somehow in a game playing thread with a null game." );
+		} else {
+			game.start();
+		}
 	}
 
 	/************************************************************

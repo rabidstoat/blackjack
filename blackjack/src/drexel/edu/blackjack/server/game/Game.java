@@ -197,4 +197,17 @@ public class Game {
 		}
 		return null;
 	}
+
+	/**
+	 * Starting the game involves starting a new round
+	 * of play, then requesting bets.
+	 */
+	public void start() {
+		if( state == null ) {
+			LOGGER.severe( "Trying to start a game with a null state can't be good..." );
+		} else {
+			// This will set players active and set the current player
+			state.startNewRound();
+		}
+	}
 }

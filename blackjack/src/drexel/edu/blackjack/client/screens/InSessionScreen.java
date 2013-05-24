@@ -59,8 +59,11 @@ public class InSessionScreen extends AbstractScreen {
 		
 		if( this.isActive ) {
 			if( state == NEED_BET ) {
-				// TODO: Yeah
-				reset();
+				System.out.println( "***********************************************************" );
+				System.out.println( "                 Making a Bet Screen                       " );
+				System.out.println( "***********************************************************" );
+				System.out.println( "How much would you like to bet?" );
+				System.out.println( "***********************************************************" );
 			} else if( state == NEED_PLAY ) {
 				// TODO: Yeah
 				reset();
@@ -145,6 +148,10 @@ public class InSessionScreen extends AbstractScreen {
 				// TODO: Implement
 			} else if( code.hasSameCode( ResponseCode.CODE.USER_BUSTED ) ) {
 				// TODO: Implement
+			} else if( code.hasSameCode( ResponseCode.CODE.REQUEST_FOR_BET ) ) {
+				state = NEED_BET;
+			} else if( code.hasSameCode( ResponseCode.CODE.REQUEST_FOR_GAME_ACTION ) ) {
+				state = NEED_PLAY;
 			} else {
 				super.handleResponseCode( code );
 			}
@@ -157,9 +164,13 @@ public class InSessionScreen extends AbstractScreen {
 	@Override
 	public void handleUserInput(String str) {
 		if( this.isActive ) {
+			
 			if( state == NEED_BET ) {
-				// TODO: Yeah
-				reset();
+				if( str == null ) {
+					reset();
+				} else {
+					interpretUserBet( str );
+				}
 			} else if( state == NEED_PLAY ) {
 				// TODO: Yeah
 				reset();
@@ -172,6 +183,7 @@ public class InSessionScreen extends AbstractScreen {
 					displayMenu();
 				} else if( str.trim().equals(QUIT_OPTION) ) {
 					//TODO
+					System.out.println( "Not implemented yet. Try leaving the game first, then quit." );
 					//quit();
 				} else if( str.trim().equals(VERSION_OPTION) ) {
 					sendVersionRequest();
@@ -184,7 +196,7 @@ public class InSessionScreen extends AbstractScreen {
 					displayMenu();
 				}
 			} else {
-				System.out.println( "Uh oh. The UI got into a weird state, resetting it for you." );
+				System.out.println( "Uh oh. The UI got into a weird state (" + state + "), resetting it for you." );
 				reset();
 			}
 		}
@@ -200,4 +212,25 @@ public class InSessionScreen extends AbstractScreen {
 		helper.sendLeaveSessionRequest();
 	}
 
+	/**
+	 * Upon being requested to enter a bet, the user entered
+	 * something. Hopefully it's a number...
+	 */
+	private void interpretUserBet( String str ) {
+		if( str == null ) {
+			reset();
+		} else {
+			// Try to interpret the amount as a number
+			System.out.println( "Trying to interpret user bet of " + str );
+			Integer bet = null;
+			try {
+				bet = Integer.parseInt(str.trim());
+				System.out.println( "One moment, submitting your bet to the dealer..." );
+				helper.sendBetRequest( bet );
+			} catch( NumberFormatException e ) {
+				System.out.println( "You need to enter a number for the bet amount." );
+				displayMenu();
+			}
+		}
+	}
 }

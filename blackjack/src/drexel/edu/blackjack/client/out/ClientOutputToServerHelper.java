@@ -119,6 +119,17 @@ public class ClientOutputToServerHelper extends Thread {
 	}
 
 	/**
+	 * Sends a request to the server placing a bet
+	 */
+	public boolean sendBetRequest(Integer bet) {
+		if( bet == null ) {
+			return false;
+		}
+		
+		return this.sendRawText( "BET " + bet.toString() );
+	}
+	
+	/**
 	 * Sends a request to the server asking for the version
 	 */
 	public boolean sendVersionRequest() {
@@ -187,5 +198,5 @@ public class ClientOutputToServerHelper extends Thread {
 	synchronized public boolean removeListener( MessagesToServerListener listener ) {
 		return listeners.remove(listener);
 	}
-	
+
 }
