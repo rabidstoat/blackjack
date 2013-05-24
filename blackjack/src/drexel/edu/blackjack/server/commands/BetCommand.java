@@ -82,9 +82,6 @@ public class BetCommand extends BlackjackCommand {
 		//5.4 Success! Need to store the amount on the protocol
 		protocol.setBet( desiredBet );
 		
-		// And do... something else, not sure yet
-		// TODO: Need to call some method about the bet being set
-		
 		// And return a successfully response
 		return new ResponseCode( ResponseCode.CODE.SUCCESSFULLY_BET ,
 				" Bet Command completed").toString();			
