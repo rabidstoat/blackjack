@@ -94,15 +94,7 @@ public class ClientSideGame {
 		
 		// Some metadata on the same line
 		str.append( " [" );
-		if( getMinBet() == null && getMaxBet() == null ) {
-			str.append( "Unlimited bet range" );
-		} else if( getMinBet() == null ) {
-			str.append( "Bets up to $" + getMaxBet() );
-		} else if( getMaxBet() == null ) {
-			str.append( "Bets start at $" + getMinBet() );
-		} else {
-			str.append( "Bets from $" + getMinBet() + " - $" + getMaxBet() );
-		}
+		str.append( getBetRestriction() );
 		str.append(", " );
 		if( getNumDecks() == null ) {
 			str.append( "with an unspecified number of decks used" );
@@ -118,5 +110,29 @@ public class ClientSideGame {
 		}
 		
 		return str.toString();
+	}
+
+	/**
+	 * Get a text description of the bet range of this game.
+	 * 
+	 * @return A sentence that stands on its own describing
+	 * the restrictions for bets on this game, with no
+	 * ending punctuation
+	 */
+	public String getBetRestriction() {
+		
+		String betRestriction = "Bet restrictions unknown";
+		
+		if( getMinBet() == null && getMaxBet() == null ) {
+			betRestriction = "Unlimited bet range";
+		} else if( getMinBet() == null ) {
+			betRestriction = "Bets up to $" + getMaxBet();
+		} else if( getMaxBet() == null ) {
+			betRestriction = "Bets start at $" + getMinBet();
+		} else {
+			betRestriction = "Bets from $" + getMinBet() + " - $" + getMaxBet();
+		}
+		
+		return betRestriction;
 	}
 }

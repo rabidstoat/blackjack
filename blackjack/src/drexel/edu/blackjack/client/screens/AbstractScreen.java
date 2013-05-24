@@ -291,9 +291,9 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 * be displayed as a text string
 	 * @param str
 	 */
-	private void updateStatus(String str) {
-		SimpleDateFormat sdf = new SimpleDateFormat( "hh:mm:ss");
-		System.out.println( "UPDATE " + sdf.format( new Date() ) + ": " + str );
+	protected void updateStatus(String str) {
+		SimpleDateFormat sdf = new SimpleDateFormat( "HH:mm:ss");
+		System.out.println( "[" + sdf.format( new Date() ) + "] " + str );
 	}
 
 	/**

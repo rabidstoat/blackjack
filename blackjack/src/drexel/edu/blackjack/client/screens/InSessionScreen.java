@@ -74,6 +74,9 @@ public class InSessionScreen extends AbstractScreen {
 					System.out.println( "                 Making a Bet Screen                       " );
 					System.out.println( "***********************************************************" );
 					System.out.println( "How much would you like to bet?" );
+					if( client.getCurrentGame() != null ) {
+						System.out.println( "(" + client.getCurrentGame().getBetRestriction() + ".)" );
+					}
 					System.out.println( "***********************************************************" );
 				} else if( state == NEED_PLAY ) {
 					// TODO: Yeah
@@ -177,13 +180,14 @@ public class InSessionScreen extends AbstractScreen {
 				if( code == null ) {
 					reset();
 				} else if( code.hasSameCode( ResponseCode.CODE.INVALID_BET_OUTSIDE_RANGE ) ) {
-					System.out.println( "Your bet was outside the range allowed in the game." );
-					displayMenu();
+					updateStatus( "Your bet was outside the range allowed in the game." );
+					if( client.getCurrentGame() != null ) {
+						updateStatus( client.getCurrentGame().getBetRestriction() + "." );
+					}
 				} else if( code.hasSameCode( ResponseCode.CODE.INVALID_BET_TOO_POOR ) ) {
-					System.out.println( "Your account is not large enough for that bet." );
-					displayMenu();
+					updateStatus( "Your account is not large enough for that bet." );
 				} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_BET ) ) {
-					System.out.println( "Your bet amount has been deducted from your account." );
+					updateStatus( "Your bet of $" + requestedBet + " has been deducted from your account." );
 					acceptedBet = requestedBet;
 					state = WATCHING_GAME;
 					displayMenu();
@@ -192,11 +196,11 @@ public class InSessionScreen extends AbstractScreen {
 					System.out.println( "Need to implement the response to a successful hit." );
 					displayMenu();
 				} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_LEFT_SESSION_FORFEIT_BET) ) {
-					System.out.println( "You left the game mid-play, forfeiting $" + code.getFirstParameterAsString() + "." );
+					updateStatus( "You left the game mid-play, forfeiting $" + code.getFirstParameterAsString() + "." );
 					state = WATCHING_GAME;	// Reset the internal state just in case....
 					showPreviousScreen();	// Move to the previous screen
 				} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_LEFT_SESSION_NOT_MIDPLAY ) ) {
-					System.out.println( "You left the game between hands, and did not forfeit a bet." );
+					updateStatus( "You left the game between hands, and no money was lost." );
 					state = WATCHING_GAME;	// Reset the internal state just in case....
 					showPreviousScreen();	// Move to the previous screen
 				} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_STAND ) ) {
@@ -204,16 +208,18 @@ public class InSessionScreen extends AbstractScreen {
 					System.out.println( "Need to implement the response to a successful stand." );
 					displayMenu();
 				} else if( code.hasSameCode( ResponseCode.CODE.TIMEOUT_EXCEEDED_WHILE_BETTING ) ) {
-					System.out.println( "You did not place a bet in time, and have been removed from the game. No money was lost." );
+					updateStatus( "You did not place a bet in time." );
+					updateStatus( "Removed from game but no money lost." );
 					state = WATCHING_GAME;	// Reset the internal state just in case....
 					showPreviousScreen();	// Move to the previous screen
 				} else if( code.hasSameCode( ResponseCode.CODE.TIMEOUT_EXCEEDED_WHILE_PLAYING ) ) {
 					// TODO: Something better here
-					System.out.println( "You did not choose your play in time, and have been removed from the game." );
+					updateStatus( "You did not choose your play in time" );
+					updateStatus( "Removed from game and bet was lost." );
 					state = WATCHING_GAME;	// Reset the internal state just in case....
 					showPreviousScreen();	// Move to the previous screen
 				} else if( code.hasSameCode( ResponseCode.CODE.USER_BUSTED ) ) {
-					System.out.println( "You BUSTED. That's over 21, and you have lost." );
+					updateStatus( "You BUSTED. That's over 21, and you have lost." );
 					state = WATCHING_GAME;
 					displayMenu();
 				} else if( code.hasSameCode( ResponseCode.CODE.REQUEST_FOR_BET ) ) {
