@@ -56,7 +56,7 @@ public class ClientOutputToServerHelper extends Thread {
 	public boolean sendRawText( String text ) {
 		
 		// In case we're debugging
-		LOGGER.info( ">>>> " + text );
+		LOGGER.fine( ">>>> " + text );
 		
 		// Any listeners?
 		if( listeners != null ) {

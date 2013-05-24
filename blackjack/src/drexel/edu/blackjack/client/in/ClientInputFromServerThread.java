@@ -100,7 +100,7 @@ public class ClientInputFromServerThread extends Thread {
 				while ( inputLine != null ) {
 					
 					// If we're debuging
-					LOGGER.info( "<<<< " + inputLine );
+					LOGGER.fine( "<<<< " + inputLine );
 					
 					// What we due depends on if we're processing a multiline message or not
 					if( this.processingMultilineMessage ) {
