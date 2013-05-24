@@ -32,6 +32,9 @@ public class BlackjackProtocol {
 	// Only want to initialize it once
 	private static boolean isInitialized					= false;
 	
+	// Keep track of incorrect login attempts
+	private int incorrectLogins = 0;
+	
 	// This file should be in the classpath
 	private static String COMMAND_FILENAME					= "commands.txt";
 	
@@ -439,4 +442,21 @@ public class BlackjackProtocol {
 		this.timer = timer;
 	}
 
+	/**
+	 * A count is kept of incorrect login attempts. If it exceeds
+	 * the MAX_INVALID_LOGINS, the session is ended
+	 */
+	public void incrementIncorrectLogins() {
+		incorrectLogins++;
+	}
+
+	/**
+	 * Get the number of incorrect logins recorded
+	 * at this point in time.
+	 * 
+	 * @return Number of incorrect logins
+	 */
+	public int getIncorrectLogins() {
+		return incorrectLogins;
+	}
 }

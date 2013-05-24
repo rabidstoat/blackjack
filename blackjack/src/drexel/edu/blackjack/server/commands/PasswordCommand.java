@@ -15,6 +15,9 @@ import drexel.edu.blackjack.server.game.User;
 /***/
 
 public class PasswordCommand extends BlackjackCommand {
+	
+	// They get 3 tries to login before they're booted
+	public static final int INCORRECT_LOGIN_LIMIT = 3;
 
 	private static final String COMMAND_WORD = "PASSWORD";
 
@@ -62,13 +65,25 @@ public class PasswordCommand extends BlackjackCommand {
 		
 		/**Check that login-credentials parameters are not null; else, send an error message.
 		 * If login-credentials valid, record which user is connected and send a 'success' message.*/
-		
 		if(userManager.loginUser(username, password) == null) {
 			
-			protocol.setState(STATE.WAITING_FOR_USERNAME);
+			// We keep track of how many times they've failed
+			protocol.incrementIncorrectLogins();
 			
-			return new ResponseCode( ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS, 
-					"PasswordCommand.loginCredentialsCommand() received invalid login credentials; try logging in again.").toString();
+			// We need to return this
+			ResponseCode code = new ResponseCode( ResponseCode.CODE.INTERNAL_ERROR );
+			
+			// Make sure they didn't hit a threshold
+			if( protocol.getIncorrectLogins() >= INCORRECT_LOGIN_LIMIT ) {
+				code = new ResponseCode( ResponseCode.CODE.LOGIN_ATTEMPTS_EXCEEDED );
+			} else {
+				// Here, we let them try again
+				protocol.setState(STATE.WAITING_FOR_USERNAME);
+				code = new ResponseCode( ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS, 
+						"PasswordCommand.loginCredentialsCommand() received invalid login credentials; try logging in again.");
+			}
+			
+			return code.toString();	
 		}
 		/**Associate the new user with the protocol*/
 		

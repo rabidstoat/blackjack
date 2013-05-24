@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import drexel.edu.blackjack.server.commands.PasswordCommand;
+
 /**
  * This class is used to generate or interpret response
  * codes. It's mostly a set of convenience functions, though
@@ -59,6 +61,7 @@ public class ResponseCode {
 		INVALID_LOGIN_CREDENTIALS( 402, "The username and password are incorrect." ),
 		NOT_EXPECTING_PASSWORD( 403, "Server was not expected to receive a PASSWORD command just now." ),
 		NOT_EXPECTING_USERNAME( 404, "Server was not expected to receive a USERNAME command just now." ),
+		LOGIN_ATTEMPTS_EXCEEDED( 405, "Exceeded allowed " + PasswordCommand.INCORRECT_LOGIN_LIMIT + " incorrect login attempts" ),
 		JOIN_SESSION_DOES_NOT_EXIST( 410, "Tried to join a non-existent game session." ),
 		JOIN_SESSION_AT_MAX_PLAYERS( 411, "Cannot join a session at the maximum number of players." ),
 		JOIN_SESSION_TOO_POOR( 412, "Cannot join the session as bank account is too low." ),
@@ -664,5 +667,22 @@ public class ResponseCode {
 		// Otherwise we count
 		String[] lines = text.split( "\n" );
 		return lines.length;
+	}
+
+	/**
+	 * Does this code indicate that a disconnect is needed? Certain
+	 * CODE value indicate that
+	 * 
+	 * @return
+	 */
+	public boolean requiresDisconnect() {
+		
+		if( code != null ) {
+			// Or together all the 'you are going to be disconnected' codes here
+			return hasSameCode(CODE.LOGIN_ATTEMPTS_EXCEEDED);
+		}
+		
+		// Get this far, must be fine
+		return false;
 	}
 }

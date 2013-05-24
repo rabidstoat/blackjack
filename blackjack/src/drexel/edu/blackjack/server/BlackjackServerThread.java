@@ -84,6 +84,12 @@ public class BlackjackServerThread extends Thread {
 				out.println(outputLine);
 				out.flush();
 				
+				// Was it a code that requires us to disconnect them?
+				ResponseCode code = ResponseCode.getCodeFromString( outputLine );
+				if( code != null && code.requiresDisconnect() ) {
+					break;
+				}
+				
 				// And we read another line
 				LOGGER.finer( "Inside a blackjack server thread, about to block for another read" );
 				inputLine = in.readLine();
