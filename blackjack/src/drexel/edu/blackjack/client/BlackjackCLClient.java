@@ -11,6 +11,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -21,6 +23,7 @@ import javax.net.ssl.TrustManagerFactory;
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
 import drexel.edu.blackjack.client.screens.AbstractScreen;
+import drexel.edu.blackjack.client.screens.ClientSideGame;
 import drexel.edu.blackjack.client.screens.InSessionScreen;
 import drexel.edu.blackjack.client.screens.LoginInputScreen;
 import drexel.edu.blackjack.client.screens.NotInSessionScreen;
@@ -62,7 +65,7 @@ public class BlackjackCLClient {
 	// Finally, the port that the server will run on
 	private static final int PORT						= 55555;
 	
-	// This system property is set true if we should show the message frae
+	// This system property is set true if we should show the message frame
 	private static final String SHOW_MESSAGES			= "ShowMessages";
 	
 	// Our logger
@@ -70,6 +73,9 @@ public class BlackjackCLClient {
 	
 	// And keep track of the 'screen' that is 'up' on the clint
 	private AbstractScreen currentScreen = null;
+	
+	// Keeps track of the games that the client knows about
+	private Map<String,ClientSideGame> gameMap = new HashMap<String,ClientSideGame>();
 	
 	// ALong with the input and output
 	private ClientOutputToServerHelper output = null;
@@ -284,6 +290,19 @@ public class BlackjackCLClient {
 			// This is a weird error
 			LOGGER.severe( "Had a request to move to the next UI screen, but there was no next one defined." );
 		}
+	}
+		
+	/**
+	 * The client keeps track of games in a hash map.
+	 * 
+	 * @return That map
+	 */
+	public Map<String,ClientSideGame> getGameMap() {
+		return gameMap;
+	}
+	
+	public void setGameMap( Map<String,ClientSideGame> gameMap ) {
+		this.gameMap = gameMap;
 	}
 
 }
