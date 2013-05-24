@@ -43,7 +43,7 @@ public class VersionCommand extends BlackjackCommand {
 		
 		//Step 8: Format user response code
 		        
-			return 	new ResponseCode( ResponseCode.CODE.VERSION, "Blackjack Version 1.0").toString();
+		return 	new ResponseCode( ResponseCode.CODE.VERSION, "version 1.0 (CS544 implementation)").toString();
 				
 	}
 	
