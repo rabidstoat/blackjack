@@ -14,10 +14,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 	private static final String COMMAND_WORD = "CAPABILITIES";
 	
 	Set<STATE> validStates = null;
-	
-	StringBuilder capabilities = new StringBuilder();
-	
-	
+		
     /**@param protocol The protocol connection that made that
 	 * command. From there the user, state, and all sorts of
 	 * good information can be found.
@@ -34,52 +31,33 @@ public class CapabilitiesCommand extends BlackjackCommand {
 				"CapabilitiesCommand.processCommand() received null arguments").toString();
 		}
 
-		/**Step 1-2: Return an error if not in valid state for CAPABILITIES command:
-		 * These steps are ignored in this command; a client may execute this command
-		 * at any state in the protocol, including the non-authenticated state.  */	
-		
-		//Step 7: Update state: Send client back to the state client is currently
-		
-		protocol.setState(protocol.getState());
-		
-		/**Step 8: Generate a response listing the capabilities allowed.*/
-		
 		// 1. Get set of all valid commands, in any state
 		Set<BlackjackCommand> commands = protocol.getAllValidCommands();
-		
-		
+
 		// 2. Get the current state
-		STATE currentState = protocol.getState(); 
-		 
-		BlackjackCommand command;
-		 
-		//STATE state;
+		STATE currentState = protocol.getState();
 		
-		//Iterate through all valid blackjack commands. 
-		Iterator<BlackjackCommand> itr = commands.iterator();
-		while( itr.hasNext() ) {
-			command = itr.next();
+		// Build up capabilities list here
+		StringBuilder capabilities = new StringBuilder();
+
+		for( BlackjackCommand command : commands ) {
 			
 			//Get the states in which command is valid
 			Set<STATE> stateSet = command.getValidStates();
 			
 			if(stateSet.contains(currentState)){
+
 				//append to string builder:the command word, a space, and any parameters. 
-				capabilities.append( command.getCommandWord() + " " + command.getRequiredParameterNames());
+				StringBuilder str = new StringBuilder(command.getCommandWord());
+				if( command.getRequiredParameterNames() != null ) {
+					for( String parameter : command.getRequiredParameterNames() ) {
+						str.append( " " );
+						str.append( parameter );
+					}
 				}
-			
-			/**
-			//Iterate through the states valid for the command in current iteration
-			Iterator<STATE> itr2 = stateSet.iterator();
-			while( itr2.hasNext() ) {
-			state = itr2.next();
-			//If the set of states contains the current state
-			if(state.equals(currentState)) {
-				
-				//append to string builder:the command word, a space, and any parameters. 
-				capabilities.append( command.getCommandWord() + " " + command.getRequiredParameterNames());			
-			}
-		   } */
+				str.append( "\n" );
+				capabilities.append( str.toString() );
+			}			
 		}
 			
 		return 	new ResponseCode( ResponseCode.CODE.CAPABILITIES_FOLLOW,

@@ -11,8 +11,6 @@ import drexel.edu.blackjack.server.commands.CommandMetadata;
 
 public class UnknownCommand extends BlackjackCommand {
 
-	private static final String COMMAND_WORD = "UNKNOWN";
-	
 	private Set<STATE> validStates = null;
 	
 	@Override
@@ -49,7 +47,7 @@ public class UnknownCommand extends BlackjackCommand {
 		
 	@Override
 	public String getCommandWord() {
-		return COMMAND_WORD;
+		return null;
 	}
 	
 	@Override
