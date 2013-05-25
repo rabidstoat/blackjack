@@ -615,8 +615,9 @@ public class ResponseCode {
 	 */
 	public boolean isMultilineCode() {
 		
-		return this.getCode() == CODE.CAPABILITIES_FOLLOW.getCode() ||
-				this.getCode() == CODE.GAMES_FOLLOW.getCode();
+		return this.hasSameCode(CODE.CAPABILITIES_FOLLOW) ||
+				hasSameCode(CODE.GAMES_FOLLOW) ||
+				hasSameCode( CODE.GAME_STATUS );
 	}
 	
 	/**
