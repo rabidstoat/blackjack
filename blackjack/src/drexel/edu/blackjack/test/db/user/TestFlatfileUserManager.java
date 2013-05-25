@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import drexel.edu.blackjack.db.user.AlreadyLoggedInException;
 import drexel.edu.blackjack.db.user.FlatfileUserManager;
 import drexel.edu.blackjack.db.user.UserManagerInterface;
 import drexel.edu.blackjack.db.user.UserMetadata;
@@ -42,11 +43,43 @@ public class TestFlatfileUserManager {
 		f.add(u1);
 		assertTrue(f.save());
 		assertTrue(f.load());
-		assertTrue(f.loginUser(u1.getUsername(), u1.getPassword()).getFullname().equals(u1a[2]));
+		try {
+			assertTrue(f.loginUser(u1.getUsername(), u1.getPassword()).getFullname().equals(u1a[2]));
+		} catch (AlreadyLoggedInException e) {
+			fail( "Received an unexpected exception when logging in a user." );
+		}
+		try {
+			f.loginUser(u1.getUsername(), u1.getPassword()).getFullname().equals(u1a[2]);
+			fail( "Expected to receive an AlreadyLoggedInException for a second login, and did not." );
+		} catch (AlreadyLoggedInException e) {
+			// This is expected
+		}
+		assertTrue( f.logoutUser(u1.getUsername() ) );
+		try {
+			assertTrue(f.loginUser(u1.getUsername(), u1.getPassword()).getFullname().equals(u1a[2]));
+		} catch (AlreadyLoggedInException e) {
+			fail( "Received an unexpected exception when logging in a user after logging them out." );
+		}
 		f.add(u2);
 		assertTrue(f.save());
 		assertTrue(f.load());
-		assertTrue(f.loginUser(u2.getUsername(), u2.getPassword()).getFullname().equals(u2a[2]));
+		try {
+			assertTrue(f.loginUser(u2.getUsername(), u2.getPassword()).getFullname().equals(u2a[2]));
+		} catch (AlreadyLoggedInException e) {
+			fail( "Received an unexpected exception when logging in a user." );
+		}
+		try {
+			f.loginUser(u2.getUsername(), u2.getPassword()).getFullname().equals(u2a[2]);
+			fail( "Expected to receive an AlreadyLoggedInException for a second login, and did not." );
+		} catch (AlreadyLoggedInException e) {
+			// This was expected
+		}
+		assertTrue( f.logoutUser(u2.getUsername() ) );
+		try {
+			assertTrue(f.loginUser(u2.getUsername(), u2.getPassword()).getFullname().equals(u2a[2]));
+		} catch (AlreadyLoggedInException e) {
+			fail( "Received an unexpected exception when logging in a user after logging them out." );
+		}
 	}
 
 }

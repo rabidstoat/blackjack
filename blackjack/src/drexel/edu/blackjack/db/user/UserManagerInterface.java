@@ -65,6 +65,11 @@ public interface UserManagerInterface {
 	 * Returning any of them is considered valid (as this is 
 	 * really an error condition we're not worrying about).
 	 * 
+	 * Users who have logged in need to be tracked, and if a
+	 * username is logged in for a second time (with a correct
+	 * password) an exception about them being already logged
+	 * in must be thrown.
+	 * 
 	 * @param username Corresponds to username on the UserMetadata
 	 * object
 	 * @param passord Corresponds to password on the UserMetadata
@@ -72,6 +77,19 @@ public interface UserManagerInterface {
 	 * @return If some UserMetadata object exists with an equivalent
 	 * username and password string, then return the object (not
 	 * the object, a copy itself). Otherwise, return null.
+	 * @throws An exception if the user is already logged in
 	 */
-	public UserMetadata loginUser( String username, String password );
+	public UserMetadata loginUser( String username, String password ) throws AlreadyLoggedInException;
+	
+	/**
+	 * Removes the user with this username from the tracked
+	 * list of users who have logged into the session.
+	 * 
+	 * @param username
+	 * @return True if they were indeed noted as already logged
+	 * in but have been successfully removed, or false it they
+	 * either weren't listed as being logged in OR it failed
+	 * in some way
+	 */
+	public boolean logoutUser( String username );
 }

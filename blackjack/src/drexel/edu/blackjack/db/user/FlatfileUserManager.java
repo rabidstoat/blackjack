@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * User metadata is stored out in a flat file. The format
@@ -25,6 +27,9 @@ public class FlatfileUserManager implements UserManagerInterface {
 	private HashMap<String, UserMetadata> users;
 	public final static String USER_RECORDS = "users_serialized";
 	private final String objectFile;
+	
+	// Maintain a list of logged in users, to prevent a user from being logged in twice
+	private Set<String> loggedInUserNames = new HashSet<String>();
 
 	/**
 	 * Following the singleton design pattern, the constructor
@@ -76,13 +81,30 @@ public class FlatfileUserManager implements UserManagerInterface {
 	}
 
 	@Override
-	public UserMetadata loginUser(String username, String password) {
+	public UserMetadata loginUser(String username, String password) throws AlreadyLoggedInException {
 		if (users.containsKey(username)) {
 			if (users.get(username).getPassword().equals(password)) {
+				// Make sure they aren't already logged in
+				if( loggedInUserNames.contains(username) ) {
+					throw new AlreadyLoggedInException( username + " is already logged in." );
+				}
+				loggedInUserNames.add( username );
 				return users.get(username);
 			}
 		}
 		return null;
+	}
+	
+
+	@Override
+	public boolean logoutUser(String username) {
+		
+		if( loggedInUserNames != null ) {
+			return loggedInUserNames.remove(username);
+		}
+		
+		// If we got here something went wrong
+		return false;
 	}
 	
 	/**
