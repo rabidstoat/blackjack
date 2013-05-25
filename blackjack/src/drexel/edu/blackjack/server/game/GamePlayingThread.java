@@ -83,7 +83,7 @@ public class GamePlayingThread extends Thread {
 			
 		}
 		
-		System.out.println( "Done with the big game loop." );
+		LOGGER.info( "Done with the big game loop." );
 	}
 
 	/**

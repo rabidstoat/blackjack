@@ -138,37 +138,6 @@ public class ActiveGameCoordinator {
 		}
 	}
 
-	/******************************************************************************
-	 * Private methods go here
-	 *****************************************************************************/
-
-	/**
-	 * Loads the game metadata from the game manager interface.
-	 * Create a game for each game metadata object. Since they
-	 * initially aren't running, they all point to null threads.
-	 */
-	private void loadGames() {
-		GameManagerInterface gameManager = FlatfileGameManager.getDefaultGameManager();
-		if( gameManager == null ) {
-			LOGGER.severe( "Could not load the games in our game manager, the game manager was null." );
-		} else {
-			
-			// Initialize our maps
-			gameToThreadMap = new HashMap<Game,GamePlayingThread>();
-			idToGameMap = new HashMap<String,Game>();
-
-			// Can only add things from non-null game metadata list
-			List<GameMetadata> gameMetadatas = gameManager.getGames();
-			if( gameMetadatas != null ) {
-				for( GameMetadata metadata : gameMetadatas  ) {
-					Game game = new Game( metadata );
-					gameToThreadMap.put( game, new GamePlayingThread( game ) );
-					idToGameMap.put( game.getId(), game );
-				}
-			}
-		}
-	}
-
 	/**
 	 * Requests that a game be started. This only makes sense to do IF
 	 * the game is not already started!
@@ -209,4 +178,36 @@ public class ActiveGameCoordinator {
 		
 		return status;
 	}
+	
+	/******************************************************************************
+	 * Private methods go here
+	 *****************************************************************************/
+
+	/**
+	 * Loads the game metadata from the game manager interface.
+	 * Create a game for each game metadata object. Since they
+	 * initially aren't running, they all point to null threads.
+	 */
+	private void loadGames() {
+		GameManagerInterface gameManager = FlatfileGameManager.getDefaultGameManager();
+		if( gameManager == null ) {
+			LOGGER.severe( "Could not load the games in our game manager, the game manager was null." );
+		} else {
+			
+			// Initialize our maps
+			gameToThreadMap = new HashMap<Game,GamePlayingThread>();
+			idToGameMap = new HashMap<String,Game>();
+
+			// Can only add things from non-null game metadata list
+			List<GameMetadata> gameMetadatas = gameManager.getGames();
+			if( gameMetadatas != null ) {
+				for( GameMetadata metadata : gameMetadatas  ) {
+					Game game = new Game( metadata );
+					gameToThreadMap.put( game, new GamePlayingThread( game ) );
+					idToGameMap.put( game.getId(), game );
+				}
+			}
+		}
+	}
+
 }

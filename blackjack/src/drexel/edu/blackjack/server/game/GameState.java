@@ -42,6 +42,7 @@ public class GameState {
 	// Every game has an identifier
 	private String gameId			= null;
 
+	
 	/*********************************************************************
 	 * Constructor goes here
 	 ********************************************************************/
@@ -58,10 +59,13 @@ public class GameState {
 		players = Collections.synchronizedList(new ArrayList<User>());
 	}
 
+	
 	/*********************************************************************
-	 * Public methods go here
+	 * Notification methods. These are used to alert others in the game
+	 * of some sort of player action.
 	 ********************************************************************/
 
+	
 	/**
 	 * Need to send out messages to the remaining players (those who are
 	 * not GONE status, or the player themselves) and notify them about
@@ -70,38 +74,24 @@ public class GameState {
 	 * This is a ResponseCode.CODE.PLAYER_LEFT code, and the parameters
 	 * are the gameId followed by the userId 
 	 *
-	 * @param departedPlayer
+	 * @param departedPlayer Who left
+	 * @return True if notifications were sent successfully, false
+	 * if there were problems
 	 */
-	public void notifyOthersOfDepartedPlayer(User departedPlayer) {
+	public boolean notifyOthersOfDepartedPlayer(User departedPlayer) {
 		
-		// They can't be null, that's bad
-		if( departedPlayer != null && players != null ) {
-			
-			// Need to formulate the ResponseCode that we would send
-			StringBuilder str = new StringBuilder( gameId );
-			str.append( " " );
-			UserMetadata metadata = departedPlayer.getUserMetadata();
-			if( metadata == null || metadata.getUsername() == null ) {
-				str.append( "(unknown)" );
-			} else {
-				str.append( metadata.getUsername() );
-			}
+		boolean success = false;
+		
+		// It's all bad if they don't specify who joined
+		if( departedPlayer != null ) {
+			// Create the response code
+			ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_LEFT, getStringForGameAndUser(departedPlayer) );
 
-			// And then send it to all the remaining players. We make a
-			// copy of them in a synchronized block to avoid deadlocking
-			User[] copy = getCopyOfPlayers();
-			
-			// If copy is non-null, we can send our messages
-			if( copy != null ) {
-				ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_LEFT, str.toString() );
-				for( int i = 0; i < copy.length; i++ ) {
-					User user = ((User)copy[i]);
-					if( user != null && !user.hasSameUsername(departedPlayer)) {
-						user.sendMessage( code );
-					}
-				}
-			}
+			// Then send it to all the players except the one who generated
+			success = notifyOtherPlayers( code, departedPlayer );		
 		}
+
+		return success;
 	}
 	
 	/**
@@ -109,37 +99,23 @@ public class GameState {
 	 * how some new player has joined the session.
 	 * 
 	 * @param newPlayer Who just joined
+	 * @return True if notifications were sent successfully, false
+	 * if there were problems
 	 */
-	public void notifyOthersOfJoinedPlayer( User newPlayer) {
+	public boolean notifyOthersOfJoinedPlayer( User newPlayer) {
 		
-		// They can't be null, that's bad
-		if( newPlayer != null && players != null ) {
-			
-			// Need to formulate the ResponseCode that we would send
-			StringBuilder str = new StringBuilder( gameId );
-			str.append( " " );
-			UserMetadata metadata = newPlayer.getUserMetadata();
-			if( metadata == null || metadata.getUsername() == null ) {
-				str.append( "(unknown)" );
-			} else {
-				str.append( metadata.getUsername() );
-			}
+		boolean success = false;
+		
+		// It's all bad if they don't specify who joined
+		if( newPlayer != null ) {
+			// Create the response code: gameid username
+			ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_JOINED, getStringForGameAndUser(newPlayer) );
 
-			// And then send it to all the remaining players. We make a
-			// copy of them in a synchronized block to avoid deadlocking
-			User[] copy = getCopyOfPlayers();
-			
-			// If copy is non-null, we can send our messages
-			if( copy != null ) {
-				ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_JOINED, str.toString() );
-				for( int i = 0; i < copy.length; i++ ) {
-					User user = ((User)copy[i]);
-					if( user != null && !user.hasSameUsername(newPlayer)) {
-						user.sendMessage( code );
-					}
-				}
-			}
+			// Then send it to all the players except the one who generated
+			success = notifyOtherPlayers( code, newPlayer );		
 		}
+
+		return success;
 	}	
 	
 	/**
@@ -152,28 +128,44 @@ public class GameState {
 		
 		boolean success = false;
 		
-		// They can't be null, that's bad
-		if( player != null && players != null ) {
-			
-			// Need to formulate the ResponseCode that we would send
-			StringBuilder str = new StringBuilder( gameId );
-			str.append( " " );
-			UserMetadata metadata = player.getUserMetadata();
-			if( metadata == null || metadata.getUsername() == null ) {
-				str.append( "(unknown)" );
-			} else {
-				str.append( metadata.getUsername() );
-			}
+		// It's all bad if they don't specify who joined
+		if( player != null ) {
+			// Create the response code: gameid username bet
+			StringBuilder str = new StringBuilder( getStringForGameAndUser( player ) );
 			str.append( " " );
 			str.append( bet );
+			ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_JOINED, getStringForGameAndUser(player) );
 
+			// Then send it to all the players except the one who generated
+			success = notifyOtherPlayers( code, player );		
+		}
+
+		return success;
+	}	
+
+	/**
+	 * Send a response code update to all other players except for
+	 * the one passed in (who might be null)
+	 * 
+	 * @param code What to send
+	 * @param player Who not to send it to
+	 * @return True if successfully sent, false othrewise
+	 */
+	private boolean notifyOtherPlayers(ResponseCode code, User player) {
+		
+		boolean success = true;
+		
+		// They can't be null, that's bad
+		if( players == null ) {
+			success = false;
+		} else {
+			
 			// And then send it to all the remaining players. We make a
 			// copy of them in a synchronized block to avoid deadlocking
 			User[] copy = getCopyOfPlayers();
 			
 			// If copy is non-null, we can send our messages
 			if( copy != null ) {
-				ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_BET, str.toString() );
 				for( int i = 0; i < copy.length; i++ ) {
 					User user = ((User)copy[i]);
 					if( user != null && !user.hasSameUsername(player)) {
@@ -184,7 +176,35 @@ public class GameState {
 		}
 		
 		return success;
-	}	
+	}
+
+
+	/**
+	 * A common pattern for these response codes starts with putting
+	 * the gameid and username up front. So make a convenient method
+	 * that computes this
+	 * 
+	 * @param player The 'user' part of the 'GameAndUser'
+	 * @return The string of the gameid and username, unless something
+	 * went wrong and then null
+	 */
+	private String getStringForGameAndUser( User player) {
+		// Start by creating a response code: gameId username
+		StringBuilder str = new StringBuilder( gameId );
+		str.append( " " );
+		UserMetadata metadata = (player == null ? null : player.getUserMetadata());
+		if( metadata == null || metadata.getUsername() == null ) {
+			str.append( "(unknown)" );
+		} else {
+			str.append( metadata.getUsername() );
+		}
+		return str.toString();
+	}
+	
+	/*********************************************************************
+	 * These deal with managing the players in the game session
+	 ********************************************************************/
+	
 	
 	/**
 	 * Adds a player to the tracking within the game state. Newly
@@ -247,6 +267,76 @@ public class GameState {
 		return currentPlayer;
 	}
 
+	/** 
+	 * Returns the number of players, without regard to their
+	 * status as observer or active
+	 */
+	synchronized public int getNumberOfPlayers() {
+		return (players == null ? 0 : players.size() );
+	}
+	
+
+	/**
+	 * Looks at all the players who are active. If there are any
+	 * who don't have their bet set, they need to be idle-bumped
+	 */
+	public void removeActivePlayersWithNoBet() {
+		
+		// Grab the users
+		User[] users = getCopyOfPlayers();
+		
+		// If array is non-null, we can look and see if any users haven't bet
+		if( users != null ) {
+			for( int i = 0; i < users.length; i++ ) {
+				User user = ((User)users[i]);
+				
+				// If the user is active...
+				if( user != null && user.getStatus() != null && user.getStatus().equals(STATUS.ACTIVE) ) {
+					
+					// And they placed no bet
+					if( !user.hasSpecifiedBet() ) {
+						// Force them to idle timeout
+						user.forceTimeoutWhileBetting();
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Cycles through the players. If it finds a player
+	 * who is active who does not have a bet value
+	 * set on the connection protocol, you have
+	 * outstanding bets that are being waited for
+	 * 
+	 * @return True if there is some active player
+	 * who has no bet specified
+	 */
+	public boolean arePlayersWithOutstandingBets() {
+	
+		User[] users = getCopyOfPlayers();
+		for( User user : users ) {
+			// If the user is active
+			if( user.getStatus() != null && user.getStatus().equals(STATUS.ACTIVE) ) {
+				// Return true if they don't have a bet set
+				if( !user.hasSpecifiedBet() ) {
+					return true;
+				}
+			}
+		}
+		
+		// If we got this far, we're okay
+		return false;
+	}
+	
+
+	
+	/*********************************************************************
+	 * These deal with altering the game state in response to activity
+	 * in the game
+	 ********************************************************************/
+
+	
 	/**
 	 * Indicates to the game state that a new round
 	 * is being started. A few things are done here:
@@ -307,18 +397,12 @@ public class GameState {
 		}
 	}
 	
-	/** 
-	 * Returns the number of players, without regard to their
-	 * status as observer or active
-	 */
-	synchronized public int getNumberOfPlayers() {
-		return (players == null ? 0 : players.size() );
-	}
 	
 	/*********************************************************************
 	 * Private methods go here
 	 ********************************************************************/
 
+	
 	/**
 	 * Walk through the players, and mark them all as ACTIVE.
 	 * 
@@ -407,60 +491,5 @@ public class GameState {
 		}
 		return users;
 	}
-
-	/**
-	 * Looks at all the players who are active. If there are any
-	 * who don't have their bet set, they need to be idle-bumped
-	 */
-	public void removeActivePlayersWithNoBet() {
-		
-		// Grab the users
-		User[] users = getCopyOfPlayers();
-		
-		// If array is non-null, we can look and see if any users haven't bet
-		if( users != null ) {
-			for( int i = 0; i < users.length; i++ ) {
-				User user = ((User)users[i]);
-				
-				// If the user is active...
-				if( user != null && user.getStatus() != null && user.getStatus().equals(STATUS.ACTIVE) ) {
-					
-					// And they placed no bet
-					if( !user.hasSpecifiedBet() ) {
-						// Force them to idle timeout
-						user.forceTimeoutWhileBetting();
-					}
-				}
-			}
-		}
-
-	}
-
-	/**
-	 * Cycles through the players. If it finds a player
-	 * who is active who does not have a bet value
-	 * set on the connection protocol, you have
-	 * outstanding bets that are being waited for
-	 * 
-	 * @return True if there is some active player
-	 * who has no bet specified
-	 */
-	public boolean outstandingBets() {
-	
-		User[] users = getCopyOfPlayers();
-		for( User user : users ) {
-			// If the user is active
-			if( user.getStatus() != null && user.getStatus().equals(STATUS.ACTIVE) ) {
-				// Return true if they don't have a bet set
-				if( !user.hasSpecifiedBet() ) {
-					return true;
-				}
-			}
-		}
-		
-		// If we got this far, we're okay
-		return false;
-	}
-	
 
 }

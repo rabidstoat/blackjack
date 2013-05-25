@@ -258,7 +258,7 @@ public class Game {
 		// This is how long we've been waiting up until now
 		long delta = System.currentTimeMillis() - start;
 		
-		while( state.outstandingBets() && delta < BETTING_WAIT_TIME ) {
+		while( state.arePlayersWithOutstandingBets() && delta < BETTING_WAIT_TIME ) {
 			
 			// Sleep a while to give them time to check
 			try {

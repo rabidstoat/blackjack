@@ -44,9 +44,11 @@ public class User {
 	// For debug output
 	private final static Logger LOGGER = BlackjackLogger.createLogger(User.class.getName()); 
 
+	
 	/***************************************************************
 	 * Constructors go here
 	 **************************************************************/
+	
 	
 	public User() {
 	}
@@ -55,10 +57,12 @@ public class User {
 		this.userMetadata = userMetadata;
 	}
 	
+	
 	/***************************************************************
-	 * Getters and setters
+	 * Simple, straightforward Getters and setters
 	 **************************************************************/
 
+	
 	// Auto-generated getters and setters below
 	/**
 	 * @return the user
@@ -99,38 +103,85 @@ public class User {
 		this.game = game;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
+	/**
+	 * If the user is connected (and they should be), keep a pointer
+	 * to their server thread around, so messages can get sent
+	 * 
+	 * @param blackjackProtocol
 	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((userMetadata == null) ? 0 : userMetadata.hashCode());
-		return result;
+	public void setBlackjackServerThread(BlackjackServerThread thread) {
+		this.thread = thread;
+	}
+	
+	/**
+	 * Used for other people to set the user's status. Typically the
+	 * game will set the status on the user as they move between
+	 * observer and active status
+	 */
+	protected void setStatus( GameState.STATUS status ) {
+		this.status = status;
+	}
+	
+	/**
+	 * Return the status in the game of this player
+	 */
+	protected GameState.STATUS getStatus() {
+		return status;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
+	
+	/***************************************************************
+	 * More complex ways of getting and setting things, with more
+	 * logic than just setting or returning a simple variable
+	 **************************************************************/
+
+	
+	/**
+	 * Sets the state on the protocol object associated with this user's
+	 * connection. 
+	 * 
+	 * @return True if it was successful, otherwise false
 	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean setProtocolState( BlackjackProtocol.STATE state ) {
+		
+		if( thread != null && thread.getProtocol() != null ) {
+			thread.getProtocol().setState( state );
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		User other = (User) obj;
-		if (userMetadata == null) {
-			if (other.userMetadata != null)
-				return false;
-		} else if (!userMetadata.equals(other.userMetadata))
-			return false;
-		return true;
+		}
+		
+		return false;
 	}
 
+	/**
+	 * A user has specified a bet if they have a non-null protocol
+	 * object somewhere, and there is a bet value set on it.
+	 */
+	public boolean hasSpecifiedBet() {
+		
+		if( thread != null && thread.getProtocol() != null ) {
+			return thread.getProtocol().getBet() != null;
+		}
+		
+		// THis would be bad
+		return false;
+	}
+
+	/**
+	 * Remove any bets that are associated with this player
+	 */
+	public void clearBet() {
+		if( thread != null && thread.getProtocol() != null ) {
+			thread.getProtocol().setBet(null);
+		}
+	}
+	
+	
+	/***************************************************************
+	 * Other public methods, typically these have to do with
+	 * interacting with the socket.
+	 **************************************************************/
+
+	
 	/**
 	 * Sends a message to the presumably connected user by 
 	 * sending it through to their socket
@@ -154,79 +205,6 @@ public class User {
 	}
 
 	/**
-	 * If the user is connected (and they should be), keep a pointer
-	 * to their server thread around, so messages can get sent
-	 * 
-	 * @param blackjackProtocol
-	 */
-	public void setBlackjackServerThread(BlackjackServerThread thread) {
-		this.thread = thread;
-	}
-	
-	/**
-	 * Sets the state on the protocol object associated with this user's
-	 * connection. 
-	 * 
-	 * @return True if it was successful, otherwise false
-	 */
-	public boolean setProtocolState( BlackjackProtocol.STATE state ) {
-		
-		if( thread != null && thread.getProtocol() != null ) {
-			thread.getProtocol().setState( state );
-			return true;
-		}
-		
-		return false;
-	}
-
-	/**
-	 * This is basically equality based on username value
-	 * 
-	 * @return True if the usernames are both non-null
-	 * and identical, false otherwise
-	 */
-	public boolean hasSameUsername(User player) {
-		if( player != null && player.getUserMetadata() != null &&
-				player.getUserMetadata().getUsername() != null &&
-				this.getUserMetadata() != null &&
-				this.getUserMetadata().getUsername() != null ) {
-			return this.getUserMetadata().getUsername().equals( player.getUserMetadata().getUsername() );
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Used for other people to set the user's status. Typically the
-	 * game will set the status on the user as they move between
-	 * observer and active status
-	 */
-	protected void setStatus( GameState.STATUS status ) {
-		this.status = status;
-	}
-	
-	/**
-	 * Return the status in the game of this player
-	 */
-	protected GameState.STATUS getStatus() {
-		return status;
-	}
-
-	/**
-	 * A user has specified a bet if they have a non-null protocol
-	 * object somewhere, and there is a bet value set on it.
-	 */
-	public boolean hasSpecifiedBet() {
-		
-		if( thread != null && thread.getProtocol() != null ) {
-			return thread.getProtocol().getBet() != null;
-		}
-		
-		// THis would be bad
-		return false;
-	}
-
-	/**
 	 * If a user is forced to timeout while betting, they
 	 * have their state changed to not being in a session,
 	 * and a response sent to them alerting them of this
@@ -241,15 +219,6 @@ public class User {
 		// THen send the response code
 		ResponseCode code = new ResponseCode( ResponseCode.CODE.TIMEOUT_EXCEEDED_WHILE_BETTING );
 		this.sendMessage( code );
-	}
-
-	/**
-	 * Remove any bets that are associated with this player
-	 */
-	public void clearBet() {
-		if( thread != null && thread.getProtocol() != null ) {
-			thread.getProtocol().setBet(null);
-		}
 	}
 
 	/**
@@ -283,4 +252,59 @@ public class User {
 		}
 	}
 
+	
+	/***************************************************************
+	 * Needed to implement the equals() method
+	 **************************************************************/
+
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((userMetadata == null) ? 0 : userMetadata.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (userMetadata == null) {
+			if (other.userMetadata != null)
+				return false;
+		} else if (!userMetadata.equals(other.userMetadata))
+			return false;
+		return true;
+	}
+
+	/**
+	 * This is basically equality based on username value
+	 * 
+	 * @return True if the usernames are both non-null
+	 * and identical, false otherwise
+	 */
+	public boolean hasSameUsername(User player) {
+		if( player != null && player.getUserMetadata() != null &&
+				player.getUserMetadata().getUsername() != null &&
+				this.getUserMetadata() != null &&
+				this.getUserMetadata().getUsername() != null ) {
+			return this.getUserMetadata().getUsername().equals( player.getUserMetadata().getUsername() );
+		}
+		
+		return false;
+	}
+	
 }
