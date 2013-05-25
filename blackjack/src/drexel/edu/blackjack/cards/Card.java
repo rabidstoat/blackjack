@@ -133,65 +133,41 @@ public class Card {
 		String rankName = rank.name();
 		rank = Enum.valueOf(RANK.class, rankName.toUpperCase());
 		 
-		  int[] value = new int[2];
+		  
 		  
 		  switch( rank) {
 		  case ACE:
+			  int[] value = new int[2];
 			  value[0] = 1;
 			  value[1] = 11;
-			  break;
+			  return value;
 		  case TWO:
-			  value[0] = 2;
-			  value[1] = 2;
-			  break;
+			  return new int[]{2};
 		  case THREE:
-			  value[0] = 3;
-			  value[1] = 3;
-			  break;
+			  return new int[]{3};
 		  case FOUR:
-			  value[0] = 4;
-			  value[1] = 4;
-			  break;
+			  return new int[]{4};
 		  case FIVE:
-			  value[0] = 5;
-			  value[1] = 5;
-			  break;
+			  return new int[]{5};
 		  case SIX:
-			  value[0] = 6;
-			  value[1] = 6;
-			  break;
+			  return new int[]{6};
 		  case SEVEN:
-			  value[0] = 7;
-			  value[1] = 7;
-			  break;
+			  return new int[]{7};
 		  case EIGHT:
-			  value[0] = 8;
-			  value[1] = 8;
-			  break;
+			  return new int[]{8};
 		  case NINE:
-			  value[0] = 9;
-			  value[1] = 9;
-			  break;
+			  return new int[]{9};
 		  case TEN:
-			  value[0] = 10;
-			  value[1] = 10;
-			  break;
+			  return new int[]{10};
 		  case JACK:
-			  value[0] = 10;
-			  value[1] = 10;
-			  break;
+			  return new int[]{10};
 		  case QUEEN:
-			  value[0] = 10;
-			  value[1] = 10;
-			  break;
+			  return new int[]{10};
 		  case KING:
-			  value[0] = 10;
-			  value[1] = 10;
-			  break;		  
+			  return new int[]{10};	  
+		  default:
+			  return new int[0];
 		  } 
-		  
-		return value;
-		
 	}
 	
 	/**Concatenates rank and suit into a string to create a playing card*/
