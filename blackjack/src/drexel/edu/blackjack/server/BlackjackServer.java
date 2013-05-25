@@ -110,6 +110,7 @@ public class BlackjackServer {
             SSLServerSocketFactory ssf = sc.getServerSocketFactory();
             serverSocket = ssf.createServerSocket(PORT);
             LOGGER.info( "Started a server on port " + PORT );
+            System.out.println( "The server is now ready to accept connections." );
             
             // Now we do an endless loop, accepting clients
             while( true ) {
