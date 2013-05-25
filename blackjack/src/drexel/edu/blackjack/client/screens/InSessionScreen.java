@@ -1,9 +1,12 @@
 package drexel.edu.blackjack.client.screens;
 
+import java.util.logging.Logger;
+
 import drexel.edu.blackjack.client.BlackjackCLClient;
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
 import drexel.edu.blackjack.server.ResponseCode;
+import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
  * This is the user screen to display when someone is playing
@@ -42,6 +45,8 @@ public class InSessionScreen extends AbstractScreen {
 	// And keep a copy to itself for the singleton pattern
 	private static InSessionScreen inSessionScreen = null;
 	
+	// And a logger for errors
+	private final static Logger LOGGER = BlackjackLogger.createLogger(InSessionScreen.class.getName()); 
 	
 	/**********************************************************************
 	 * Private constructor and singleton access method
@@ -144,14 +149,41 @@ public class InSessionScreen extends AbstractScreen {
 				} else if( code.hasSameCode( ResponseCode.CODE.REQUEST_FOR_GAME_ACTION ) ) {
 					state = NEED_PLAY;
 					displayMenu();
+				} else if( code.hasSameCode( ResponseCode.CODE.GAME_STATUS ) ) {
+					displayGameStatus( code );
+					displayMenu();
+				} else if( code.hasSameCode( ResponseCode.CODE.GAMES_FOLLOW ) ) {
+					displayGameMetadata( code );
 				} else {
 					super.handleResponseCode( code );
 				}
 			}
 		}
 	}	
-
 	
+	/**
+	 * Received the LISTGAMES response, which has descriptions
+	 * of every single game. Need to find the one we're interested
+	 * in, and show a short line about it.
+	 * 
+	 * @param code The game response code
+	 */
+	private void displayGameMetadata(ResponseCode code) {
+		// TODO Auto-generated method stub
+		System.out.println( "Have not created the method to display the game metadata yet." );
+	}
+
+	/**
+	 * Received some game status from the system. Need to display
+	 * it to the user
+	 * 
+	 * @param code The game status
+	 */
+	private void displayGameStatus(ResponseCode code) {
+		// TODO: Much prettier
+		System.out.println( code.getText() );
+	}
+
 	/**********************************************************************
 	 * General methods related to showing menus and getting responses.
 	 *********************************************************************/
@@ -170,11 +202,13 @@ public class InSessionScreen extends AbstractScreen {
 					if( client.getCurrentGame() != null ) {
 						System.out.println( "(" + client.getCurrentGame().getBetRestriction() + ".)" );
 					}
-					StringBuilder str = new StringBuilder( "Enter amount, or '" );
+					StringBuilder str = new StringBuilder( "Enter amount, '" );
 					str.append( ACCOUNT_OPTION );
-					str.append( "' to check balance, or '" );
+					str.append( "' for balance, '" );
 					str.append( LEAVE_OPTION );
-					str.append( "' to leave this game." );
+					str.append( "' to leave, '" );
+					str.append( INFO_OPTION );
+					str.append( "' for game info." );
 					System.out.println( str.toString() );
 					System.out.println( "***********************************************************" );
 				} else if( state == NEED_PLAY ) {
@@ -271,8 +305,7 @@ public class InSessionScreen extends AbstractScreen {
 					// TODO need to implement
 					System.out.println( "Not implemented yet. Try leaving the game first, then quit." );
 				} else if( str.trim().equals(INFO_OPTION) ) {
-					// TODO need to implement
-					System.out.println( "The info option is not implemnted yet." );
+					sendGameStatusRequest();
 				} else if( str.trim().equals(VERSION_OPTION) ) {
 					sendVersionRequest();
 				} else if( str.trim().equals(ACCOUNT_OPTION) ) {
@@ -328,4 +361,43 @@ public class InSessionScreen extends AbstractScreen {
 			}
 		}
 	}
+
+	/**
+	 * Sends a request for game status. This is actually two requests:
+	 * LISTGAMES to get the static information (and when it's processed
+	 * here, it will just need to show the information for this one
+	 * game, not ALL of them) and GAMESTATUS for this game
+	 */
+	private void sendGameStatusRequest() {
+		System.out.println( "Requesting current game status from the server..." );
+		helper.sendListGamesRequest();
+		if( getSessionId() == null ) {
+			LOGGER.severe( "Cannot send a request for game status because the game ID wasn't recorded anywhere." );
+		} else {
+			helper.sendGameStatusRequest( getSessionId() );
+		}
+	}
+
+	
+	/***********************************************************************************
+	 * Odds and ends
+	 **********************************************************************************/
+	
+	/**
+	 * Gets the session ID to use in various commands. This should
+	 * be the game ID of whatever game is being played in this UI.
+	 * 
+	 * @return The session ID / session name / game ID
+	 */
+	private String getSessionId() {
+		
+		// Hopefully they remembered to set the game!
+		if( client != null && client.getCurrentGame() != null ) {
+			return client.getCurrentGame().getId();
+		}
+		
+		// IF we can't find it, return null
+		return null;
+	}
+	
 }

@@ -159,6 +159,8 @@ public class ClientOutputToServerHelper extends Thread {
 
 	/**
 	 * Sends a request to the server asking to join a session
+	 * 
+	 * @param sessionName the session name it's for
 	 */
 	public boolean sendJoinSessionRequest( String sessionName ) {
 		if( sessionName == null ) {
@@ -166,7 +168,16 @@ public class ClientOutputToServerHelper extends Thread {
 		}
 		return this.sendRawText( "JOINSESSION " + sessionName );
 	}
-	
+
+	/**
+	 * Sends a request to the server for game status
+	 * 
+	 * @param sessionName the session name it's for
+	 */
+	public boolean sendGameStatusRequest( String sessionName ) {
+		return this.sendRawText( "GAMESTATUS " + sessionName );
+	}
+
 	/**
 	 * Sends a request to the server asking to leave a session
 	 */
