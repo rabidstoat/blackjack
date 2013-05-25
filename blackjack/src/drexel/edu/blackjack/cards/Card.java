@@ -88,14 +88,14 @@ public class Card {
 	* Local variables*/
 	/******************************/
 	
-	private String rank = null;
-	private String suit = null;
+	private RANK rank = null;
+	private SUIT suit = null;
 	
-	public String getRank() {
+	public RANK getRank() {
 		return rank;
 	}
 	
-	public String getSuit() {
+	public SUIT getSuit() {
 		return suit;
 	}
 	
@@ -109,8 +109,8 @@ public class Card {
 			throw new IllegalArgumentException( "The rank or suit cannot be null");
 		}
 		
-		this.rank = rank.getRank();
-		this.suit = suit.getSuit();	
+		this.rank = rank;
+		this.suit = suit;	
 	}
 	
 	
@@ -126,14 +126,6 @@ public class Card {
 	  */
 	
 	public int[] getValues(){
-		
-		 
-		RANK rank = RANK.ACE;
-		
-		String rankName = rank.name();
-		rank = Enum.valueOf(RANK.class, rankName.toUpperCase());
-		 
-		  
 		  
 		  switch( rank) {
 		  case ACE:

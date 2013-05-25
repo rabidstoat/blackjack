@@ -10,7 +10,7 @@ public class DealtCard extends Card {
 	}
 	
 	public DealtCard(Card card, boolean isShown) {
-		super(Card.RANK.valueOf(card.getRank()), Card.SUIT.valueOf(card.getSuit()));
+		super(card.getRank(), card.getSuit());
 		faceup = isShown;
 	}
 	

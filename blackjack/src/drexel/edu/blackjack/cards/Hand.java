@@ -1,6 +1,7 @@
 package drexel.edu.blackjack.cards;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import drexel.edu.blackjack.server.game.User;
@@ -14,15 +15,17 @@ import drexel.edu.blackjack.server.game.User;
 public class Hand {
 	
 	private final ArrayList<DealtCard> cards = new ArrayList<DealtCard>();
-	private final ArrayList<Integer> points = new ArrayList<Integer>();
+	private final HashSet<Integer> points = new HashSet<Integer>();
 	private final User user;
 	
 	public Hand(User user) {
 		this.user = user;
+		points.add(0);
 	}
 	
 	// get a card from dealer, it must be faceup or facedown using DealtCard class
 	// this method also interprets the card and calculate all possible values 
+	// there are many other simpler ways, but this is more generic
 	public void receiveCard(DealtCard card) {
 		
 		cards.add(card);
@@ -45,8 +48,8 @@ public class Hand {
 	/**
 	 * @return all possibly interpreted values of hand
 	 */
-	public List<Integer> possibleValues() {
-		return points;
+	public List<Integer> getPossibleValues() {
+		return new ArrayList<Integer>(points);
 	}
 	
 	public List<Card> getFaceupCards() {
