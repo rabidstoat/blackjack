@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import drexel.edu.blackjack.db.user.AlreadyLoggedInException;
 import drexel.edu.blackjack.db.user.FlatfileUserManager;
 import drexel.edu.blackjack.db.user.UserManagerInterface;
+import drexel.edu.blackjack.db.user.UserMetadata;
 import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 import drexel.edu.blackjack.server.ResponseCode;
@@ -62,44 +64,55 @@ public class PasswordCommand extends BlackjackCommand {
 		
 		//Sigleton FlatfileUserManager
 		UserManagerInterface userManager = FlatfileUserManager.getDefaultUserManager();
-		
-		/**Check that login-credentials parameters are not null; else, send an error message.
-		 * If login-credentials valid, record which user is connected and send a 'success' message.*/
-		if(userManager.loginUser(username, password) == null) {
-			
-			// We keep track of how many times they've failed
-			protocol.incrementIncorrectLogins();
-			
-			// We need to return this
-			ResponseCode code = new ResponseCode( ResponseCode.CODE.INTERNAL_ERROR );
-			
-			// Make sure they didn't hit a threshold
-			if( protocol.getIncorrectLogins() >= INCORRECT_LOGIN_LIMIT ) {
-				code = new ResponseCode( ResponseCode.CODE.LOGIN_ATTEMPTS_EXCEEDED );
+
+		// We need to return this
+		ResponseCode code = new ResponseCode( ResponseCode.CODE.INTERNAL_ERROR );
+
+		// Try to log the user in
+		UserMetadata userMetadata = null;
+		try {
+			userMetadata = userManager.loginUser(username, password);
+			// Null metadata means they were unsuccessful
+			if( userMetadata == null) {
+				
+				// We keep track of how many times they've failed
+				protocol.incrementIncorrectLogins();
+				
+				
+				// Make sure they didn't hit a threshold
+				if( protocol.getIncorrectLogins() >= INCORRECT_LOGIN_LIMIT ) {
+					code = new ResponseCode( ResponseCode.CODE.LOGIN_ATTEMPTS_EXCEEDED );
+				} else {
+					// Here, we let them try again
+					protocol.setState(STATE.WAITING_FOR_USERNAME);
+					code = new ResponseCode( ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS, 
+							"PasswordCommand.loginCredentialsCommand() received invalid login credentials; try logging in again.");
+				}
 			} else {
-				// Here, we let them try again
-				protocol.setState(STATE.WAITING_FOR_USERNAME);
-				code = new ResponseCode( ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS, 
-						"PasswordCommand.loginCredentialsCommand() received invalid login credentials; try logging in again.");
+				// While non-null metadata is good
+				/**Associate the new user with the protocol*/
+				
+				User user = new User(userMetadata);
+					
+				protocol.setUser(user);
+				
+				/**Step 7: Update state. The client has authenticated but is not in a session*/
+				
+				protocol.setState(STATE.NOT_IN_SESSION);
+					
+				/**Step 8: Generate the proper response */
+				
+				code = new ResponseCode( ResponseCode.CODE.SUCCESSFULLY_AUTHENTICATED, 
+						"PasswordCommand.loginCredentialsCommand() received valid login credentials; " +
+						"still not in session" );
 			}
-			
-			return code.toString();	
-		}
-		/**Associate the new user with the protocol*/
-		
-		User user = new User(userManager.loginUser(username, password));
-			
-		protocol.setUser(user);
-		
-		/**Step 7: Update state. The client has authenticated but is not in a session*/
-		
-		protocol.setState(STATE.NOT_IN_SESSION);
-			
-		/**Step 8: Generate the proper response */
-		
-		return new ResponseCode( ResponseCode.CODE.SUCCESSFULLY_AUTHENTICATED, 
-				"PasswordCommand.loginCredentialsCommand() received valid login credentials; " +
-				"still not in session" ).toString();
+		} catch (AlreadyLoggedInException e) {
+			// Logging in twice is invalid
+			code = new ResponseCode( ResponseCode.CODE.ALREADY_LOGGED_IN );
+		} 
+
+		// Return whatever happened
+		return code.toString();
 	}
 	
 	@Override

@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.logging.Logger;
 
+import drexel.edu.blackjack.db.user.FlatfileUserManager;
+import drexel.edu.blackjack.db.user.UserManagerInterface;
 import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 import drexel.edu.blackjack.server.timeouts.IdleTimeoutDaemon;
 import drexel.edu.blackjack.util.BlackjackLogger;
@@ -112,6 +114,17 @@ public class BlackjackServerThread extends Thread {
 		LOGGER.info( "Inside a client connection thread, about to shut down the connection" );
 		if( daemon != null ) {
 			daemon.removeBlackjackServerThread(this);
+		}
+		
+		// Don't forget to log out the user
+		if( protocol != null && protocol.getUser() != null ) {
+			UserManagerInterface um = FlatfileUserManager.getDefaultUserManager();
+			String username = (protocol.getUser().getUserMetadata() == null 
+					? null 
+					: protocol.getUser().getUserMetadata().getUsername() );
+			if( um != null && username != null ) {
+				um.logoutUser(username);
+			}
 		}
 	}
 

@@ -62,6 +62,7 @@ public class ResponseCode {
 		NOT_EXPECTING_PASSWORD( 403, "Server was not expected to receive a PASSWORD command just now." ),
 		NOT_EXPECTING_USERNAME( 404, "Server was not expected to receive a USERNAME command just now." ),
 		LOGIN_ATTEMPTS_EXCEEDED( 405, "Exceeded allowed " + PasswordCommand.INCORRECT_LOGIN_LIMIT + " incorrect login attempts" ),
+		ALREADY_LOGGED_IN( 406, "Already logged in elsewhere" ),
 		JOIN_SESSION_DOES_NOT_EXIST( 410, "Tried to join a non-existent game session." ),
 		JOIN_SESSION_AT_MAX_PLAYERS( 411, "Cannot join a session at the maximum number of players." ),
 		JOIN_SESSION_TOO_POOR( 412, "Cannot join the session as bank account is too low." ),
@@ -679,7 +680,7 @@ public class ResponseCode {
 		
 		if( code != null ) {
 			// Or together all the 'you are going to be disconnected' codes here
-			return hasSameCode(CODE.LOGIN_ATTEMPTS_EXCEEDED);
+			return hasSameCode(CODE.LOGIN_ATTEMPTS_EXCEEDED) || hasSameCode(CODE.ALREADY_LOGGED_IN);
 		}
 		
 		// Get this far, must be fine

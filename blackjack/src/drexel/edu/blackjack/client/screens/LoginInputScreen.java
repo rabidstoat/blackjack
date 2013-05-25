@@ -60,6 +60,9 @@ public class LoginInputScreen extends AbstractScreen {
 			} else if( code.hasSameCode(ResponseCode.CODE.LOGIN_ATTEMPTS_EXCEEDED ) ) {
 				System.out.println( "Exceeded the allowed number of login attempts." );
 				// They're about to get disconnected....
+			} else if( code.hasSameCode(ResponseCode.CODE.ALREADY_LOGGED_IN ) ) {
+				System.out.println( "That user is aleady logged in somewhere else." );
+				// They're about to get disconnected....
 			} else {
 				super.handleResponseCode( code );
 			}
