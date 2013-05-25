@@ -143,6 +143,50 @@ public class GameState {
 	}	
 	
 	/**
+	 * Need to send out messages to the other players (if any) about
+	 * how a bet was placed
+	 * 
+	 * @param newPlayer Who just joined
+	 */
+	public boolean notifyOthersOfBetPlaced( User player, int bet ) {
+		
+		boolean success = false;
+		
+		// They can't be null, that's bad
+		if( player != null && players != null ) {
+			
+			// Need to formulate the ResponseCode that we would send
+			StringBuilder str = new StringBuilder( gameId );
+			str.append( " " );
+			UserMetadata metadata = player.getUserMetadata();
+			if( metadata == null || metadata.getUsername() == null ) {
+				str.append( "(unknown)" );
+			} else {
+				str.append( metadata.getUsername() );
+			}
+			str.append( " " );
+			str.append( bet );
+
+			// And then send it to all the remaining players. We make a
+			// copy of them in a synchronized block to avoid deadlocking
+			User[] copy = getCopyOfPlayers();
+			
+			// If copy is non-null, we can send our messages
+			if( copy != null ) {
+				ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_BET, str.toString() );
+				for( int i = 0; i < copy.length; i++ ) {
+					User user = ((User)copy[i]);
+					if( user != null && !user.hasSameUsername(player)) {
+						success = success && user.sendMessage( code );
+					}
+				}
+			}
+		}
+		
+		return success;
+	}	
+	
+	/**
 	 * Adds a player to the tracking within the game state. Newly
 	 * added players are entered in the OBSERVER state, unless...
 	 * 

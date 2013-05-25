@@ -3,6 +3,8 @@ package drexel.edu.blackjack.server.game;
 import java.util.logging.Logger;
 
 import drexel.edu.blackjack.cards.Hand;
+import drexel.edu.blackjack.db.user.FlatfileUserManager;
+import drexel.edu.blackjack.db.user.UserManagerInterface;
 import drexel.edu.blackjack.db.user.UserMetadata;
 import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.BlackjackServerThread;
@@ -135,7 +137,9 @@ public class User {
 	 * 
 	 * @param code
 	 */
-	public void sendMessage(ResponseCode code) {
+	public boolean sendMessage(ResponseCode code) {
+		
+		boolean success = false;
 		
 		if( thread == null ) {
 			LOGGER.severe( "Had a request to send user " + 
@@ -143,7 +147,10 @@ public class User {
 					" a response, but couldn't find their socket." );
 		} else {
 			thread.sendMessage( code );
+			success = true;
 		}
+		
+		return success;
 	}
 
 	/**
@@ -242,6 +249,37 @@ public class User {
 	public void clearBet() {
 		if( thread != null && thread.getProtocol() != null ) {
 			thread.getProtocol().setBet(null);
+		}
+	}
+
+	/**
+	 * Placing a bet involves several things:
+	 * 
+	 * <OL>
+	 * <LI>The protocol state needs to be updated to reflect the bet
+	 * <LI>The user's account needs to be deducted
+	 * <LI>Others in the game need to be notified
+	 * </OL>
+	 * @param desiredBet
+	 */
+	public void handlePlacedBet(Integer desiredBet) {
+		if( desiredBet != null ) {
+			// First, set the protocol state
+			if( thread != null && thread.getProtocol() != null ) {
+				thread.getProtocol().setBet(desiredBet);
+			}
+			
+			// Next, deduct from the user's account, and force a save
+			if( userMetadata != null ) {
+				userMetadata.setBalance( userMetadata.getBalance() - desiredBet );
+				UserManagerInterface userManager = FlatfileUserManager.getDefaultUserManager();
+				userManager.save();
+			}
+			
+			// Finally, alert others in the game about the bet
+			if( game != null ) {
+				game.notifyOfPlayerBet( this, desiredBet );
+			}
 		}
 	}
 

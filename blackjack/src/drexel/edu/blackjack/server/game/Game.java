@@ -274,4 +274,19 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Requests that a message be sent out to notify others
+	 * in the game that a user has placed a bet
+	 * 
+	 * @param user Who bet
+	 * @param bet What they bet
+	 */
+	public boolean notifyOfPlayerBet( User user, int bet ) {
+		boolean success = false;
+		if( state != null ) {
+			success = state.notifyOthersOfBetPlaced( user, bet );
+		}
+		return success;
+	}
+	
 }
