@@ -54,6 +54,9 @@ public class BlackjackServer {
 	// Finally, the port that the server will run on
 	private static final int PORT						= 55555;
 	
+	// Use this for our EOL when sending message
+	public static final String EOL						= "\n";
+	
 	private final static Logger LOGGER = BlackjackLogger.createLogger(BlackjackServer.class .getName()); 
 	
 	/************************************************************
