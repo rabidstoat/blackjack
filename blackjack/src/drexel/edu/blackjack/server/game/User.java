@@ -167,6 +167,20 @@ public class User {
 	}
 
 	/**
+	 * A user has specified a bet if they have a non-null protocol
+	 * object somewhere, and there is a bet value set on it.
+	 */
+	public Integer getBet() {
+		
+		if( thread != null && thread.getProtocol() != null ) {
+			return thread.getProtocol().getBet();
+		}
+		
+		// This is sort of bad....
+		return null;
+	}
+
+	/**
 	 * Remove any bets that are associated with this player
 	 */
 	public void clearBet() {

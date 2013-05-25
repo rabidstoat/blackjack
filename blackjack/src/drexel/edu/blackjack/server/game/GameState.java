@@ -275,7 +275,6 @@ public class GameState {
 		return (players == null ? 0 : players.size() );
 	}
 	
-
 	/**
 	 * Looks at all the players who are active. If there are any
 	 * who don't have their bet set, they need to be idle-bumped
@@ -479,7 +478,7 @@ public class GameState {
 	 * 
 	 * @return A list of the players
 	 */
-	synchronized private User[] getCopyOfPlayers() {
+	synchronized public User[] getCopyOfPlayers() {
 
 		User[] users = null;
 		if( players != null ) {
@@ -491,5 +490,18 @@ public class GameState {
 		}
 		return users;
 	}
+
+	/**
+	 * A game is supposed to be STARTED or NOT_STARTED. Not sre
+	 * what decides it. Maybe if its thread is running?
+	 * 
+	 * @return Either "STARTED" or "NOT_STARTED"
+	 */
+	public String getGameStage() {
+		// TODO: Sort this out. Maybe it should be more 
+		// like "taking bets" or "playing hand" or something....
+		return "STARTED";
+	}
+
 
 }

@@ -56,7 +56,7 @@ public class GameStatusCommand extends BlackjackCommand {
 		// Step 8: Format the user response code; we add the extra newline
 		// because this is a multiline response that must end with an extra
 		// newline.
-		ResponseCode code = new ResponseCode( ResponseCode.CODE.GAME_STATUS, user.getGame().getGameStatus() + "\n" );
+		ResponseCode code = new ResponseCode( ResponseCode.CODE.GAME_STATUS, user.getGame().getGameStatus( user ) );
 		return code.toString();
 	}
 

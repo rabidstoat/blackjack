@@ -3,6 +3,7 @@ package drexel.edu.blackjack.server.game;
 import java.util.logging.Logger;
 
 import drexel.edu.blackjack.db.game.GameMetadata;
+import drexel.edu.blackjack.server.BlackjackServer;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
@@ -28,6 +29,13 @@ public class Game {
 	public static final String RULE_KEYWORD = "RULE"; 
 	public static final String RECORD_START_KEYWORD = "GAME";
 	public static final String RECORD_END_KEYWORD = "ENDGAME";
+	public static final String GAMESTAGE_KEYWORD = "GAMESTAGE";
+	public static final String UNKNOWN_KEYWORD = "UNKNOWN";
+	public static final String BET_KEYWORD = "BET";
+	public static final String HAND_KEYWORD = "HAND";
+	public static final String ACTIVE_KEYWORD = "ACTIVE_PLAYER";
+	public static final String OBSERVER_KEYWORD = "OBSERVER";
+	public static final String UNKNOWN_USERNAME = "(unknown)";
 	
 	/*******************************************************************************
 	 * private variables
@@ -150,11 +158,104 @@ public class Game {
 	 * about the session it's in -- what players, what are their bets,
 	 * what are their cards.
 	 * 
+	 * @param The user on whose behalf to get the status. This is needed
+	 * because the way the hands are shown differ depending on if it's
+	 * the user's hand, or someone else's, where facedown cards are not
+	 * shown.
 	 * @return A string representing the game suitable of putting
-	 * into the response of a GAMESTATUS command
+	 * into the response of a GAMESTATUS command. It appears to have
+	 * an extra newline at the end that I can't remove so there you go
 	 */	
-	public String getGameStatus() {
-		return "A multiline response.\nTelling me that I have not implemented.\nThis method.";
+	public String getGameStatus( User user ) {
+		
+		StringBuilder str = new StringBuilder( GAMESTAGE_KEYWORD );
+		str.append( " " );
+		
+		// First line is either GAMESTAGE STARTED or GAMESTAGE NOT_STARTED
+		if( this.state != null && state.getGameStage() != null ) {
+			str.append( state.getGameStage() );
+		} else {
+			str.append( UNKNOWN_KEYWORD );
+		}
+		str.append( BlackjackServer.EOL );
+		
+		// Then we list of all players
+		User[] players = null;
+		if( state != null ) {
+			players = state.getCopyOfPlayers();
+		}
+		
+		if( players == null ) {
+			LOGGER.severe( "Could not get a list of players for the game status response." );
+		} else {
+			// Print the list of active players
+			for( User player : players ) {
+				// They need to have active status 
+				if( player.getStatus() != null && player.getStatus().equals(GameState.STATUS.ACTIVE ) ) {
+					str.append( concatKeywordAndUsername(ACTIVE_KEYWORD, player) );
+					str.append( BlackjackServer.EOL );
+				}
+			}
+
+			// Print the list of observer players
+			for( User player : players ) {
+				// They need to have active status 
+				if( player.getStatus() != null && player.getStatus().equals(GameState.STATUS.OBSERVER ) ) {
+					str.append( concatKeywordAndUsername(OBSERVER_KEYWORD, player) );
+					str.append( BlackjackServer.EOL );
+				}
+			}
+
+			// Print out the bets
+			for( User player : players ) {
+				// They need to have active status 
+				if( player.hasSpecifiedBet() ) {
+					str.append( concatKeywordAndUsername(BET_KEYWORD, player) );
+					// And then the amount
+					str.append( " " );
+					str.append( player.getBet() );
+					str.append( BlackjackServer.EOL );
+				}
+			}
+			
+			// TODO: HAND lines
+			for( User player : players ) {
+				// They need to have active status 
+				if( player.getHand() != null ) {
+					str.append( concatKeywordAndUsername(HAND_KEYWORD, player) );
+					// And then the hand
+					str.append( " " );
+					if( user != null && player.hasSameUsername(player) ) {
+						str.append( player.getHand().toStringIfThisPlayer() );
+					} else {
+						str.append( player.getHand().toStringIfNotThisPlayer() );
+					}
+					str.append( BlackjackServer.EOL );
+				}
+			}
+		}
+		
+		return str.toString();
+	}
+
+	/**
+	 * Lots of lines start off with a keyword followed by a username. This
+	 * creates that
+	 * @param keyword The keyword, to be followed by a space and the username
+	 * @param player The player whose username to use
+	 */
+	private String concatKeywordAndUsername(String keyword, User player) {
+		
+		StringBuilder str = new StringBuilder( keyword );
+		str.append( " " );
+		// And they should have a non-null username
+		if( player.getUserMetadata() != null && player.getUserMetadata().getUsername() != null ) {
+			str.append( player.getUserMetadata().getUsername() );
+		} else {
+			LOGGER.warning( "Could not find a non-null username for a player in game " + getId() );
+			str.append( UNKNOWN_USERNAME );
+		}
+		return str.toString();
 	}
 	
 	/**
@@ -187,22 +288,22 @@ public class Game {
 		StringBuilder str = new StringBuilder();
 		str.append( RECORD_START_KEYWORD + " " + metadata.getId() + " Blackjack\n" );
 		if( isActive() ) {
-			str.append( ACTIVE_STATUS_ATTRIBUTE + "\n" );
+			str.append( ACTIVE_STATUS_ATTRIBUTE + BlackjackServer.EOL );
 		} else {
-			str.append( INACTIVE_STATUS_ATTRIBUTE + "\n" );
+			str.append( INACTIVE_STATUS_ATTRIBUTE + BlackjackServer.EOL );
 		}
-		str.append( MIN_PLAYERS_ATTRIBUTE + " " + metadata.getMinPlayers() + "\n");
-		str.append( MAX_PLAYERS_ATTRIBUTE + " " + metadata.getMaxPlayers() + "\n");
-		str.append( MIN_BET_ATTRIBUTE + " " + metadata.getMinBet() + "\n");
-		str.append( MAX_BET_ATTRIBUTE + " " + metadata.getMaxBet() + "\n");
-		str.append( NUM_PLAYERS_ATTRIBUTE + " " + state.getNumberOfPlayers() + "\n");
-		str.append( NUM_DECKS_ATTRIBUTE + " " + metadata.getNumDecks() + "\n");
+		str.append( MIN_PLAYERS_ATTRIBUTE + " " + metadata.getMinPlayers() + BlackjackServer.EOL);
+		str.append( MAX_PLAYERS_ATTRIBUTE + " " + metadata.getMaxPlayers() + BlackjackServer.EOL);
+		str.append( MIN_BET_ATTRIBUTE + " " + metadata.getMinBet() + BlackjackServer.EOL);
+		str.append( MAX_BET_ATTRIBUTE + " " + metadata.getMaxBet() + BlackjackServer.EOL);
+		str.append( NUM_PLAYERS_ATTRIBUTE + " " + state.getNumberOfPlayers() + BlackjackServer.EOL);
+		str.append( NUM_DECKS_ATTRIBUTE + " " + metadata.getNumDecks() + BlackjackServer.EOL);
 		if( metadata.getRules() != null && metadata.getRules().size() > 0 ) {
 			for( String rule : metadata.getRules() ) {
 				StringBuilder ruleLine = new StringBuilder( RULE_KEYWORD );
 				ruleLine.append( " " );
 				ruleLine.append( rule );
-				ruleLine.append( "\n" );
+				ruleLine.append( BlackjackServer.EOL );
 				if( ruleLine.toString().trim().length() <= (RULE_KEYWORD.length() + 2) ) {
 					LOGGER.warning( "Game " + metadata.getId() + " had a rule that appeared empty." );
 				} else {
@@ -210,7 +311,7 @@ public class Game {
 				}
 			}
 		}
-		str.append( RECORD_END_KEYWORD + "\n" );
+		str.append( RECORD_END_KEYWORD + BlackjackServer.EOL );
 		return str.toString();
 	}
 	
