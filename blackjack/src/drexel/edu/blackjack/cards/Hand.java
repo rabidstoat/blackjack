@@ -96,4 +96,44 @@ public class Hand {
 		}
 		return false;
 	}
+	
+	/**
+	 * This needs to display a string representation of the cards
+	 * in the hand, as presented to the person whose hand it is.
+	 * The distinction is in the facedown cards. If displaying
+	 * for this person, the facedown cards are shown as if faceup,
+	 * that is, with the card.toString() value. Here, the facedown
+	 * card should be listed first in order, then the faceup cards
+	 * in order. The cards should be space-delimited. An example
+	 * of a valid response might be:
+	 * 
+	 * 2C 3S 5D
+	 * 
+	 * Here (though it is not indicated) the 2C was the facedown
+	 * card, and the 3S and 5D were the two facedown cards, in order.
+	 * 
+	 * @return
+	 */
+	public String toStringIfThisPlayer() {
+		// TODO: implement
+		return null;
+	}
+
+	/**
+	 * This is very similar to the toStringIfThisPlayer() method,
+	 * with one important distinction: instead of showing the
+	 * card.toString() values of facedown cards, an "X" should
+	 * be used.
+	 * 
+	 * Continuing the example of the previous method, calling
+	 * this method on the same hand would return:
+	 * 
+	 * X 3S 5D
+	 * 
+	 * @return
+	 */
+	public String toStringIfNotThisPlayer() {
+		// TODO: implement
+		return null;
+	}
 }
