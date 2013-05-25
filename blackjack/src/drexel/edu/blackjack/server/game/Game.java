@@ -133,6 +133,8 @@ public class Game {
 			return null;
 		}
 		
+		// If we got here, we succeeded!
+		player.setGame(null);
 		state.notifyOthersOfDepartedPlayer( player );
 		
 		// Were they in a state where they forfeited their bet?
