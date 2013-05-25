@@ -74,6 +74,8 @@ public class ResponseCode {
 		NOT_EXPECTING_HIT( 424, "The server was not expecting a HIT command now. Be patient." ),
 		NOT_EXPECTING_STAND( 425, "The server was not expecting a STAND command now. Be patient." ),
 		ALREADY_IN_SESSION( 426, "Cannot JOINSESSION when already in a session." ),
+		NOT_EXPECTING_GAMESTATUS( 427, "The server was not expecting a GAMESTATUS command now. Are you even in a session?" ),
+		GAMESTATUS_DOES_NOT_EXIST( 428, "Tried to request status of a non-existent game session." ),
 
 		UNKNOWN_COMMAND( 500, "That command is unknown to the server." ),
 		UNSUPPORTED_COMMAND( 501, "That command is not supported on this server." ),
@@ -86,6 +88,7 @@ public class ResponseCode {
 		CARD_DEALT(624, null ),
 		UPDATED_HAND( 625, null),
 		GAME_OUTCOME( 626, null ),
+		GAME_STATUS( 627, null ),
 		
 		REQUEST_FOR_BET( 720, "What amount do you wish to bet?" ),
 		REQUEST_FOR_GAME_ACTION( 721, "What game action would you like to take?" );
