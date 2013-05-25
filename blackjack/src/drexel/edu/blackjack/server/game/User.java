@@ -30,9 +30,6 @@ public class User {
 	// Hand they have in the current game
 	private Hand hand;
 	
-	// Bet they are currently making (or null if no bet)
-	private Integer bet;
-	
 	// Game they are playing
 	private Game game;
 	
@@ -43,7 +40,7 @@ public class User {
 	private BlackjackServerThread thread = null;
 	
 	// For debug output
-	private final static Logger LOGGER = BlackjackLogger.createLogger(User.class .getName()); 
+	private final static Logger LOGGER = BlackjackLogger.createLogger(User.class.getName()); 
 
 	/***************************************************************
 	 * Constructors go here
@@ -84,20 +81,6 @@ public class User {
 	 */
 	public void setHand(Hand hand) {
 		this.hand = hand;
-	}
-
-	/**
-	 * @return the bet
-	 */
-	public Integer getBet() {
-		return bet;
-	}
-
-	/**
-	 * @param bet the bet to set
-	 */
-	public void setBet(Integer bet) {
-		this.bet = bet;
 	}
 
 	/**
