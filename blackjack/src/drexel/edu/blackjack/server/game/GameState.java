@@ -220,6 +220,9 @@ public class GameState {
 			// Sets up all players active
 			makeAllPlayersActive();
 			
+			// Sets up all players active
+			removeAllPlayerBets();
+			
 			// Reset the starting player
 			currentPlayer = null;
 			
@@ -282,6 +285,23 @@ public class GameState {
 		if( players != null ) {
 			for( User player : players ) {
 				player.setStatus( STATUS.ACTIVE );
+			}
+		}
+	}
+
+	/**
+	 * Walk through the players, find their protocol object,
+	 * and set the bet value stored on it to null. This signifies
+	 * starting a new round of play, where the bet no longer
+	 * needs to be stored.
+	 * 
+	 * TODO: I'm worried about this method and synchronization
+	 */
+	private void removeAllPlayerBets() {
+
+		if( players != null ) {
+			for( User player : players ) {
+				player.clearBet();
 			}
 		}
 	}

@@ -236,4 +236,13 @@ public class User {
 		this.sendMessage( code );
 	}
 
+	/**
+	 * Remove any bets that are associated with this player
+	 */
+	public void clearBet() {
+		if( thread != null && thread.getProtocol() != null ) {
+			thread.getProtocol().setBet(null);
+		}
+	}
+
 }

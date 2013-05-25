@@ -17,11 +17,11 @@ public class GamePlayingThread extends Thread {
 	 * Private class variables
 	 ***********************************************************/
 	
+	// This is fairly hard-coded, how many steps make up a round of play
+	private static final int NUMBER_OF_STEPS = 3;
+	
 	// A game playing thread is responsible for one and only one game
 	private Game game = null;
-	
-	// Controls our perpetual game-playing loop
-	private boolean stillPlaying = true;
 	
 	private final static Logger LOGGER = BlackjackLogger.createLogger( GamePlayingThread.class.getName() );
 
@@ -74,24 +74,47 @@ public class GamePlayingThread extends Thread {
 	 */
 	private void bigGameLoop() {
 		
-		stillPlaying = true;
-
 		// This loops through until something sets this to false somewhere
-		while( stillPlaying ) {
+		while( keepPlaying() ) {
 			
-			// Start a new round, and ask for bets
-			game.startNewRound();
+			for( int i = 0; keepPlaying() && i < NUMBER_OF_STEPS; i++ ) {
+				doStep(i);
+			}
 			
-			// Wait for the bets to be placed
-			game.waitForBetsToBePlaced();
-			
-			// People who didn't bet in time get idled out
-			game.removeActivePlayersWithNoBets();
-			
-			// For now, we just do this once
-			stillPlaying = false;
 		}
 		
 		System.out.println( "Done with the big game loop." );
+	}
+
+	/**
+	 * The steps the thread has to do are ordered. This method
+	 * performs the step specified by the stepNumber
+	 * 
+	 * @param stepNumber Which step to perform
+	 */
+	private void doStep(int stepNumber ) {
+		
+		if( stepNumber == 0 ) {
+			// Start a new round, and ask for bets
+			game.startNewRound();
+		} else if( stepNumber == 1 ) {
+			// Wait for the bets to be placed
+			game.waitForBetsToBePlaced();
+		} else if( stepNumber == 2 ) {
+			// People who didn't bet in time get idled out
+			game.removeActivePlayersWithNoBets();
+		}
+				
+	}
+	
+	/**
+	 * Right now, we keep playing as long as there are players
+	 */
+	private boolean keepPlaying() {
+		if( game == null ) {
+			return false;
+		}
+		
+		return game.isActive();
 	}
 }
