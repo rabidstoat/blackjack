@@ -196,6 +196,8 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 					displayPlayerMovement( code );
 				} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_LEFT ) ) {
 					displayPlayerMovement( code );
+				} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_BET ) ) {
+					displayPlayerBet( code );
 				} else {
 					// TODO: Handle game state codes
 					LOGGER.info( "Received unhandled game state code of '" + code.toString() + "'." );
@@ -280,6 +282,43 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 				str.append( "performed an unknown action in " );
 			}
 			str.append( " the game." );
+			
+			// Display to the string
+			updateStatus( str.toString() );
+		}
+	}
+
+	/**
+	 * This handles codes about players placing a bet. The first 
+	 * variable is the game ID. The second variable is the username.
+	 * The third variable is the bet amount.
+	 * 
+	 * @param code Hopefully of type ResponseCode.CODE.PLAYER_BET
+	 */
+	private void displayPlayerBet(ResponseCode code) {
+		
+		if( code != null  ) {
+			
+			// Start with their username
+			StringBuilder str = new StringBuilder( "The player " );
+			List<String> params = code.getParameters();
+			if( params == null || params.size() < 2 ) {
+				str.append( "(unknown)" );
+			} else {
+				String username = params.get(1);
+				str.append( username == null ? "(unknown)" : username );
+			}
+			
+			// How much did they bet?
+			str.append( " has placed a bet of " );
+			if( params == null || params.size() < 3 ) {
+				str.append( "an unknown amount" );
+			} else {
+				String amount = params.get(2);
+				str.append( "$" );
+				str.append( amount );
+			}
+			str.append( "." );
 			
 			// Display to the string
 			updateStatus( str.toString() );

@@ -77,6 +77,12 @@ public class InSessionScreen extends AbstractScreen {
 					if( client.getCurrentGame() != null ) {
 						System.out.println( "(" + client.getCurrentGame().getBetRestriction() + ".)" );
 					}
+					StringBuilder str = new StringBuilder( "Enter amount, or '" );
+					str.append( ACCOUNT_OPTION );
+					str.append( "'to check balance, or '" );
+					str.append( LEAVE_OPTION );
+					str.append( "' to leave this game." );
+					System.out.println( str.toString() );
 					System.out.println( "***********************************************************" );
 				} else if( state == NEED_PLAY ) {
 					// TODO: Yeah
@@ -240,40 +246,35 @@ public class InSessionScreen extends AbstractScreen {
 		if( this.isActive ) {
 
 			synchronized( state ) {
-				if( state == NEED_BET ) {
-					if( str == null ) {
-						reset();
-					} else {
-						interpretUserBet( str );
-					}
+				
+				if( str == null ) {
+					reset();
+				} else if( str.trim().equals(CAPABILITIES_OPTION) ) {
+					sendCapabilitiesRequest();
+				} else if( str.trim().equals(TOGGLE_MONITOR_OPTION) ) {
+					toggleMessageMonitorFrame();
+				} else if( str.trim().equals(MENU_OPTION) ) {
+					displayMenu();
+				} else if( str.trim().equals(QUIT_OPTION) ) {
+					// TODO need to implement
+					System.out.println( "Not implemented yet. Try leaving the game first, then quit." );
+				} else if( str.trim().equals(INFO_OPTION) ) {
+					// TODO need to implement
+					System.out.println( "The info option is not implemnted yet." );
+				} else if( str.trim().equals(VERSION_OPTION) ) {
+					sendVersionRequest();
+				} else if( str.trim().equals(ACCOUNT_OPTION) ) {
+					sendAccountRequest();
+				} else if( str.trim().equals(LEAVE_OPTION) ) {
+					sendLeaveGameRequest();
+				} else if( state == NEED_BET ) {
+					interpretUserBet( str );
 				} else if( state == NEED_PLAY ) {
 					// TODO: Yeah
 					reset();
-				} if( state == WATCHING_GAME ) {
-					if( str == null ) {
-						reset();
-					} else if( str.trim().equals(CAPABILITIES_OPTION) ) {
-						sendCapabilitiesRequest();
-					} else if( str.trim().equals(TOGGLE_MONITOR_OPTION) ) {
-						toggleMessageMonitorFrame();
-					} else if( str.trim().equals(MENU_OPTION) ) {
-						displayMenu();
-					} else if( str.trim().equals(QUIT_OPTION) ) {
-						// TODO need to implement
-						System.out.println( "Not implemented yet. Try leaving the game first, then quit." );
-					} else if( str.trim().equals(INFO_OPTION) ) {
-						// TODO need to implement
-						System.out.println( "The info option is not implemnted yet." );
-					} else if( str.trim().equals(VERSION_OPTION) ) {
-						sendVersionRequest();
-					} else if( str.trim().equals(ACCOUNT_OPTION) ) {
-						sendAccountRequest();
-					} else if( str.trim().equals(LEAVE_OPTION) ) {
-						sendLeaveGameRequest();
-					} else {
-						System.out.println( "Unrecognized user input: " + str );
-						displayMenu();
-					}
+				} else {
+					System.out.println( "Unrecognized user input: " + str );
+					displayMenu();
 				}
 			}
 		}
