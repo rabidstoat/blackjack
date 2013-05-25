@@ -131,6 +131,7 @@ public class ActiveGameCoordinator {
 		// Make sure there is room to add the player
 		if( game.stillHasRoom() ) {
 			game.addPlayer( user );
+			user.setGame( game );
 			return game;
 		} else {
 			LOGGER.severe( "Game has no more room. Race condition?" );

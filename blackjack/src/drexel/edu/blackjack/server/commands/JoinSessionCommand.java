@@ -73,14 +73,14 @@ public class JoinSessionCommand extends BlackjackCommand {
 			return new ResponseCode( ResponseCode.CODE.JOIN_SESSION_TOO_POOR).toString();
 		}
 		
-		// Finally if we get this far they can join the game! Make sure it succeeded
+		// Finally if we get this far they can join the game! Make sure it succeeded.
+		// If it succeeded this should set the game associated with the user object, too.
 		game = coordinator.addPlayer( sessionName, user );
 		if( game == null ) {
 			return new ResponseCode(ResponseCode.CODE.INTERNAL_ERROR,
 					"In JOIN SESSION, failed to join a game we thought we could because Coordinator.addPlayer() returned null.")
 					.toString();
 		}
-		user.setGame( game );
 
 		// Step 6: Save out state variables? There are none
 
