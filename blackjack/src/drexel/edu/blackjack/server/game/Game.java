@@ -225,10 +225,8 @@ public class Game {
 					str.append( concatKeywordAndUsername(HAND_KEYWORD, player) );
 					// And then the hand
 					str.append( " " );
-					if( user != null && player.hasSameUsername(player) ) {
-						str.append( player.getHand().toStringIfThisPlayer() );
-					} else {
-						str.append( player.getHand().toStringIfNotThisPlayer() );
+					if( user != null ) {
+						str.append( player.getHand().toString(user) );
 					}
 					str.append( BlackjackServer.EOL );
 				}
