@@ -38,16 +38,17 @@
     </target>
 
     <target depends="compile" name="compile-test">
-        <javac srcdir="src" includes="**/*Test.java" destdir="bin" source="${source}" target="${target}">
+        <javac srcdir="src" includes="**/*Test.java" destdir="bin" source="${source}" target="${target}" includeantruntime="true">
             <classpath refid="blackjack.classpath"/>
         </javac>
     </target>
 
     <target depends="compile-test" name="test">
-        <junit>
+        <junit includeantruntime="true" printsummary="yes">
+            <formatter type="plain" usefile="false"/>
             <classpath refid="blackjack.classpath"/>
             <batchtest>
-                <fileset dir="src"/>
+                <fileset dir="src" includes="**/*Test*.java"/>
             </batchtest>
         </junit>
     </target>
