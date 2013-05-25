@@ -128,11 +128,8 @@ public class BlackjackProtocol {
 	
 	
 	/******************************************************************
-	 * I don't think this is the right set of timers we need. These
-	 * attributes are used to track when a timeout needs to occur,
-	 * by recording the client activity. Somewhere else some daemon
-	 * will have to periodically search all connections for ones
-	 * that have been idle too long for their state.
+	 * Need to track their last command received, so they can be
+	 * timed out
 	 *****************************************************************/
 	
 	// This attribute is the last time the client did any sort of
@@ -140,15 +137,6 @@ public class BlackjackProtocol {
 	// milliseconds
 	private Long lastCommand = null;
 	
-	// This is a timer that can be used if something is being
-	// waited for from the user. It seems like this might be
-	// distinct from the above because, for example, if they're
-	// waiting for the client to make a BET command, they
-	// shouldn't be able to avoid timing out by using the
-	// perfectly allowable CAPABILITIES command repeatedly
-	private Long timer = null;
-	
-
 	/*************************************************************
 	 * Constructor goes  here
 	 ************************************************************/
@@ -426,20 +414,6 @@ public class BlackjackProtocol {
 	 */
 	public void setLastCommand(Long lastCommand) {
 		this.lastCommand = lastCommand;
-	}
-
-	/**
-	 * @return the timer
-	 */
-	public Long getTimer() {
-		return timer;
-	}
-
-	/**
-	 * @param timer the timer to set
-	 */
-	public void setTimer(Long timer) {
-		this.timer = timer;
 	}
 
 	/**

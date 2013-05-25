@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import drexel.edu.blackjack.db.user.FlatfileUserManager;
 import drexel.edu.blackjack.db.user.UserManagerInterface;
-import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 import drexel.edu.blackjack.server.timeouts.IdleTimeoutDaemon;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
@@ -143,51 +142,14 @@ public class BlackjackServerThread extends Thread {
 	}
 
 	/**
-	 * This method is called when a timeout occurs on the thread. A state
-	 * change is involved, potentially with a response code sent to the
-	 * client. Timers on the protocol should be reset by this command.
-	 */
-	
-	public void handleTimeout(STATE newState, ResponseCode responseCode) {
-		
-		LOGGER.info( "Inside a client connection thread, about to handle a timeout" );
-
-		// Set the new state
-		if( protocol != null ) {
-
-			// First reset the timers
-			long currentTime = System.currentTimeMillis();
-			protocol.setLastCommand( currentTime );
-			protocol.setTimer( currentTime );
-			
-			// Then set the state
-			protocol.setState( newState );
-			
-			// And, finally, send a response code if needed
-			if( responseCode != null && out != null ) {
-				out.println( responseCode.toString() );
-				out.flush();
-			}
-		} else {
-			LOGGER.warning( "Inside a blackjack server thread, handling a timeout with a null protocol" );
-		}
-		
-		// Now if they're in the disconnected state, we have to handle
-		// the fact that this connection needs to close
-		if( newState == null || newState.equals(BlackjackProtocol.STATE.DISCONNECTED) ) {
-			LOGGER.finer( "Inside a blackjack server thread, about to close the connection" );
-			closeConnection();
-		}
-	}
-
-	/**
 	 * This method is called when the connection is closed. It should handle
 	 * shutting down the connection, closing any readers or writers, closing
 	 * the socket, stopping the thread, and unregistering the thread with the
 	 * idle monitor.
-	 */
-	private void closeConnection() {
-
+	 */	
+	public void forceDisconnectDueToTimeout() {
+		
+		LOGGER.info( "Inside a client connection thread, about to force a timeout disconnect!" );
 		// Well, if we close the input reader, then the thread
 		// should (hopefully stop!)
 		try {
