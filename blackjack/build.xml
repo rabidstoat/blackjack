@@ -89,7 +89,6 @@
 			</permissions>            
 			<classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="SEVERE"/>
-    		<sysproperty key="ShowMessages" value="true"/>
     	</java>
     </target>
 
@@ -103,7 +102,6 @@
 			</permissions>            
     	    <classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="WARNING"/>
-    		<sysproperty key="ShowMessages" value="true"/>
     	</java>
     </target>
 
@@ -117,7 +115,6 @@
 			</permissions>            
     	    <classpath refid="blackjack.classpath"/>
     		<sysproperty key="loglevel" value="INFO"/>
-    		<sysproperty key="ShowMessages" value="true"/>
     	</java>
     </target>
 
