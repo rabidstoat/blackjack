@@ -10,6 +10,7 @@
         <pathelement location="bin"/>
         <pathelement location="libs/hamcrest-core-1.3.jar"/>
         <pathelement location="libs/junit-4.11.jar"/>
+        <pathelement location="libs/mockito-all-1.9.5.jar"/>
         <pathelement location="config"/>
     </path>
 
