@@ -143,10 +143,25 @@ public class Game {
 		return new ResponseCode( ResponseCode.CODE.SUCCESSFULLY_LEFT_SESSION_NOT_MIDPLAY,
 				"Have not coded logic to see if a bet was forfeited.");
 	}
+	/**
+	 * The game descriptor is a string, with newlines in it, capable of
+	 * being inserted directly into the response of a GAMESTATUS command.
+	 * This describes active details about the game, that is, information
+	 * about the session it's in -- what players, what are their bets,
+	 * what are their cards.
+	 * 
+	 * @return A string representing the game suitable of putting
+	 * into the response of a GAMESTATUS command
+	 */	
+	public String getGameStatus() {
+		return "A multiline response.\nTelling me that I have not implemented.\nThis method.";
+	}
 	
 	/**
 	 * The game descriptor is a string, with newlines in it, capable of
 	 * being inserted directly into the response of a LISTGAMES command.
+	 * This describes game metadata, basically, as the only 'active'
+	 * detail about the game that is shown is whether or not it's active.
 	 * For example, one string response might look like this:
 	 * GAME game1 This is sample game 1
 	 * ATTRIBUTE STATUS INACTIVE
@@ -298,5 +313,5 @@ public class Game {
 		}
 		return success;
 	}
-	
+
 }

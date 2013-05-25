@@ -16,4 +16,5 @@ drexel.edu.blackjack.server.commands.QuitCommand
 drexel.edu.blackjack.server.commands.StandCommand
 drexel.edu.blackjack.server.commands.UsernameCommand
 drexel.edu.blackjack.server.commands.VersionCommand
+drexel.edu.blackjack.server.commands.GameStatusCommand
 drexel.edu.blackjack.server.commands.UnknownCommand
