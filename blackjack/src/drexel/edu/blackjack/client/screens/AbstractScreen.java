@@ -26,17 +26,27 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		
 		LOGIN_SCREEN,
 		NOT_IN_SESSION_SCREEN,
-		IN_SESSION_SCREEN,
-		OTHER_SCREEN 
+		IN_SESSION_SCREEN
 		
 	}
 
+	
 	/*****************************************************************
 	 * Local variables here
 	 ***************************************************************/
 
+
+	// Some menu options that are shared amongst multiple screens
+	protected static String VERSION_OPTION			= "V";	// Request to see the version of the server
+	protected static String CAPABILITIES_OPTION		= "C";	// Request to see the capabilities of the server
+	protected static String QUIT_OPTION				= "Q";	// Request to quit the client entirely
+	protected static String MENU_OPTION				= "?";	// Request to repeat the last menu
+	protected static String ACCOUNT_OPTION			= "A";	// Request to view the user's bank account balance
+	protected static String TOGGLE_MONITOR_OPTION	= "T";	// Request to toggle the frame that shows messages sent and receivd
+	protected static String BACK_OPTION				= "back";	// Request to go back a menu
+
 	// What type of screen is it
-	private SCREEN_TYPE screenType = SCREEN_TYPE.OTHER_SCREEN;	// Default to 'other'
+	private SCREEN_TYPE screenType = SCREEN_TYPE.LOGIN_SCREEN;	// We start with the login
 	
 	// Whether or not this particular screen is active. In general,
 	// only one screen should be active at a time.
@@ -53,9 +63,12 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	// Our logger
 	private final static Logger LOGGER = BlackjackLogger.createLogger(AbstractScreen.class .getName()); 
 	
+	
 	/*****************************************************************
-	 * Construct here
+	 * Constructor goes here
 	 ***************************************************************/
+	
+	
 	public AbstractScreen( BlackjackCLClient client, ClientInputFromServerThread thread,
 			ClientOutputToServerHelper helper ) {
 		this.client = client;
@@ -63,9 +76,11 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		this.helper = helper;
 	}
 	
+	
 	/*****************************************************************
 	 * Abstract methods to be defined elsewhere
 	 ***************************************************************/
+	
 	
 	/**
 	 * Used to display whatever sort of command-line 'menu'
@@ -90,10 +105,13 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 */
 	public abstract void handleUserInput( String str );
 
+	
 	/*****************************************************************
-	 * Concrete methods implemented here
+	 * Some getters and setters, essentially, with at most a small
+	 * amount of necessary logic
 	 ***************************************************************/
 
+	
 	/**
 	 * @return the screenType
 	 */
@@ -104,7 +122,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	/**
 	 * @param screenType the screenType to set
 	 */
-	public void setScreenType(SCREEN_TYPE screenType) {
+	protected void setScreenType(SCREEN_TYPE screenType) {
 		this.screenType = screenType;
 	}	
 
@@ -152,19 +170,34 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 			client.showPreviousScreen();
 		}
 	}
+
+	
+	/*****************************************************************
+	 * These methods have to do with handling responses from the
+	 * server. Typically this would be overridden by the extending
+	 * class so they can add their own specific handling out of
+	 * methods, but defaults are provided here for many things.
+	 ***************************************************************/
+
 	
 	/**
 	 * Does the best it can to handle a response code that the
 	 * implementing screen did not handle. This might be because
-	 * it's a 'general error', or it might simply be something
-	 * that was totally unexpected.
+	 * it's a 'general error' or 'common message', or it might 
+	 * simply be something that was totally unexpected.
 	 * 
 	 * Handling the message might involve printing to the console
 	 * or it might just be handled internally in a silent manner.
 	 * 
-	 * @param code
+	 * If handling the code requires redisplaying the menu, do that
+	 * here. Typically this is only done if you reset, if you have
+	 * changed menus, or if you have received a message that prints
+	 * a lot to the screen, such that displaying the menu again would
+	 * be helpful.
+	 * 
+	 * @param code What was received
 	 */
-	public void handleResponseCode(ResponseCode code) {
+	protected void handleResponseCode(ResponseCode code) {
 
 		// Only handle if it's active
 		if( isActive ) {
@@ -183,12 +216,12 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 					displayVersion( code );
 				} else if( code.hasSameCode( ResponseCode.CODE.CAPABILITIES_FOLLOW ) ) {
 					displayCapabilities( code );
+					displayMenu();
 				} else if( code.hasSameCode( ResponseCode.CODE.ACCOUNT_BALANCE ) ) {
 					displayAccountBalance( code );
 				} else {
 					LOGGER.info( "Received unhandled informative code of '" + code.toString() + "'." );
 				}
-				displayMenu();
 				
 			} else if( code.isGameState() ) {
 				
@@ -202,7 +235,6 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 					// TODO: Handle game state codes
 					LOGGER.info( "Received unhandled game state code of '" + code.toString() + "'." );
 				}
-				displayMenu();
 				
 			} else if( code.isCommandComplete() ) {
 				
@@ -210,44 +242,13 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 					quitTheGame();
 				} else {
 					LOGGER.info( "Received unhandled command-complete code of '" + code.toString() + "'." );
-					displayMenu();
 				}
 				
 			} else {
 				// TODO: Not sure what to do here
 				LOGGER.info( "Received some other unhandled code of '" + code.toString() + "'." );
-				displayMenu();
 			}
 		}
-	}
-
-	@Override
-	public void receivedMessage(ResponseCode code) {
-		// Only ask an implementing class to process the message
-		// if the screen is active
-		if( isActive ) {
-			processMessage( code );
-		}
-	}
-
-	/**
-	 * Print to the screen something about the capabilities
-	 * @param code
-	 */
-	protected void displayCapabilities(ResponseCode code) {
-		
-		// Make sure this is a valid capabilities list first
-		if( code == null ||  
-				!code.hasSameCode( ResponseCode.CODE.CAPABILITIES_FOLLOW ) ) {
-			System.out.println( "Internal error, sorry. Can't display the capabilities list." );
-		} else {
-			System.out.println( "The server supports " + (code.getNumberOfLines()-1) + " protocol commands in this current state." );
-			System.out.println( "They are: " );
-			for( int i = 1; i < code.getNumberOfLines(); i++ ) {
-				System.out.println( i + ". " + code.getMultiline(i) );
-			}
-		}
-				
 	}
 
 	/**
@@ -262,15 +263,11 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		
 		if( code != null  ) {
 			
-			// Start with their username
-			StringBuilder str = new StringBuilder( "The player " );
+			// Our parameters
 			List<String> params = code.getParameters();
-			if( params == null || params.size() < 2 ) {
-				str.append( "(unknown)" );
-			} else {
-				String username = params.get(1);
-				str.append( username == null ? "(unknown)" : username );
-			}
+
+			// All player update messages start the same
+			StringBuilder str = createStringBuilderForUserUpdate(params);
 			
 			// Have they left or joined?
 			str.append( " has " );
@@ -298,16 +295,12 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	private void displayPlayerBet(ResponseCode code) {
 		
 		if( code != null  ) {
-			
-			// Start with their username
-			StringBuilder str = new StringBuilder( "The player " );
+
+			// Our parameters
 			List<String> params = code.getParameters();
-			if( params == null || params.size() < 2 ) {
-				str.append( "(unknown)" );
-			} else {
-				String username = params.get(1);
-				str.append( username == null ? "(unknown)" : username );
-			}
+
+			// All player update messages start the same
+			StringBuilder str = createStringBuilderForUserUpdate(params);
 			
 			// How much did they bet?
 			str.append( " has placed a bet of " );
@@ -325,21 +318,44 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		}
 	}
 
+
 	/**
-	 * Does whatever to update the user as to a status, which can
-	 * be displayed as a text string
-	 * @param str
+	 * Creates a string builder to be used for displaying messages about a
+	 * particular user, by starting it off with a line like: "The player <username>"
+	 * 
+	 * @param The parameters. The second parameter should have the username. This
+	 * correspons to the format of player update messages from the server
+	 * @return The stringbuilder, initialized to this leadin phrase
 	 */
-	protected void updateStatus(String str) {
-		SimpleDateFormat sdf = new SimpleDateFormat( "HH:mm:ss");
-		System.out.println( "[" + sdf.format( new Date() ) + "] " + str );
+	private StringBuilder createStringBuilderForUserUpdate(List<String> params) {
+		// Start with their username
+		StringBuilder str = new StringBuilder( "The player " );
+		if( params == null || params.size() < 2 ) {
+			str.append( "(unknown)" );
+		} else {
+			String username = params.get(1);
+			str.append( username == null ? "(unknown)" : username );
+		}
+		return str;
 	}
 
 	/**
-	 * Server acknowledges a quit, so we can cleanly exit
+	 * Print to the screen something about the capabilities
+	 * @param code
 	 */
-	protected void quitTheGame() {
-		client.notifyOfShutdown();
+	protected void displayCapabilities(ResponseCode code) {
+		
+		// Make sure this is a valid capabilities list first
+		if( code == null ||  
+				!code.hasSameCode( ResponseCode.CODE.CAPABILITIES_FOLLOW ) ) {
+			System.out.println( "Internal error, sorry. Can't display the capabilities list." );
+		} else {
+			System.out.println( "The server supports " + (code.getNumberOfLines()-1) + " protocol commands in this current state." );
+			System.out.println( "They are: " );
+			for( int i = 1; i < code.getNumberOfLines(); i++ ) {
+				System.out.println( i + ". " + code.getMultiline(i) );
+			}
+		}				
 	}
 
 	/**
@@ -372,10 +388,30 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		}
 	}
 
+	
+	/**
+	 * Does whatever to update the user as to a status, which can
+	 * be displayed as a text string
+	 * @param str
+	 */
+	protected void updateStatus(String str) {
+		SimpleDateFormat sdf = new SimpleDateFormat( "HH:mm:ss");
+		System.out.println( "[" + sdf.format( new Date() ) + "] " + str );
+	}
+
+	/**
+	 * Server acknowledges a quit, so we can cleanly exit
+	 */
+	protected void quitTheGame() {
+		client.notifyOfShutdown();
+	}
+
+	
 	/***********************************************************************************
 	 * Interacts with the server as needed to handle various user requests
 	 **********************************************************************************/
 
+	
 	protected void sendVersionRequest() {
 		System.out.println( "One moment, fetching the version from the server..." );
 		helper.sendVersionRequest();
@@ -394,6 +430,22 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	protected void toggleMessageMonitorFrame() {
 		if( client != null ) {
 			client.toggleMessageFrame();
+		}
+	}
+
+	
+	/***********************************************************************************
+	 * This is what handles the interface that we are implementing. It takes input
+	 * and calls a method that causes the input to be processed.
+	 **********************************************************************************/
+
+	
+	@Override
+	public void receivedMessage(ResponseCode code) {
+		// Only ask an implementing class to process the message
+		// if the screen is active
+		if( isActive ) {
+			processMessage( code );
 		}
 	}
 }

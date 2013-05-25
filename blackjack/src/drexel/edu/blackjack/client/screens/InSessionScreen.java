@@ -19,19 +19,14 @@ public class InSessionScreen extends AbstractScreen {
 	 * Private variables.
 	 *********************************************************************/
 
-	// This screen can be in one of these two states
+	// This screen can be in one of these three states
 	private static final int NEED_BET		= 0;
 	private static final int NEED_PLAY		= 1;
 	private static final int WATCHING_GAME	= 3;
 
-	// The different options for this menu
+	// The different options for this menu, other than the general ones
+	// that are defined in the abstract superclass
 	private static String LEAVE_OPTION			= "L";
-	private static String VERSION_OPTION		= "V";
-	private static String CAPABILITIES_OPTION	= "C";
-	private static String QUIT_OPTION			= "Q";
-	private static String MENU_OPTION			= "?";
-	private static String ACCOUNT_OPTION		= "A";
-	private static String TOGGLE_MONITOR_OPTION	= "T";
 	private static String INFO_OPTION			= "I";
 	
 	// Which of the states the screen is in
@@ -47,9 +42,11 @@ public class InSessionScreen extends AbstractScreen {
 	// And keep a copy to itself for the singleton pattern
 	private static InSessionScreen inSessionScreen = null;
 	
+	
 	/**********************************************************************
-	 * Private constructor.
+	 * Private constructor and singleton access method
 	 *********************************************************************/
+	
 	
 	private InSessionScreen( BlackjackCLClient client, ClientInputFromServerThread thread,
 			ClientOutputToServerHelper helper ) {
@@ -62,89 +59,6 @@ public class InSessionScreen extends AbstractScreen {
 		setIsActive( false );
 		
 	}
-
-
-	@Override
-	public void displayMenu() {
-		
-		if( this.isActive ) {
-			synchronized(state) {
-				if( state == NEED_BET ) {
-					System.out.println( "***********************************************************" );
-					System.out.println( "                 Making a Bet Screen                       " );
-					System.out.println( "***********************************************************" );
-					System.out.println( "How much would you like to bet?" );
-					if( client.getCurrentGame() != null ) {
-						System.out.println( "(" + client.getCurrentGame().getBetRestriction() + ".)" );
-					}
-					StringBuilder str = new StringBuilder( "Enter amount, or '" );
-					str.append( ACCOUNT_OPTION );
-					str.append( "'to check balance, or '" );
-					str.append( LEAVE_OPTION );
-					str.append( "' to leave this game." );
-					System.out.println( str.toString() );
-					System.out.println( "***********************************************************" );
-				} else if( state == NEED_PLAY ) {
-					// TODO: Yeah
-					reset();
-				} else {
-					System.out.println( "***********************************************************" );
-					System.out.println( "                 Playing Blackjack Screen                  " );
-					System.out.println( "***********************************************************" );
-					System.out.println( playingBlackjackStatusLine() );
-					System.out.println( "***********************************************************" );
-					System.out.println( "Please enter the letter or symbol of the option to perform:" );
-					System.out.println( LEAVE_OPTION + ") Leave the game" );
-					System.out.println( ACCOUNT_OPTION + ") Account balance request" );
-					System.out.println( INFO_OPTION + ") Info about the game" );
-					System.out.println( QUIT_OPTION + ") Quit playing entirely" );
-					System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
-					System.out.println( CAPABILITIES_OPTION + ") See what capabilities the game implements (for debug purposes)" );
-					System.out.println( TOGGLE_MONITOR_OPTION + ") Toggle the message monitor window (for debug purposes)" );
-					System.out.println( MENU_OPTION + ") Repeat this menu of options" );
-					System.out.println( "***********************************************************" );
-				}
-			}
-		}
-		
-	}
-
-	/**
-	 * Generate a fixed-width line that reports the cards held, 
-	 * and the current bet placed.
-	 * 
-	 * @return Fixed length string of this
-	 */
-	private String playingBlackjackStatusLine() {
-		
-		// We might just have the word NONE for the cards, might have some real values
-		// We really don't want it to be null, though
-		if( cards == null ) {
-			cards = "NONE";
-		}
-		StringBuilder str = new StringBuilder( "* Cards: " );
-		str.append( cards );
-		
-		// Now, the length of the cards string, plus number of spaces, should equal 20
-		for( int i = 0; i < (20-cards.length()); i++ ) {
-			str.append( " " );
-		}
-		
-		// Come up with a string for the bet part
-		String bet = "Bet: " + (acceptedBet == null ? "NONE" : "$" + acceptedBet.toString() );
-		
-		// We need to fill 28 spaces to the end of the bet line
-		for( int i = 0; i < (28-bet.length()); i++ ) {
-			str.append( " " );
-		}
-		str.append( bet );
-		
-		// And finally end it off
-		str.append( " *" );
-		
-		return str.toString();
-	}
-
 
 	/**
 	 * This is used in the singleton pattern so that only
@@ -167,16 +81,12 @@ public class InSessionScreen extends AbstractScreen {
 		
 	}
 
-	@Override
-	public void reset() {
-		if( this.isActive ) {
-			// For us, resetting the screen involves showing the menu again
-			System.out.println( "Whoops, the user interface got confused. Let's try this again." );
-			state = WATCHING_GAME;
-			displayMenu();
-		}
-	}
 
+	/**********************************************************************
+	 * Methods related to messages received from the server
+	 *********************************************************************/
+
+	
 	@Override
 	public void processMessage(ResponseCode code) {
 		if( this.isActive ) {
@@ -241,6 +151,108 @@ public class InSessionScreen extends AbstractScreen {
 		}
 	}	
 
+	
+	/**********************************************************************
+	 * General methods related to showing menus and getting responses.
+	 *********************************************************************/
+
+	
+	@Override
+	public void displayMenu() {
+		
+		if( this.isActive ) {
+			synchronized(state) {
+				if( state == NEED_BET ) {
+					System.out.println( "***********************************************************" );
+					System.out.println( "                 Making a Bet Screen                       " );
+					System.out.println( "***********************************************************" );
+					System.out.println( "How much would you like to bet?" );
+					if( client.getCurrentGame() != null ) {
+						System.out.println( "(" + client.getCurrentGame().getBetRestriction() + ".)" );
+					}
+					StringBuilder str = new StringBuilder( "Enter amount, or '" );
+					str.append( ACCOUNT_OPTION );
+					str.append( "' to check balance, or '" );
+					str.append( LEAVE_OPTION );
+					str.append( "' to leave this game." );
+					System.out.println( str.toString() );
+					System.out.println( "***********************************************************" );
+				} else if( state == NEED_PLAY ) {
+					// TODO: Yeah
+					reset();
+				} else {
+					System.out.println( "***********************************************************" );
+					System.out.println( "                 Playing Blackjack Screen                  " );
+					System.out.println( "***********************************************************" );
+					System.out.println( playingBlackjackStatusLine() );
+					System.out.println( "***********************************************************" );
+					System.out.println( "Please enter the letter or symbol of the option to perform:" );
+					System.out.println( LEAVE_OPTION + ") Leave the game" );
+					System.out.println( ACCOUNT_OPTION + ") Account balance request" );
+					System.out.println( INFO_OPTION + ") Info about the game" );
+					System.out.println( QUIT_OPTION + ") Quit playing entirely" );
+					System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
+					System.out.println( CAPABILITIES_OPTION + ") See what capabilities the game implements (for debug purposes)" );
+					System.out.println( TOGGLE_MONITOR_OPTION + ") Toggle the message monitor window (for debug purposes)" );
+					System.out.println( MENU_OPTION + ") Repeat this menu of options" );
+					System.out.println( "***********************************************************" );
+				}
+			}
+		}	
+	}
+	
+	/**
+	 * Generate a fixed-width line that reports the cards held, 
+	 * and the current bet placed.
+	 * 
+	 * @return Fixed length string of this
+	 */
+	private String playingBlackjackStatusLine() {
+		
+		// We might just have the word NONE for the cards, might have some real values
+		// We really don't want it to be null, though
+		if( cards == null ) {
+			cards = "NONE";
+		}
+		StringBuilder str = new StringBuilder( "* Cards: " );
+		str.append( cards );
+		
+		// Now, the length of the cards string, plus number of spaces, should equal 20
+		for( int i = 0; i < (20-cards.length()); i++ ) {
+			str.append( " " );
+		}
+		
+		// Come up with a string for the bet part
+		String bet = "Bet: " + (acceptedBet == null ? "NONE" : "$" + acceptedBet.toString() );
+		
+		// We need to fill 28 spaces to the end of the bet line
+		for( int i = 0; i < (28-bet.length()); i++ ) {
+			str.append( " " );
+		}
+		str.append( bet );
+		
+		// And finally end it off
+		str.append( " *" );
+		
+		return str.toString();
+	}
+
+	@Override
+	public void reset() {
+		if( this.isActive ) {
+			// For us, resetting the screen involves showing the menu again
+			System.out.println( "Whoops, the user interface got confused. Let's try this again." );
+			state = WATCHING_GAME;
+			displayMenu();
+		}
+	}
+
+
+	/***********************************************************************************
+	 * These methods process user input
+	 **********************************************************************************/
+
+
 	@Override
 	public void handleUserInput(String str) {
 		if( this.isActive ) {
@@ -281,6 +293,11 @@ public class InSessionScreen extends AbstractScreen {
 	}
 
 
+	/***********************************************************************************
+	 * Interacts with the server to handle various user requests
+	 **********************************************************************************/
+
+	
 	/**
 	 * Sends a request to leave the session. No prompting
 	 * of the user to confirm, sucks to be them.
