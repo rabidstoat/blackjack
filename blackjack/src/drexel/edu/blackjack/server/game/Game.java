@@ -180,9 +180,17 @@ public class Game {
 		str.append( MAX_BET_ATTRIBUTE + " " + metadata.getMaxBet() + "\n");
 		str.append( NUM_PLAYERS_ATTRIBUTE + " " + state.getNumberOfPlayers() + "\n");
 		str.append( NUM_DECKS_ATTRIBUTE + " " + metadata.getNumDecks() + "\n");
-		if( metadata.getRules() != null ) {
+		if( metadata.getRules() != null && metadata.getRules().size() > 0 ) {
 			for( String rule : metadata.getRules() ) {
-				str.append( RULE_KEYWORD + " " + rule + "\n" );
+				StringBuilder ruleLine = new StringBuilder( RULE_KEYWORD );
+				ruleLine.append( " " );
+				ruleLine.append( rule );
+				ruleLine.append( "\n" );
+				if( ruleLine.toString().trim().length() <= (RULE_KEYWORD.length() + 2) ) {
+					LOGGER.warning( "Game " + metadata.getId() + " had a rule that appeared empty." );
+				} else {
+					str.append( ruleLine.toString() );
+				}
 			}
 		}
 		str.append( RECORD_END_KEYWORD + "\n" );
