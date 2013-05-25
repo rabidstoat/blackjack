@@ -161,8 +161,11 @@ public class Card {
 			  return new int[0];
 		  } 
 	}
-	
-	/**Concatenates rank and suit into a string to create a playing card*/
+
+	/**
+	 * @return Concatenates rank and suit into a string to create a playing card
+	 * For example, 2S, 4C, 5H, AC
+	 */
 	public String toString() {
 		
 		StringBuilder str = new StringBuilder();

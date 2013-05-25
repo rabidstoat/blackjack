@@ -100,6 +100,7 @@ public class Hand {
 		return false;
 	}
 	
+	@Deprecated
 	/**
 	 * This needs to display a string representation of the cards
 	 * in the hand, as presented to the person whose hand it is.
@@ -118,10 +119,22 @@ public class Hand {
 	 * @return
 	 */
 	public String toStringIfThisPlayer() {
-		// TODO: implement
-		return null;
+		StringBuilder b = new StringBuilder();
+		String separator = ""; 
+		for (Card c:this.getFacedownCards()) {
+			b.append(separator);
+			b.append(c.toString());
+			separator = " ";
+		}
+		for (Card c:this.getFaceupCards()) {
+			b.append(separator);
+			b.append(c.toString());
+			separator = " ";
+		}
+		return b.toString();
 	}
-
+	
+	@Deprecated
 	/**
 	 * This is very similar to the toStringIfThisPlayer() method,
 	 * with one important distinction: instead of showing the
@@ -136,7 +149,69 @@ public class Hand {
 	 * @return
 	 */
 	public String toStringIfNotThisPlayer() {
-		// TODO: implement
-		return null;
+		StringBuilder b = new StringBuilder();
+		String separator = ""; 
+		for (Card c:this.getFacedownCards()) {
+			b.append(separator);
+			b.append("X");
+			separator = " ";
+		}
+		for (Card c:this.getFaceupCards()) {
+			b.append(separator);
+			b.append(c.toString());
+			separator = " ";
+		}
+		return b.toString();
+	}
+	
+	/**
+	 * @param callingUser
+	 * @return
+	 * @see toStringIfNotThisPlayer()
+	 * @see toStringIfThisPlayer()
+	 */
+	public String toString(User callingUser) {
+		StringBuilder b = new StringBuilder();
+		String separator = ""; 
+		for (Card c:this.getFacedownCards()) {
+			b.append(separator);
+			if (callingUser == user) 
+				b.append("X");
+			else
+				b.append(c.toString());
+			separator = " ";
+		}
+		for (Card c:this.getFaceupCards()) {
+			b.append(separator);
+			b.append(c.toString());
+			separator = " ";
+		}
+		return b.toString();
+	}
+
+	
+	/**
+	 * @param callingUser
+	 * @return
+	 * @see toStringIfNotThisPlayer()
+	 * @see toStringIfThisPlayer()
+	 */
+	public String toString(boolean isOwner) {
+		StringBuilder b = new StringBuilder();
+		String separator = ""; 
+		for (Card c:this.getFacedownCards()) {
+			b.append(separator);
+			if (isOwner) 
+				b.append("X");
+			else
+				b.append(c.toString());
+			separator = " ";
+		}
+		for (Card c:this.getFaceupCards()) {
+			b.append(separator);
+			b.append(c.toString());
+			separator = " ";
+		}
+		return b.toString();
 	}
 }
