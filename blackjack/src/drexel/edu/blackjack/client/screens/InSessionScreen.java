@@ -231,7 +231,6 @@ public class InSessionScreen extends AbstractScreen {
 					System.out.println( LEAVE_OPTION + ") Leave the game" );
 					System.out.println( ACCOUNT_OPTION + ") Account balance request" );
 					System.out.println( INFO_OPTION + ") Info about the game" );
-					System.out.println( QUIT_OPTION + ") Quit playing entirely" );
 					System.out.println( VERSION_OPTION + ") See what version of the game is running (for debug purposes)" );
 					System.out.println( CAPABILITIES_OPTION + ") See what capabilities the game implements (for debug purposes)" );
 					System.out.println( TOGGLE_MONITOR_OPTION + ") Toggle the message monitor window (for debug purposes)" );
@@ -308,9 +307,6 @@ public class InSessionScreen extends AbstractScreen {
 					toggleMessageMonitorFrame();
 				} else if( str.trim().equals(MENU_OPTION) ) {
 					displayMenu();
-				} else if( str.trim().equals(QUIT_OPTION) ) {
-					// TODO need to implement
-					System.out.println( "Not implemented yet. Try leaving the game first, then quit." );
 				} else if( str.trim().equals(INFO_OPTION) ) {
 					sendGameStatusRequest();
 				} else if( str.trim().equals(VERSION_OPTION) ) {
