@@ -193,6 +193,7 @@ public class ClientSideGameStatus {
 			if( bet != null ) {
 				response.append( " Their bet is $" );
 				response.append( bet );
+				response.append( "." );
 			}
 			
 			// Do they have a hand?
