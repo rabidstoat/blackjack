@@ -16,6 +16,11 @@ public class DealtCard extends Card {
 
 	private boolean faceup;
 	
+	public DealtCard(Card c) {
+		super(c.getRank(), c.getSuit());
+		faceup = false;
+	}
+	
 	public DealtCard(RANK rank, SUIT suit) {
 		super(rank, suit);
 		faceup = false;
@@ -28,5 +33,12 @@ public class DealtCard extends Card {
 	
 	public boolean isFaceUp() {
 		return faceup;
+	}
+	
+	/*
+	 * Only to turn the card up, not the other way around
+	 */
+	public void changeToFaceUp() {
+		faceup = true;
 	}
 }

@@ -45,7 +45,7 @@ public interface DealerShoeInterface {
    * 
    * @return The topmost card that is 'dealt'
    */
-	Card dealTopCard();
+	DealtCard dealTopCard();
 	
 	/**
 	 * If there's no more cards that can be dealt with dealTopCard().

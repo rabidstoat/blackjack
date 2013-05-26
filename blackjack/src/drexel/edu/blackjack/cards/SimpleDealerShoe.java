@@ -40,11 +40,11 @@ public class SimpleDealerShoe implements DealerShoeInterface {
 	}
 
 	@Override
-	public Card dealTopCard() {
+	public DealtCard dealTopCard() {
 		if (isEmpty()) return null;
 		Card c = deck.remove(0);
 		bin.add(c);
-		return c;
+		return new DealtCard(c);
 	}
 
 	@Override

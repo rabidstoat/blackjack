@@ -429,6 +429,17 @@ public class GameState {
 	}
 	
 	/**
+	 * return the dealer
+	 */
+	public DealerShoeInterface getDealer() {
+		if (shoe == null) {
+			shoe = new SimpleDealerShoe( numberOfDecks );
+			shoe.shuffle();
+		}
+		return shoe;
+	}
+	
+	/**
 	 * Perform the action of reshuffling. Notify players about
 	 * the cards being shuffled.
 	 */
