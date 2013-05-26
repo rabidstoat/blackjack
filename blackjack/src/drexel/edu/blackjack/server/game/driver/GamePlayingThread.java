@@ -1,7 +1,10 @@
-package drexel.edu.blackjack.server.game;
+package drexel.edu.blackjack.server.game.driver;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
+import drexel.edu.blackjack.server.game.Game;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
@@ -17,8 +20,16 @@ public class GamePlayingThread extends Thread {
 	 * Private class variables
 	 ***********************************************************/
 	
-	// This is fairly hard-coded, how many steps make up a round of play
-	private static final int NUMBER_OF_STEPS = 3;
+	// This holds the list of actions that we have to perform, in order, in
+	// the process of running a game.
+	private List<GameAction> gameActions = null;
+	
+	// This is the current action we're on. Hopefully it's between 0 and
+	// the number of gameActions minus one...
+	private int gameActionIndex = 0;
+	
+	// A flag we can use to stop gameplay on internal errors
+	private volatile boolean keepPlaying = true;
 	
 	// A game playing thread is responsible for one and only one game
 	private Game game = null;
@@ -34,7 +45,17 @@ public class GamePlayingThread extends Thread {
 	 * @param game Game to play in this thread.
 	 */
 	public GamePlayingThread( Game game ) {
+		// Need to know the game we're playing
 		this.game = game;
+		
+		// Create an ordered list of actions for playing the game
+		gameActions = new ArrayList<GameAction>();
+		gameActions.add( new StartNewRoundAction() );
+		gameActions.add( new WaitForBetsAction() );
+		gameActions.add( new RemoveNonBettersAction() );
+		
+		// And note that we're at the first one
+		this.gameActionIndex = 0;
 	}
 
 	/************************************************************
@@ -65,20 +86,29 @@ public class GamePlayingThread extends Thread {
 	 ***********************************************************/
 	
 	/**
-	 * The big game loop moves through the steps of a
-	 * round of cards. It periodically gets interrupts
-	 * about things external to the game loop that are
-	 * happening. Sometimes it realizes that there are
-	 * no more players, and nothing else to do, and it
+	 * The big game loop moves through the actions involved
+	 * in playing the game. At some point it realizes that 
+	 * there are no more players, and nothing else to do, and it
 	 * finally ends.
 	 */
 	private void bigGameLoop() {
 		
 		// This loops through until something sets this to false somewhere
 		while( keepPlaying() ) {
-			
-			for( int i = 0; keepPlaying() && i < NUMBER_OF_STEPS; i++ ) {
-				doStep(i);
+
+			// This should never happen
+			if( gameActions == null || gameActionIndex < 0 || gameActionIndex >= gameActions.size() ) {
+				LOGGER.severe( "Something went wrong in our bigGameLoop() with internal variables." );
+				this.keepPlaying = false;
+			} else {
+				GameAction nextAction = gameActions.get(gameActionIndex);
+				if( !nextAction.doAction( game ) ) {
+					LOGGER.severe( "Something went wrong in the game action " + nextAction.getClass().getName() + ".doAction() method" );
+					this.keepPlaying = false;
+				} else {
+					// Advance the game index, looping to the beginning if we pass the end
+					gameActionIndex = (gameActionIndex+1) % gameActions.size();
+				}		
 			}
 			
 		}
@@ -87,27 +117,6 @@ public class GamePlayingThread extends Thread {
 	}
 
 	/**
-	 * The steps the thread has to do are ordered. This method
-	 * performs the step specified by the stepNumber
-	 * 
-	 * @param stepNumber Which step to perform
-	 */
-	private void doStep(int stepNumber ) {
-		
-		if( stepNumber == 0 ) {
-			// Start a new round, and ask for bets
-			game.startNewRound();
-		} else if( stepNumber == 1 ) {
-			// Wait for the bets to be placed
-			game.waitForBetsToBePlaced();
-		} else if( stepNumber == 2 ) {
-			// People who didn't bet in time get idled out
-			game.removeActivePlayersWithNoBets();
-		}
-				
-	}
-	
-	/**
 	 * Right now, we keep playing as long as there are players
 	 */
 	private boolean keepPlaying() {
@@ -115,6 +124,6 @@ public class GamePlayingThread extends Thread {
 			return false;
 		}
 		
-		return game.isActive();
+		return keepPlaying && game.isActive();
 	}
 }

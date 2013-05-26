@@ -15,8 +15,9 @@ import drexel.edu.blackjack.util.BlackjackLogger;
 public class Game {
 
 	/*******************************************************************************
-	 * These are used in game descriptors
+	 * These are used in game descriptors and such
 	 *****************************************************************************/
+	
 	public static final String ATTRIBUTE_KEYWORD = "ATTRIBUTE";
 	public static final String NUM_DECKS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " NUMDECKS";
 	public static final String MIN_BET_ATTRIBUTE = ATTRIBUTE_KEYWORD + " MINBET";
@@ -47,15 +48,6 @@ public class Game {
 	// This holds all of our static game information
 	private GameMetadata metadata;
 	
-	// Constant
-	private int SECOND_IN_MILLISECONDS	= 1000;
-	
-	// We give people up to this long to place their bets
-	private int BETTING_WAIT_TIME		= 60 * SECOND_IN_MILLISECONDS;
-	
-	// We check every this many ms to see if everyone has bet yet
-	private int SWEEP_DELAY				= 500;
-	
 	// And of course our logger
 	private final static Logger LOGGER = BlackjackLogger.createLogger(Game.class.getName());
 	
@@ -75,9 +67,11 @@ public class Game {
 		}
 	}
 	
+	
 	/*******************************************************************************
-	 * Public methods
+	 * Methods that have to do with players coming and going
 	 *****************************************************************************/
+	
 	
 	/**
 	 * Each active game has a maximum number of players based on
@@ -151,6 +145,78 @@ public class Game {
 		return new ResponseCode( ResponseCode.CODE.SUCCESSFULLY_LEFT_SESSION_NOT_MIDPLAY,
 				"Have not coded logic to see if a bet was forfeited.");
 	}
+	
+
+	/*******************************************************************************
+	 * Handles notifying various players about various game actions
+	 *****************************************************************************/
+
+	
+	/**
+	 * Requests that a message be sent out to notify others
+	 * in the game that a user has placed a bet
+	 * 
+	 * @param user Who bet
+	 * @param bet What they bet
+	 */
+	public boolean notifyOfPlayerBet( User user, int bet ) {
+		boolean success = false;
+		if( state != null ) {
+			success = state.notifyOthersOfBetPlaced( user, bet );
+		}
+		return success;
+	}
+
+	
+	/*******************************************************************************
+	 * Some getters/setters that aren't overly complex in logic
+	 *****************************************************************************/
+	
+	
+	/**
+	 * An active game has at least one player in it and an active
+	 * game thread running it. 
+	 * @return True if the game is active, false otherwise
+	 */
+	public boolean isActive() {
+		return state.getNumberOfPlayers() > 0;
+	}
+	
+	/**
+	 * Gets the game metadata associated with this game
+	 * @return The metadata, or null if not set
+	 */
+	public GameMetadata getMetadata() {
+		return metadata;
+	}
+	
+	/**
+	 * Gets the game state associated with this game
+	 * @return The state, or null if not set
+	 */
+	public GameState getGameState() {
+		return state;
+	}
+	
+	/**
+	 * Convenience method that gets the ID from the game
+	 * metadata. If it's not set, this will return null.
+	 * 
+	 * @return The ID from the metadata, or null if not set
+	 */
+	public String getId() {
+		if( metadata != null ) {
+			return metadata.getId();
+		}
+		return null;
+	}
+
+	
+	/*******************************************************************************
+	 * Methods that have to do with supplying needed information about the game
+	 *****************************************************************************/
+
+	
 	/**
 	 * The game descriptor is a string, with newlines in it, capable of
 	 * being inserted directly into the response of a GAMESTATUS command.
@@ -222,7 +288,7 @@ public class Game {
 				}
 			}
 			
-			// TODO: HAND lines
+			// Print out the player hands
 			for( User player : players ) {
 				// They need to have active status 
 				if( player.getHand() != null ) {
@@ -315,106 +381,5 @@ public class Game {
 		}
 		str.append( RECORD_END_KEYWORD + BlackjackServer.EOL );
 		return str.toString();
-	}
-	
-	/**
-	 * An active game has at least one player in it and an active
-	 * game thread running it. 
-	 * @return True if the game is active, false otherwise
-	 */
-	public boolean isActive() {
-		return state.getNumberOfPlayers() > 0;
-	}
-	
-	/**
-	 * Gets the game metadata associated with this game
-	 * @return The metadata, or null if not set
-	 */
-	public GameMetadata getMetadata() {
-		return metadata;
-	}
-	
-	/**
-	 * Convenience method that gets the ID from the game
-	 * metadata. If it's not set, this will return null.
-	 * 
-	 * @return The ID from the metadata, or null if not set
-	 */
-	public String getId() {
-		if( metadata != null ) {
-			return metadata.getId();
-		}
-		return null;
-	}
-
-	/**
-	 * Starting the game involves starting a new round
-	 * of play, then requesting bets.
-	 */
-	public void startNewRound() {
-		if( state == null ) {
-			LOGGER.severe( "Trying to start a new round with a null state can't be good..." );
-		} else {
-			// This will set players active and set the current player
-			state.startNewRound();
-		}
-	}
-
-	/**
-	 * This starts up a loop for BETTING_WAIT_TIME milliseconds,
-	 * checking periodically to see if all the ACTIVE players have
-	 * placed their bets yet.
-	 */
-	public void waitForBetsToBePlaced() {
-
-		if( state == null ) {
-			LOGGER.severe( "In waitingForBetsToBePlaced(), somehow have a null state object." );
-			return;
-		}
-		
-		// This is when we started this whole process
-		long start = System.currentTimeMillis();
-		
-		// This is how long we've been waiting up until now
-		long delta = System.currentTimeMillis() - start;
-		
-		while( state.arePlayersWithOutstandingBets() && delta < BETTING_WAIT_TIME ) {
-			
-			// Sleep a while to give them time to check
-			try {
-				Thread.sleep( SWEEP_DELAY );
-			} catch( InterruptedException e ) {
-				// It's just waking us up
-			}
-			
-			// Recalculate delta before checking again
-			delta = System.currentTimeMillis() - start;
-		}
-	}
-
-	/**
-	 * Looks at all the players who are active. If there are any
-	 * who don't have their bet set, they need to be idle-bumped
-	 */
-	public void removeActivePlayersWithNoBets() {
-		if( state != null ) {
-			state.removeActivePlayersWithNoBet();
-		}
-	}
-	
-	/**
-	 * Requests that a message be sent out to notify others
-	 * in the game that a user has placed a bet
-	 * 
-	 * @param user Who bet
-	 * @param bet What they bet
-	 */
-	public boolean notifyOfPlayerBet( User user, int bet ) {
-		boolean success = false;
-		if( state != null ) {
-			success = state.notifyOthersOfBetPlaced( user, bet );
-		}
-		return success;
-	}
-
+	}	
 }
