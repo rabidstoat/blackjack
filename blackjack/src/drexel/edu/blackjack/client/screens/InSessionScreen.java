@@ -1,10 +1,12 @@
 package drexel.edu.blackjack.client.screens;
 
+import java.util.Map;
 import java.util.logging.Logger;
 
 import drexel.edu.blackjack.client.BlackjackCLClient;
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
+import drexel.edu.blackjack.client.screens.util.ClientSideGame;
 import drexel.edu.blackjack.client.screens.util.ClientSideGameStatus;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.util.BlackjackLogger;
@@ -170,8 +172,23 @@ public class InSessionScreen extends AbstractScreen {
 	 * @param code The game response code
 	 */
 	private void displayGameMetadata(ResponseCode code) {
-		// TODO Auto-generated method stub
-		System.out.println( "Have not created the method to display the game metadata yet." );
+
+		// We get a list of games, not just our own
+		Map<String,ClientSideGame> gameMap = generateGameMap(code);
+		
+		// Though we're only interested in our own
+		ClientSideGame ourGame = null;
+		if( client != null && client.getCurrentGame() != null ) {
+			ourGame = gameMap.get( client.getCurrentGame().getId() );
+		}
+		
+		if( ourGame == null ) {
+			LOGGER.warning( "Cannot find general info about the game to display." );
+		} else {
+			StringBuilder str = new StringBuilder( "Our game: " );
+			str.append( ourGame.toString() );
+			this.updateStatus( str.toString() );
+		}
 	}
 
 	/**
