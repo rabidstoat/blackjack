@@ -45,7 +45,13 @@ import drexel.edu.blackjack.client.screens.util.ClientSideGame;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
- * Need some comments.
+ * This is the main class of the blackjack client.
+ * 
+ * <b>UI:</b> The work involved in setting up the user interface
+ * is done in this class.
+ * 
+ * <b>CLIENT:</b> Eventually the user will be able to specify
+ * the host here. The port is hardcoded.
  */
 public class BlackjackCLClient {
 
@@ -77,7 +83,7 @@ public class BlackjackCLClient {
 	// This is the protocol we'll use for security
 	private static final String SECURITY_PROTOCOL		= "TLS";
 	
-	// Finally, the port that the server will run on
+	// CLIENT: Finally, the port that the server will run on
 	private static final int PORT						= 55555;
 	
 	// This system property is set true if we should show the message frame
@@ -246,7 +252,7 @@ public class BlackjackCLClient {
 	}
 
 	/**
-	 * Establishes the default screen. It should set any previous
+	 * <b>UI:</b> Establishes the default screen. It should set any previous
 	 * screen to active, set this new screen as active, and dispay
 	 * the menu.
 	 * 
@@ -273,7 +279,7 @@ public class BlackjackCLClient {
 	}
 
 	/**
-	 * Do whatever needs to be done to show the next interface screen.
+	 * <b>UI:</b> Do whatever needs to be done to show the next interface screen.
 	 * This typically involves looking at the current screen, then
 	 * finding an appropriate new screen, and setting it.
 	 * 
@@ -298,7 +304,7 @@ public class BlackjackCLClient {
 	}
 
 	/**
-	 * Do whatever needs to be done to show the previous interface screen.
+	 * <b>UI:</b> Do whatever needs to be done to show the previous interface screen.
 	 * Probably this only makes sense moving from 'in session' to 'not
 	 * in session' user interfaces.
 	 * 
@@ -359,7 +365,7 @@ public class BlackjackCLClient {
 	}
 	
 	/**
-	 * If the message frame is showing, hide it. If it's
+	 * <b>UI:</b> If the message frame is showing, hide it. If it's
 	 * hiding, show it.
 	 */
 	public void toggleMessageFrame() {

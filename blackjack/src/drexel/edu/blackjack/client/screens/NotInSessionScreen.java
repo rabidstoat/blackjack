@@ -28,6 +28,19 @@ import drexel.edu.blackjack.server.ResponseCode;
  * This is the user interface that shows when the
  * user is waiting to join a session.
  * 
+ * <b>STATEFUL:</b> In terms of the protocol, this screen
+ * is used when the protocol DFA is in the 
+ * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#NOT_IN_SESSION} 
+ * protocol state . It therefore only sends messages that are valid
+ * for that state. 
+ * <p>
+ * <b>UI:</b> This is where part of the user interface on
+ * the client is implemented. Note that it extends the
+ * {@link AbstractScreen} class, which defines some of
+ * the functionality that must be provided. The majority
+ * of comments related to the client-side UI can be found
+ * in that class. 
+ * 
  * @author Jennifer
  */
 public class NotInSessionScreen extends AbstractScreen {
@@ -63,6 +76,12 @@ public class NotInSessionScreen extends AbstractScreen {
 	 *********************************************************************/
 	
 	
+	/**
+	 * This is a private constructor for the singleton design pattern
+	 * @param client Reference to the client
+	 * @param thread Reference to the thread that receives messages from server
+	 * @param helper Reference to the helper that sends messages to the server
+	 */
 	private NotInSessionScreen( BlackjackCLClient client, ClientInputFromServerThread thread,
 			ClientOutputToServerHelper helper ) {
 		
@@ -148,9 +167,13 @@ public class NotInSessionScreen extends AbstractScreen {
 	}
 
 	/**
-	 * Display the game list for the user to select from.
+	 * <b>UI:</b> Display the game list for the user to select from.
 	 * Save it out so that we can send the right 'JOINSESSION'
-	 * command later.
+	 * command later. That is, we don't want the user to have
+	 * to type the session ID, they shouldn't even know that
+	 * session IDs are used. They type the number of a game
+	 * to join, and the code has to translate that to a JOINSESSION
+	 * command with the proper session iD.
 	 */
 	private void displayGameList( ResponseCode code ) {
 
@@ -266,11 +289,25 @@ public class NotInSessionScreen extends AbstractScreen {
 	 **********************************************************************************/
 
 	
+	/**
+	 * Send a QUIT protocol command to the server.
+	 * 
+	 * <b>STATEFUL:</b> The QUIT protocol command is valid in the
+	 * NOT_IN_SESSION protocol state, which is the only state this
+	 * screen supports.
+	 */
 	private void sendQuitRequest() {
 		updateStatus( "One moment, informing the server of your departure..." );
 		helper.sendQuitRequest();
 	}
 
+	/**
+	 * Send a LISTGAMES protocol command to the server.
+	 * 
+	 * <b>STATEFUL:</b> The LISTGAMES protocol command is valid in the
+	 * NOT_IN_SESSION protocol state, which is the only state this
+	 * screen supports.
+	 */
 	private void sendListGamesRequest() {
 		updateStatus( "One moment, fetching a list of games from the server..." );
 		System.out.println( "***********************************************************" );
@@ -279,6 +316,13 @@ public class NotInSessionScreen extends AbstractScreen {
 		helper.sendListGamesRequest();
 	}
 
+	/**
+	 * Send a JOINSESSION protocol command to the server.
+	 * 
+	 * <b>STATEFUL:</b> The JOINSESSION protocol command is valid in the
+	 * NOT_IN_SESSION protocol state, which is the only state this
+	 * screen supports.
+	 */
 	private void sendJoinGameRequest( String id ) {
 		updateStatus( "Alerting the server that you wish to join this game..." );
 		// Remember to track it internally
@@ -290,7 +334,13 @@ public class NotInSessionScreen extends AbstractScreen {
 	 * This handles whatever the user typed in for joining a game.
 	 * It had better be a number that is in range!!!
 	 * 
-	 * @param str
+	 * <b>UI:</b> Because the user shouldn't have to know
+	 * about game session ID, much less type them, there is
+	 * a lookup process requried to convert the game number
+	 * (which is a concept only in the UI) to the game session
+	 * ID (which is a concept the protocol needs.)
+	 * 
+	 * @param str What the user typed in
 	 */
 	private void processJoinGameResponse(String str) {
 
@@ -322,7 +372,9 @@ public class NotInSessionScreen extends AbstractScreen {
 				sendListGamesRequest();
 			}
 		} else {
-			// We got a valid number, so we need to join the game
+			// We got a valid number, so we need to join the game. Since the
+			// user typed in a number, and the JOINSESSION command requires
+			// a game session ID, we have to look up which one to use...
 			String id = menuNumberToGameIdMap.get( Integer.valueOf(number) );
 			if( id == null ) {
 				updateStatus( "Whoops. Could not find the game to request due to an internal error!" );

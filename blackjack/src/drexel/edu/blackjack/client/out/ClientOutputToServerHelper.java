@@ -50,10 +50,15 @@ public class ClientOutputToServerHelper extends Thread {
 	 * Constructor goes here
 	 *********************************************************/
 
+	/**
+	 * Create an output writer based on the (secure) socket that is passed in.
+	 * @param socket A secure socket to the server, which has already
+	 * been successfully connected
+	 */
 	public ClientOutputToServerHelper( Socket socket ) {
 		super( "ClientOutputToServerThread" );
 		
-		// Add the message frame as a listener; needs to be explicitly made synchronized
+		// UI: Add the message frame as a listener; needs to be explicitly made synchronized
 		listeners = Collections.synchronizedSet(new HashSet<MessagesToServerListener>());
 		addListener( MessageFrame.getDefaultMessageFrame() );
 		
@@ -68,6 +73,13 @@ public class ClientOutputToServerHelper extends Thread {
 	/**********************************************************
 	 * Public methods go here
 	 *********************************************************/
+	
+	/**
+	 * Sends raw text to the server, exactly as it's presented.
+	 * 
+	 * @param text What to send
+	 * @return True if it was successfully sent, else false
+	 */
 	public boolean sendRawText( String text ) {
 		
 		// In case we're debugging
@@ -104,7 +116,7 @@ public class ClientOutputToServerHelper extends Thread {
 	}
 	
 	/**
-	 * given a username, formulate the proper command
+	 * Given a username, formulate the proper command
 	 * string for passing this to the server.
 	 * @param username The username
 	 * @return True if sent correctly, false otherwise
@@ -135,6 +147,8 @@ public class ClientOutputToServerHelper extends Thread {
 
 	/**
 	 * Sends a request to the server placing a bet
+	 * 
+	 * @param bet Amount of the bet
 	 */
 	public boolean sendBetRequest(Integer bet) {
 		if( bet == null ) {

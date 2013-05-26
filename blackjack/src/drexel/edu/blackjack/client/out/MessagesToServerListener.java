@@ -18,8 +18,12 @@ package drexel.edu.blackjack.client.out;
  * themselves as a listener for these messages. When
  * they do, they get notified when a message is sent to the server.
  * 
+ * <b>UI:</b> The message monitor would want to listen to this
+ * in order to display message traffic. Also, user interface
+ * screens listen to the messages, so they can respond to them
+ * if active.
+ * 
  * @author Jennifer
- *
  */
 public interface MessagesToServerListener {
 

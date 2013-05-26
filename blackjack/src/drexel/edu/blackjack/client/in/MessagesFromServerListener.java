@@ -21,6 +21,10 @@ import drexel.edu.blackjack.server.ResponseCode;
  * they do, they get notified when the server sends a response
  * matching that code.
  * 
+ * <b>UI:</b> User interface classes would want to implement
+ * this listener, in order to react to output from the server.
+ * The message monitor also uses this interface.
+ * 
  * @author Jennifer
  *
  */

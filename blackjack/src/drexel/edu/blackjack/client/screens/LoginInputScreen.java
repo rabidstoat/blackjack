@@ -21,22 +21,46 @@ import drexel.edu.blackjack.server.ResponseCode;
 /**
  * This handles the user interface for logging into the
  * server with a username and password.
+ * <p>
+ * <b>STATEFUL:</b> In terms of the protocol, this screen
+ * is used when the protocol DFA is in the 
+ * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#WAITING_FOR_USERNAME}
+ * and 
+ * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#WAITING_FOR_PASSWORD}
+ * states. It therefore only sends messages that are valid
+ * for those two states. 
+ * <p>
+ * <b>UI:</b> This is where part of the user interface on
+ * the client is implemented. Note that it extends the
+ * {@link AbstractScreen} class, which defines some of
+ * the functionality that must be provided. The majority
+ * of comments related to the client-side UI can be found
+ * in that class. 
  * 
  * @author Jennifer
  */
 public class LoginInputScreen extends AbstractScreen {
 	
-	// This screen can be in one of these three states
+	// This screen can be in one of these three states (not protocol
+	// states, these are screen states)
 	private static final int JUST_STARTED	= 0;
 	private static final int ENTER_USERNAME	= 1;
 	private static final int ENTER_PASSWORD = 2;
 	
-	// Track which one it's in
+	// Track which one it's in -- this roughly corresponds to the
+	// protocol states, though it's more coincidental than anything,
+	// the screen states is not the same as the protocol state
 	private int loginScreenState;
 	
 	// And keep a copy to itself for the singleton pattern
 	private static LoginInputScreen loginInputScreen = null;
 	
+	/**
+	 * This is a private constructor for the singleton design pattern
+	 * @param client Reference to the client
+	 * @param thread Reference to the thread that receives messages from server
+	 * @param helper Reference to the helper that sends messages to the server
+	 */
 	private LoginInputScreen( BlackjackCLClient client, ClientInputFromServerThread thread,
 			ClientOutputToServerHelper helper ) {
 		
@@ -84,7 +108,8 @@ public class LoginInputScreen extends AbstractScreen {
 	
 	/**
 	 * Used to display whatever sort of command-line 'menu'
-	 * to the screen that is appropriate.
+	 * to the screen that is appropriate. This is a prompt
+	 * for username and password, basically.
 	 */
 	public void displayMenu() {
 
@@ -111,7 +136,7 @@ public class LoginInputScreen extends AbstractScreen {
 	}
 
 	/**
-	 * This is used in the singleton pattern so that only
+	 * <b>UI:</b> This is used in the Singleton design pattern so that only
 	 * one login screen is instantiated at a time.
 	 * 
 	 * @param thread Need a valid and active client input thread

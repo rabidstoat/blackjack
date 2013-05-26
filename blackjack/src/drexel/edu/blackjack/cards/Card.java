@@ -174,6 +174,9 @@ public class Card {
 	}
 
 	/**
+	 * <b>UI:</b> Creates a string representation of the card,
+	 * suitable for showing in a command line client.
+	 * 
 	 * @return Concatenates rank and suit into a string to create a playing card
 	 * For example, 2S, 4C, 5H, AC
 	 */

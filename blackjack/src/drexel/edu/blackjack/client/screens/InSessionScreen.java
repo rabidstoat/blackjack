@@ -32,9 +32,27 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * This is the user screen to display when someone is playing
  * the game. It should inform them of changes in game status,
  * prompt them when it's time to bet or make moves, etc.
+ * <p>
+ * <b>STATEFUL:</b> In terms of the protocol, this screen
+ * is used when the protocol DFA is in the 
+ * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_SERVER_PROCESSING},
+ * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_DEALER_BLACKJACK},
+ * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_BEFORE_YOUR_TURN},
+ * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AWAITING_BETS},
+ * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AS_OBSERVER},
+ * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AND_YOUR_TURN}, and
+ * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AFTER_YOUR_TURN} 
+ * states. It therefore only sends messages that are valid
+ * for these states. 
+ * <p>
+ * <b>UI:</b> This is where part of the user interface on
+ * the client is implemented. Note that it extends the
+ * {@link AbstractScreen} class, which defines some of
+ * the functionality that must be provided. The majority
+ * of comments related to the client-side UI can be found
+ * in that class. 
  * 
  * @author Jennifer
- *
  */
 public class InSessionScreen extends AbstractScreen {
 
@@ -73,6 +91,12 @@ public class InSessionScreen extends AbstractScreen {
 	 *********************************************************************/
 	
 	
+	/**
+	 * This is a private constructor for the singleton design pattern
+	 * @param client Reference to the client
+	 * @param thread Reference to the thread that receives messages from server
+	 * @param helper Reference to the helper that sends messages to the server
+	 */
 	private InSessionScreen( BlackjackCLClient client, ClientInputFromServerThread thread,
 			ClientOutputToServerHelper helper ) {
 		
@@ -206,9 +230,9 @@ public class InSessionScreen extends AbstractScreen {
 
 	/**
 	 * Received some game status from the system. Need to display
-	 * it to the user
+	 * it in a user-friendly format.
 	 * 
-	 * @param code The game status
+	 * @param code The game status embedded in a response code
 	 */
 	private void displayGameStatus(ResponseCode code) {
 		

@@ -35,9 +35,55 @@ import drexel.edu.blackjack.server.game.GameState;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
- * A screen is something the presents some information
- * to the user, and expects them to enter something in
- * response.
+ * <b>UI:</b> A screen is something the presents some information
+ * to the user, and expects them to do something in response.
+ * If this was a graphical interface, it would probably be a window
+ * the user could interact with. Since it's a command-line interface,
+ * it is instead a menu-driven interface, with occasional prompts
+ * for information (e.g., what game session to join, what amount 
+ * to bet). Menus or prompts are displayed, and the user types in 
+ * their response and hits enter to make a choice. The UI then 'translates'
+ * the request, if needed, into protocol commands to issue to the
+ * server. The user at the keyboard never has to type in raw protocol
+ * commands, or even know that they exist. (Note: Some UI options 
+ * don't involve the server, though, like the option to re-display 
+ * the last menu.)
+ * <p>
+ * <b>UI:</b> The screen is also responsible for presenting any
+ * relevant information from the server, passed as protocol messages,
+ * to the user, as appropriate. (Inappropriate messages to show are
+ * things like internal errors, which the user doesn't have to
+ * know about.) The user at the keyboard never sees the raw response
+ * code output from the server, though. Instead, the UI translates
+ * it into a more user-friendly presentation format before 
+ * displaying it.
+ * <p>
+ * <b>UI:</b> As this is an abstract class, it must be implemented
+ * by another class to define a logical screen in the user interface.
+ * Only one screen at a time is active, just as only one user
+ * interface window in graphical client at a time has focus. There is
+ * also the concept of showing the 'next' screen, and the 'previous'
+ * screen, which is one way of having the UI move between screen.
+ * Another way is simply specifying which screen should become active.
+ * Inactive screens may receive input, from either the user at the
+ * keyboard or the server, but so long as the screen is inactive it
+ * should not do anything visible in the UI in response to such
+ * messages.
+ * <p>
+ * <b>UI:</b> Some base functionality of interest to subclasses is 
+ * included in this base abstract class. For example, in the protocol
+ * definitions there are commands available at any state that 
+ * generate either successful or error response. This abstract
+ * provides default methods for generating such commands to send
+ * to the server, or responding to input from the server, in a 
+ * general fashion. Subclasses are free to make use of this 
+ * functionality or extend it, as they see fit.
+ * <P>
+ * <b>UI:</b> In general, <b>everything</b> in this file corresponds
+ * to the user interface in some fashion. All comments in this code
+ * are therefore relevant to how the UI operates.
+ * 
+ * @author Jennifer
  */
 public abstract class AbstractScreen implements MessagesFromServerListener {
 
@@ -46,8 +92,31 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 ***************************************************************/
 	public enum SCREEN_TYPE {
 		
+		/**
+		 * The login screen corresponds, roughly, to the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#WAITING_FOR_USERNAME}
+		 * and
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#WAITING_FOR_PASSWORD}
+		 * protocol states.
+		 */
 		LOGIN_SCREEN,
+		/**
+		 * The not_in_session screen corresponds, roughly, to the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#NOT_IN_SESSION}
+		 * protocol states.
+		 */
 		NOT_IN_SESSION_SCREEN,
+		/**
+		 * The in_session screen corresponds, roughly, to the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_SERVER_PROCESSING},
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_DEALER_BLACKJACK},
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_BEFORE_YOUR_TURN},
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AWAITING_BETS},
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AS_OBSERVER},
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AND_YOUR_TURN}, and
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AFTER_YOUR_TURN} 
+		 * protocol states.
+		 */
 		IN_SESSION_SCREEN
 		
 	}
@@ -58,28 +127,62 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 ***************************************************************/
 
 
-	// Some menu options that are shared amongst multiple screens
-	protected static String VERSION_OPTION			= "V";	// Request to see the version of the server
-	protected static String CAPABILITIES_OPTION		= "C";	// Request to see the capabilities of the server
-	protected static String QUIT_OPTION				= "Q";	// Request to quit the client entirely
-	protected static String MENU_OPTION				= "?";	// Request to repeat the last menu
-	protected static String ACCOUNT_OPTION			= "A";	// Request to view the user's bank account balance
-	protected static String TOGGLE_MONITOR_OPTION	= "T";	// Request to toggle the frame that shows messages sent and receivd
-	protected static String BACK_OPTION				= "back";	// Request to go back a menu
+	/**
+	 * Request to see the version of the server
+	 */
+	protected static String VERSION_OPTION			= "V";	
+	/**
+	 * Request to see the capabilities of the server
+	 */
+	protected static String CAPABILITIES_OPTION		= "C";	
+	/**
+	 * Request to quit the client entirely
+	 */
+	protected static String QUIT_OPTION				= "Q";	
+	/**
+	 * Request to repeat the last menu
+	 */
+	protected static String MENU_OPTION				= "?";	
+	/**
+	 * Request to view the user's bank account balance
+	 */
+	protected static String ACCOUNT_OPTION			= "A";	
+	/**
+	 * Request to toggle the frame that shows messages sent and received
+	 */
+	protected static String TOGGLE_MONITOR_OPTION	= "T";	
+	/**
+	 * Request to go back a menu
+	 */
+	protected static String BACK_OPTION				= "back";	
 
-	// What type of screen is it
+	/**
+	 *  What type of screen is it
+	 */
 	private SCREEN_TYPE screenType = SCREEN_TYPE.LOGIN_SCREEN;	// We start with the login
 	
-	// Whether or not this particular screen is active. In general,
-	// only one screen should be active at a time.
+	/**
+	 * Whether or not this particular screen is active. In general,
+	 * only one screen should be active at a time.
+	 */
 	protected boolean isActive;
 	
-	// Keep a pointer to the thread and helper that are associated with
-	// this I/O for this screen.
+	/**
+	 * Keep a pointer to the thread that is associated with
+	 * this I/O for this screen. This is for messages received on the 
+	 * socket, not for keyboard input.
+	 */
 	protected ClientInputFromServerThread clientThread;
+	/**
+	 * Keep a pointer to the helper that is associated with
+	 * this I/O for this screen. This is for messages bound
+	 * to the server.
+	 */
 	protected ClientOutputToServerHelper helper;
-	
-	// And to our client
+
+	/**
+	 * Reference to the main client
+	 */
 	protected BlackjackCLClient client;
 	
 	// Our logger
@@ -91,6 +194,13 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 ***************************************************************/
 	
 	
+	/**
+	 * Create a default user interface screen.
+	 * 
+	 * @param client The client instance the screen is associated with
+	 * @param thread This thread is used to receive responses from the remote server
+	 * @param helper This class is used to send messages to the remote server
+	 */
 	public AbstractScreen( BlackjackCLClient client, ClientInputFromServerThread thread,
 			ClientOutputToServerHelper helper ) {
 		this.client = client;
@@ -106,24 +216,37 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	
 	/**
 	 * Used to display whatever sort of command-line 'menu'
-	 * to the screen that is appropriate.
+	 * to the screen that is appropriate. Some common options
+	 * are listed in the static variables at the top of this
+	 * class, so that identical functionality will have identical
+	 * menu option letters across screens.
 	 */
 	public abstract void displayMenu();
 	
 	/**
-	 * Resets the 'screen' to its starting state. This might
-	 * be done after an error, for example.
+	 * Resets the 'screen' to its starting state. This is typically
+	 * done after some sort of error state (that is, error state of
+	 * the user interface, this is not protocol state) is reached.
 	 */
 	public abstract void reset();
 	
 	/**
-	 * Process a response code from the server. This will only
-	 * be called on an active screen.
+	 * Process a response code from the server. The screen should
+	 * make sure that they are active before responding visually
+	 * to any response code. Typically this is a set of if/elseif
+	 * statements (or a case statement) that uses the code value
+	 * for making the selection.
 	 */
 	public abstract void processMessage( ResponseCode code );
 
 	/**
-	 * Used to pass user input to the screen. Do whatever is appropriate
+	 * Used to pass user input to the screen. Since input is handled
+	 * on a separate thread, a listener elsewhere is used to pass
+	 * the input to the user interface screen. The screen should
+	 * check that it is active before responding visually to any
+	 * response code. Typically this is a set of if/elseif
+	 * statements (or a case statement) that uses the string,
+	 * along with the state of the UI screen, to decide what to do.
 	 */
 	public abstract void handleUserInput( String str );
 
@@ -154,6 +277,9 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 * and should start doing its I/O, if the value is true.
 	 * Otherwise it's notifying it that it's no longer active
 	 * and should stop doing I/O.
+	 * 
+	 * @param isActive Whether or not the screen should consider
+	 * itself active, and needing to process I/O received
 	 */
 	public void setIsActive( boolean isActive ) {
 		
@@ -169,7 +295,8 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	
 	/**
 	 * Request that the user interface show the 'next screen', which is
-	 * based on what the currentScreen is
+	 * based on what the currentScreen is. It defers the request to
+	 * the client.
 	 * 
 	 * @param displayMenu True if it should immediately show the menu
 	 */
@@ -184,7 +311,8 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	
 	/**
 	 * Request that the user interface show the 'previous screen', which is
-	 * based on what the currentScreen is
+	 * based on what the currentScreen is. It defers the request to the
+	 * client.
 	 * 
 	 * @param displayMenu True if it should immediately show the menu
 	 */
@@ -214,12 +342,17 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 * 
 	 * Handling the message might involve printing to the console
 	 * or it might just be handled internally in a silent manner.
+	 * Typically the user should be shielded as much as possible
+	 * from errors they cannot fix. Also, raw protocol messages
+	 * should not be presented to the user. They should be processed
+	 * and any information presented in a more visually-appealing
+	 * fashion.
 	 * 
 	 * If handling the code requires redisplaying the menu, do that
 	 * here. Typically this is only done if you reset, if you have
-	 * changed menus, or if you have received a message that prints
-	 * a lot to the screen, such that displaying the menu again would
-	 * be helpful.
+	 * changed menus or screens, or if you have received a message 
+	 * that prints a lot to the screen, such that displaying the 
+	 * menu again would be helpful.
 	 * 
 	 * @param code What was received
 	 */
@@ -246,7 +379,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 				} else if( code.hasSameCode( ResponseCode.CODE.ACCOUNT_BALANCE ) ) {
 					displayAccountBalance( code );
 				} else {
-					LOGGER.info( "Received unhandled informative code of '" + code.toString() + "'." );
+					LOGGER.warning( "Received unhandled informative code of '" + code.toString() + "'." );
 				}
 				
 			} else if( code.isGameState() ) {
@@ -260,8 +393,8 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 				} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_ACTION ) ) {
 					displayPlayerAction( code );
 				} else {
-					// TODO: Handle game state codes
-					LOGGER.info( "Received unhandled game state code of '" + code.toString() + "'." );
+					// TODO: Handle other game state codes
+					LOGGER.warning( "Received unhandled game state code of '" + code.toString() + "'." );
 				}
 				
 			} else if( code.isCommandComplete() ) {
@@ -269,20 +402,24 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 				if( code.hasSameCode(ResponseCode.CODE.SUCCESSFULLY_QUIT ) ) {
 					quitTheGame();
 				} else {
-					LOGGER.info( "Received unhandled command-complete code of '" + code.toString() + "'." );
+					LOGGER.warning( "Received unhandled command-complete code of '" + code.toString() + "'." );
 				}
 				
 			} else {
 				// TODO: Not sure what to do here
-				LOGGER.info( "Received some other unhandled code of '" + code.toString() + "'." );
+				LOGGER.warning( "Received some other unhandled code of '" + code.toString() + "'." );
 			}
 		}
 	}
 
 	/**
-	 * This handles codes about players (or the dealer) peforming
-	 * actions. The first variable is the game ID. The second 
-	 * variable is the username. The third variable is the action.
+	 * This handles codes about players (or the dealer) performing
+	 * actions. In the blackjack protocol, the first parameter of
+	 * the response code is always the game ID. The second 
+	 * parameter is the username, or the special word 'dealer' if
+	 * the dealer performed the action. The third parameter is the action,
+	 * one of several predefined types in the protocol. This is all
+	 * as per the protocol definition.
 	 * 
 	 * @param code Hopefully of type ResponseCode.CODE.PLAYER_ACTION
 	 */
@@ -293,17 +430,19 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 			// Our parameters
 			List<String> params = code.getParameters();
 
-			// All player update messages start the same
+			// All player update messages that are presented to the user
+			// start the same, with the username involved in the action
 			StringBuilder str = createStringBuilderForUserUpdate(params);
 			str.append( " " );
 			
-			// What was the action? It's in parameter two
+			// What was the action? It's in parameter two (hopefully)
 			String action = null;
 			if( params != null && params.size() >= 3 ) {
 				action = params.get(2);
 			}
 			
-			// Decide what to state based on the action
+			// Decide what to display based on the action. The actions in the protocol
+			// are predefined. They can be found in the code in GameState class
 			if( action == null ) {
 				str.append( "performed an unknown action" );
 			} else if( action.equalsIgnoreCase( GameState.SHUFFLED_KEYWORD ) ) {
@@ -320,9 +459,11 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 				str.append( "performed an unknown action" );
 			}
 
+			// Grammar is important!
 			str.append( "." );
 			
-			// Display to the string
+			// Display to the screen. Since this is a short 1-line message, treat it as
+			// a status update message
 			updateStatus( str.toString() );
 		}
 	}
@@ -330,8 +471,8 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 
 	/**
 	 * This handles codes about players entering or leaving the
-	 * game. The first variable is the game ID. The second variable
-	 * is the username.
+	 * game. The first parameter is the game ID. The second parameter
+	 * is the username. This is as per the protocol definition.
 	 * 
 	 * @param code Hopefully of type ResponseCode.CODE.PLAYER_JOINED
 	 * or ResponseCode.CODE.PLAYER_LEFT
@@ -357,15 +498,16 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 			}
 			str.append( " the game." );
 			
-			// Display to the string
+			// Display to the screen as a short status update
 			updateStatus( str.toString() );
 		}
 	}
 
 	/**
 	 * This handles codes about players placing a bet. The first 
-	 * variable is the game ID. The second variable is the username.
-	 * The third variable is the bet amount.
+	 * parameter is the game ID. The second parameter is the username.
+	 * The third parameter is the bet amount. This is all as per
+	 * the protocol defintion.
 	 * 
 	 * @param code Hopefully of type ResponseCode.CODE.PLAYER_BET
 	 */
@@ -402,9 +544,9 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 * unless the username is the special DEALER_USERNAME, in which case it starts
 	 * off with "The dealer".
 	 * 
-	 * @param The parameters. The second parameter should have the username. This
+	 * @param params The parameters. The second parameter should have the username. This
 	 * corresponds to the format of player update messages from the server
-	 * @return The stringbuilder, initialized to this leadin phrase
+	 * @return The stringbuilder, initialized to this lead-in phrase
 	 */
 	private StringBuilder createStringBuilderForUserUpdate(List<String> params) {
 		// Start with their username
@@ -427,8 +569,12 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	}
 
 	/**
-	 * Print to the screen something about the capabilities
-	 * @param code
+	 * Print to the screen something about the capabilities. This is just
+	 * a debug capability to show off, in the UI, how capabilities can
+	 * vary from protocol state to protocol state. Normally, something
+	 * like this wouldn't be in the client, it's just for development.
+	 * 
+	 * @param code Hopefully of type CAPABILITIES_FOLLOW
 	 */
 	protected void displayCapabilities(ResponseCode code) {
 		
@@ -446,8 +592,12 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	}
 
 	/**
-	 * Print to the screen something about the account balance
-	 * @param code
+	 * This handles codes about players requesting their account balance.
+	 * The first parameter is the game ID. The second parameter is the 
+	 * username. The third parameter is the balance. This is all as per
+	 * the protocol definition.
+	 * 
+	 * @param code Hopefully of type ResponseCode.CODE.ACCOUNT_BALANCE
 	 */
 	protected void displayAccountBalance(ResponseCode code) {
 		
@@ -462,8 +612,10 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	}
 
 	/**
-	 * Print to the screen something about the version
-	 * @param code
+	 * This handles codes about players requesting the server version.
+	 * The entirety of the text can be treated as the version string.
+	 * 
+	 * @param code Hopefully of type ResponseCode.CODE.VERSION
 	 */
 	protected void displayVersion(ResponseCode code) {
 		// Make sure this is a valid version response first
@@ -477,9 +629,12 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 
 	
 	/**
-	 * Does whatever to update the user as to a status, which can
-	 * be displayed as a text string
-	 * @param str
+	 * Does whatever the UI needs to do in order to update the user 
+	 * as to a status, which can be displayed as a short text string.
+	 * In this implementation, it prints it out with a timestamp up
+	 * front.
+	 * 
+	 * @param str The staus to display
 	 */
 	protected void updateStatus(String str) {
 		SimpleDateFormat sdf = new SimpleDateFormat( "HH:mm:ss");
@@ -487,7 +642,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	}
 
 	/**
-	 * Server acknowledges a quit, so we can cleanly exit
+	 * Server acknowledges a quit, so we can cleanly exit the system.
 	 */
 	protected void quitTheGame() {
 		client.notifyOfShutdown();
@@ -499,21 +654,43 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 **********************************************************************************/
 
 	
+	/**
+	 * Requests the version from the server, using a method
+	 * on the {@link drexel.edu.blackjack.client.out.ClientOutputToServerHelper}
+	 * class. Also prints a message to the screen so the user
+	 * knows what's going on.
+	 */
 	protected void sendVersionRequest() {
 		updateStatus( "One moment, fetching the version from the server..." );
 		helper.sendVersionRequest();
 	}
 
+	/**
+	 * Requests account balance from the server, using a method
+	 * on the {@link drexel.edu.blackjack.client.out.ClientOutputToServerHelper}
+	 * class. Also prints a message to the screen so the user
+	 * knows what's going on.
+	 */
 	protected void sendAccountRequest() {
 		updateStatus( "One moment, fetching your account balance from the server..." );
 		helper.sendAccountRequest();
 	}
 
+	/**
+	 * Requests the capabilities of the server, using a method
+	 * on the {@link drexel.edu.blackjack.client.out.ClientOutputToServerHelper}
+	 * class. Also prints a message to the screen so the user
+	 * knows what's going on.
+	 */
 	protected void sendCapabilitiesRequest() {
 		updateStatus( "One moment, fetching a list of capabilities from the server..." );
 		helper.sendCapabilitiesRequest();
 	}
 
+	/**
+	 * Either shows, or hides, the message monitor frame, which is a
+	 * GUI frame used for monitoring messages.
+	 */
 	protected void toggleMessageMonitorFrame() {
 		if( client != null ) {
 			client.toggleMessageFrame();

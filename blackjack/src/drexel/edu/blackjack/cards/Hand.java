@@ -117,7 +117,7 @@ public class Hand {
 	
 	@Deprecated
 	/**
-	 * This needs to display a string representation of the cards
+	 * <b>UI:</b> This needs to display a string representation of the cards
 	 * in the hand, as presented to the person whose hand it is.
 	 * The distinction is in the facedown cards. If displaying
 	 * for this person, the facedown cards are shown as if faceup,
@@ -125,10 +125,10 @@ public class Hand {
 	 * card should be listed first in order, then the faceup cards
 	 * in order. The cards should be space-delimited. An example
 	 * of a valid response might be:
-	 * 
-	 * 2C 3S 5D
-	 * 
-	 * Here (though it is not indicated) the 2C was the facedown
+	 * <p>
+	 * <b>UI:</b> 2C 3S 5D
+	 * <p>
+	 * <b>UI:</b> Here (though it is not indicated) the 2C was the facedown
 	 * card, and the 3S and 5D were the two facedown cards, in order.
 	 * 
 	 * @return
@@ -151,15 +151,15 @@ public class Hand {
 	
 	@Deprecated
 	/**
-	 * This is very similar to the toStringIfThisPlayer() method,
+	 * <b>UI:</b> This is very similar to the toStringIfThisPlayer() method,
 	 * with one important distinction: instead of showing the
 	 * card.toString() values of facedown cards, an "X" should
 	 * be used.
 	 * 
-	 * Continuing the example of the previous method, calling
+	 * <b>UI:</b> Continuing the example of the previous method, calling
 	 * this method on the same hand would return:
 	 * 
-	 * X 3S 5D
+	 * <b>UI:</b> X 3S 5D
 	 * 
 	 * @return
 	 */
@@ -180,7 +180,7 @@ public class Hand {
 	}
 	
 	/**
-	 * String representation of card
+	 * <b>UI:</b> String representation of card
 	 * @param callingUser Who the representation is being 
 	 * constructed for
 	 * @return A string representation of cards in the hand
@@ -208,7 +208,7 @@ public class Hand {
 
 	
 	/**
-	 * Construct a string representing the cards in this hand
+	 * <b>UI:</b> Construct a string representing the cards in this hand
 	 * @param isOwner True if this is being constructed for the
 	 * 'owner' of the hand, who can see facedown card values,
 	 * or false otherwise
