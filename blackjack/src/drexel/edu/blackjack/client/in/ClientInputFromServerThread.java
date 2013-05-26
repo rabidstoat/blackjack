@@ -33,7 +33,7 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * server. It doesn't actually do anything with it. Instead,
  * it passes it off to listeners who have registered interest
  * in particular response codes.
- * 
+ * <P>
  * Synchronization techniques modeled after reading this
  * extremely old (but perhaps still relevant) article:
  * http://www.javaworld.com/jw-03-1999/jw-03-toolbox.html 

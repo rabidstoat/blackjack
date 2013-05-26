@@ -34,7 +34,7 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * allowed to remain idle before a timeout occurs is dependent on
  * the same of the protocol, as different protocol states have 
  * different timeout duartions.
- * 
+ * <P>
  * This is ONLY needed for states where timing out disconnects them.
  * If the timeout does something else, it should be handle elsewhere,
  * in the relevant {@link drexel.edu.blackjack.server.game.driver.GameAction}.

@@ -41,24 +41,81 @@ public class Game {
 	 * These are used in game descriptors and such
 	 *****************************************************************************/
 	
+	/**
+	 * In a LISTGAMES response, signifies an attribute is forthcoming
+	 */
 	public static final String ATTRIBUTE_KEYWORD = "ATTRIBUTE";
+	/**
+	 * In a LISTGAMES response, signifies an attribute for the number of decks
+	 */
 	public static final String NUM_DECKS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " NUMDECKS";
+	/**
+	 * In a LISTGAMES response, signifies an attribute for the minimum bet
+	 */
 	public static final String MIN_BET_ATTRIBUTE = ATTRIBUTE_KEYWORD + " MINBET";
+	/**
+	 * In a LISTGAMES response, signifies an attribute for the maximum bet
+	 */
 	public static final String MAX_BET_ATTRIBUTE = ATTRIBUTE_KEYWORD + " MAXBET";
+	/**
+	 * In a LISTGAMES response, signifies an attribute for the current number of players
+	 */
 	public static final String NUM_PLAYERS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " NUMPLAYERS";
+	/**
+	 * In a LISTGAMES response, signifies an attribute for the minimum required number of players
+	 */
 	public static final String MIN_PLAYERS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " MINPLAYERS";
+	/**
+	 * In a LISTGAMES response, signifies an attribute for the maximum allowed number of players
+	 */
 	public static final String MAX_PLAYERS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " MAXPLAYERS";
+	/**
+	 * In a LISTGAMES response, signifies that a game is active
+	 */
 	public static final String ACTIVE_STATUS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " STATUS ACTIVE";
+	/**
+	 * In a LISTGAMES response, signifies that a game is inactive
+	 */
 	public static final String INACTIVE_STATUS_ATTRIBUTE = ATTRIBUTE_KEYWORD + " STATUS INACTIVE";
+	/**
+	 * In a LISTGAMES response, signifies that a rule definition is on this line
+	 */
 	public static final String RULE_KEYWORD = "RULE"; 
+	/**
+	 * In a LISTGAMES response, signifies the start of a game record
+	 */
 	public static final String RECORD_START_KEYWORD = "GAME";
+	/**
+	 * In a LISTGAMES response, signifies the end of a game record
+	 */
 	public static final String RECORD_END_KEYWORD = "ENDGAME";
+	/**
+	 * In a GAMESTATUS response, signifies that the gamestage is on this line
+	 */
 	public static final String GAMESTAGE_KEYWORD = "GAMESTAGE";
+	/**
+	 * In a GAMESTATUS response, signifies an unknown keyword
+	 */
 	public static final String UNKNOWN_KEYWORD = "UNKNOWN";
+	/**
+	 * In a GAMESTATUS response, signifies a bet amount is on this line
+	 */
 	public static final String BET_KEYWORD = "BET";
+	/**
+	 * In a GAMESTATUS response, signifies a card hand is on this line
+	 */
 	public static final String HAND_KEYWORD = "HAND";
+	/**
+	 * In a GAMESTATUS response, signifies that the user is an active player
+	 */
 	public static final String ACTIVE_PLAYER = "ACTIVE_PLAYER";
+	/**
+	 * In a GAMESTATUS response, signifies that the user is an observer currently
+	 */
 	public static final String OBSERVER_KEYWORD = "OBSERVER";
+	/**
+	 * In a GAMESTATUS response, signifies an unknown username
+	 */
 	public static final String UNKNOWN_USERNAME = "(unknown)";
 	
 	/*******************************************************************************
@@ -140,7 +197,7 @@ public class Game {
 	 * generated to specify if they forfeited a bet by leaving in
 	 * the current state; if they did forfeit a bet, this routine
 	 * also has to debit the user's bank account. 
-	 * 
+     * <P>
 	 *  If something went wrong and they can't be removed (like,
 	 *  if they weren't in there in the first place) just return
 	 *  null.
@@ -360,6 +417,8 @@ public class Game {
 	 * This describes game metadata, basically, as the only 'active'
 	 * detail about the game that is shown is whether or not it's active.
 	 * For example, one string response might look like this:
+	 * <p>
+	 * <pre>
 	 * GAME game1 This is sample game 1
 	 * ATTRIBUTE STATUS INACTIVE
 	 * ATTRIBUTE MAXPLAYERS 6
@@ -369,6 +428,7 @@ public class Game {
 	 * ATTRIBUTE NUMPLAYERS 0
 	 * ATTRIBUTE NUMDECKS 4
 	 * ENDGAME
+	 * </pre>
 	 * 
 	 * @return A string representing the game suitable of putting
 	 * into the response of a LISTGAMES command

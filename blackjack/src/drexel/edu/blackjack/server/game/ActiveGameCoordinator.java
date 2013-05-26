@@ -109,14 +109,14 @@ public class ActiveGameCoordinator {
 
 	/**
 	 * Add a player to the game with the indicated sessionName.
-	 * 
+     * <P>
 	 * If the sessionName doesn't correspond to any gamemetadata,
 	 * this is a problem.
-	 * 
-	 * Otherwise, look to see if a game is already active. If so,
+     * <P>
+ 	 * Otherwise, look to see if a game is already active. If so,
 	 * make sure that it has room. If not, it's a problem. If it
 	 * does, add the player
-	 * 
+     * <P>
 	 * If there is no active game, create one, add the user, and
 	 * start it.
 	 * 

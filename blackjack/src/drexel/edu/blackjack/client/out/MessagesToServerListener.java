@@ -17,7 +17,7 @@ package drexel.edu.blackjack.client.out;
  * destined to the server need to implement. A class is able to add
  * themselves as a listener for these messages. When
  * they do, they get notified when a message is sent to the server.
- * 
+ * <P>
  * <b>UI:</b> The message monitor would want to listen to this
  * in order to display message traffic. Also, user interface
  * screens listen to the messages, so they can respond to them

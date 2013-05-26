@@ -34,7 +34,7 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * {@link drexel.edu.blackjack.db.game.GameMetadata},
  * the GameState is volatile and will change
  * often as the game progresses.
- * 
+ * <P>
  * See Section 2.15 of the protocol design
  * for details.
  * 
@@ -175,7 +175,7 @@ public class GameState {
 	/**
 	 * Need to send out messages to all players and notify them about
 	 * the dealer shoe being shuffled.
-	 * 
+     * <P>
 	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_ACTION}
 	 * code, specifying that the performer of the action is the dealer 
 	 * and the action itself is a SHUFFLE.
@@ -203,7 +203,7 @@ public class GameState {
 	/**
 	 * Need to send out messages to the remaining players and notify them about
 	 * a player leaving the game.
-	 * 
+     * <P>
 	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_LEFT}
 	 * code, and the parameters are the gameId followed by the username. 
 	 *
@@ -230,7 +230,7 @@ public class GameState {
 	/**
 	 * Need to send out messages to the other players (if any) about
 	 * how some new player has joined the session.
-	 * 
+     * <P>
 	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_JOINED}
 	 * code, and the parameters are the gameId followed by the username. 
 	 * 
@@ -257,7 +257,7 @@ public class GameState {
 	/**
 	 * Need to send out messages to the other players (if any) about
 	 * how a bet was placed.
-	 * 
+     * <P>
 	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_BET}
 	 * code, and the parameters are the gameId followed by the username
 	 * followed by the bet amount. 
@@ -545,7 +545,7 @@ public class GameState {
 	/**
 	 * Indicates to the game state that a new round
 	 * is being started. A few things are done here:
-	 * 
+     * <P>
 	 * <ol>
 	 * <li>All players are set to ACTIVE status
 	 * <li>The currentPlayer is set to null
@@ -610,7 +610,7 @@ public class GameState {
 	
 	/**
 	 * Walk through the players, and mark them all as ACTIVE.
-	 * 
+     * <P>
 	 * TODO: I'm worried about this method and synchronization
 	 */
 	private void makeAllPlayersActive() {
@@ -627,7 +627,7 @@ public class GameState {
 	 * and set the bet value stored on it to null. This signifies
 	 * starting a new round of play, where the bet no longer
 	 * needs to be stored.
-	 * 
+     * <P>
 	 * TODO: I'm worried about this method and synchronization
 	 */
 	private void removeAllPlayerBets() {
@@ -645,7 +645,7 @@ public class GameState {
 	 * and then return the corresponding USER. If there are no
 	 * more ACTIVE statuses in the list at or after that index,
 	 * then return null
-	 * 
+     * <P>
 	 * TODO: I'm worried about this method and synchronization
 	 * 
 	 * @param startingIndex The index from which to start looking for
@@ -700,7 +700,7 @@ public class GameState {
 	/**
 	 * A game is supposed to be STARTED or NOT_STARTED. Not sure
 	 * what decides it. Maybe if its thread is running?
-	 * 
+     * <P>
 	 * TODO: The game states probably don't make sense.
 	 * It should probably be BETTING or PLAYING or 
 	 * WAITING

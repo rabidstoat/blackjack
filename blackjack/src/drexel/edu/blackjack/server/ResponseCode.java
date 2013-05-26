@@ -27,7 +27,7 @@ import drexel.edu.blackjack.server.commands.PasswordCommand;
  * codes. It's mostly a set of convenience functions, though
  * by encapsulating the functionality we can change codes
  * in just one place if we get them wrong.
- * 
+ * <P>
  * <b>STATEFUL</b>: The enumeration lists the various messages
  * that are sent. Some of these messages signify transitions
  * in the DFA for the protocol, though the actual code that

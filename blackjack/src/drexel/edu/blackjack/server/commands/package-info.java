@@ -10,7 +10,7 @@
  * functionality and methods all the classes must implement. Also included
  * is a class that provides an object-oriented view of the parameters sent with
  * a command.
- * 
+ * <P>
  * <b>STATEFUL:</b> All of these commands are very involved with the stateful
  * nature of the protocol. The basic template of their processing algorithm
  * involves checking that the protocol is in a valid state before performing

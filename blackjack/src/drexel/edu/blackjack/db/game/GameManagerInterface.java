@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * Interface that any persistent store for games has to implement.
- * 
+ * <P>
  * The data that has to be stored is a number of game descriptors,
  * of which all the data that is in the GameMetadata class has
  * to be stored. 
@@ -62,10 +62,24 @@ public interface GameManagerInterface {
 	 */
 	public GameMetadata getGame(String id);
 
+	/**
+	 * Save the games out to a file
+	 * @return True if saved successfully
+	 */
 	boolean save();
 
+	/**
+	 * Add a game to the file
+	 * @param game The game to add
+	 * @return True if added successfully
+	 */
 	boolean add(GameMetadata game);
 
+	/**
+	 * Remove a game from the file
+	 * @param id The id of the game to remove
+	 * @return True if removed successfully, false otherwise
+	 */
 	boolean remove(String id);
 	
 }

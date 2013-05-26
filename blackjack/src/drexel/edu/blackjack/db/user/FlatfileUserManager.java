@@ -26,7 +26,7 @@ import java.util.Set;
 /**
  * User metadata is stored out in a flat file. The format
  * of the flat file is:
- * 
+ * <P>
  * The user list is only a hash map, mapping from username to user's metadata
  * To keep the user list persistent, this class uses serialization.
  * which requires writing permission, to write serialized file to disk

@@ -30,14 +30,21 @@ public class Hand {
 	private final HashSet<Integer> points = new HashSet<Integer>();
 	private final User user;
 	
+	/**
+	 * Construct an empty hand for a user
+	 * @param user The user
+	 */
 	public Hand(User user) {
 		this.user = user;
 		points.add(0);
 	}
 	
-	// get a card from dealer, it must be faceup or facedown using DealtCard class
-	// this method also interprets the card and calculate all possible values 
-	// there are many other simpler ways, but this is more generic
+	/**
+	 * get a card from dealer, it must be faceup or facedown using DealtCard class
+	 * this method also interprets the card and calculate all possible values 
+	 * there are many other simpler ways, but this is more generic
+	 * @param card
+	 */
 	public void receiveCard(DealtCard card) {
 		
 		cards.add(card);
@@ -67,6 +74,10 @@ public class Hand {
 		return new ArrayList<Integer>(points);
 	}
 	
+	/**
+	 * Get a list of the faceup cards in the hand
+	 * @return List of faceup cards
+	 */
 	public List<Card> getFaceupCards() {
 		ArrayList<Card> temp = new ArrayList<Card>();
 		for (DealtCard c:cards) {
@@ -77,6 +88,10 @@ public class Hand {
 		return temp;
 	}
 	
+	/**
+	 * Get a list of facedown cards in the deck
+	 * @return List of facedown cards
+	 */
 	public List<Card> getFacedownCards() {
 		ArrayList<Card> temp = new ArrayList<Card>();
 		for (DealtCard c:cards) {
@@ -88,6 +103,7 @@ public class Hand {
 	}
 	
 	/**
+	 * Determines if the hand is busted
 	 * @return true if the hand is definitely busted
 	 */
 	public boolean getIsBusted() {

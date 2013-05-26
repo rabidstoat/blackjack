@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  * authenticate. There are other local variables too, such
  * as the amount bet, or the number of incorrect login
  * attempts made.
- * 
+ * <P>
  * All state information is kept associated with the
  * protocol object. When a command is called on the
  * protocol option, the command itself is stateless.
@@ -49,7 +49,7 @@ import java.util.logging.Logger;
  * the state. In this way, one instantiation of the
  * command option can handle an arbitrary number of
  * different protocols' commands.
- * 
+ * <P>
  * Pretty much everything in this class has to do with
  * our requirement for being stateful.
  */

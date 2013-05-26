@@ -27,7 +27,7 @@ public interface DealerShoeInterface {
    * one ace of diamonds, one ace of spades, etc., etc.
    * If two decks, then two aces of clubs, two aces of diamonds,
    * etc. 
-   * 
+   * <P>
    * Note that internally you don't have to keep a randomized
    * listing, in which case this just 'resets' however you're
    * representing it. Might be easiest to keep 'undealt' and

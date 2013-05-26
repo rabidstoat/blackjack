@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Unit tests for classes in the {@link drexel.edu.blackjack.util} package
+ * Logging utilities.
  * <P>
  * CS544 Computer Networks Spring 2013
  * <P>
  * 5/26/2013
  * <P>
- * <b>Purpose:</b> This package contains JUnit tests, used purely for testing
- * purposes.
+ * <b>Purpose:</b> This package contains a customization of the standard java
+ * logger class.
  * @author Jennifer Lautenschlager
  * @author Constantine Lazarakis
  * @author Carol Greco

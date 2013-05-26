@@ -37,7 +37,7 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * of the data is optional, depending on the game state.
  * That is, if bets haven't been placed, they obviously
  * can't be shown.
- * 
+ * <P>
  * <b>UI:</b> It's important to the UI because the UI uses 
  * the {@link #toString()} method to display information 
  * about the game status.

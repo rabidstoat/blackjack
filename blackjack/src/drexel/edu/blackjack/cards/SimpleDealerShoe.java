@@ -15,12 +15,24 @@ package drexel.edu.blackjack.cards;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Implements a dealer's shoe that plays fair and square.
+ * 
+ * @author Duc
+ */
 public class SimpleDealerShoe implements DealerShoeInterface {
 	
 	private final int numDecks;
 	private final ArrayList<Card> deck;
 	private final ArrayList<Card> bin;
-	
+
+	/**
+	 * Constructs the shoe around a specified number of
+	 * decks. Cards start sequentially ordered unless
+	 * shuffled.
+	 * 
+	 * @param numDeck The number of decks
+	 */
 	public SimpleDealerShoe(int numDeck) {
 		numDecks = numDeck;
 		deck = new ArrayList<Card>();

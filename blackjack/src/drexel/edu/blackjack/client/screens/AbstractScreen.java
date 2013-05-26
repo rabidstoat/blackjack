@@ -339,7 +339,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 * implementing screen did not handle. This might be because
 	 * it's a 'general error' or 'common message', or it might 
 	 * simply be something that was totally unexpected.
-	 * 
+     * <P>
 	 * Handling the message might involve printing to the console
 	 * or it might just be handled internally in a silent manner.
 	 * Typically the user should be shielded as much as possible
@@ -347,7 +347,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 * should not be presented to the user. They should be processed
 	 * and any information presented in a more visually-appealing
 	 * fashion.
-	 * 
+     * <P>
 	 * If handling the code requires redisplaying the menu, do that
 	 * here. Typically this is only done if you reset, if you have
 	 * changed menus or screens, or if you have received a message 

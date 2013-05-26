@@ -37,7 +37,7 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * for the purpose of receiving connections. The exact spot in
  * the code where this is done is commented with the word
  * SERVICE.
- * 
+ * <P>
  * <b>CONCURRENT:</b> It is in this main thread that the socket 
  * accepts connections, and creates a separate server thread for
  * each connection. This way, multiple clients can be handled.

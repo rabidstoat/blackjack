@@ -22,15 +22,15 @@ import drexel.edu.blackjack.server.game.Game;
  * a sequential, predetermined series of actions.
  * These actions involve the Game object, and things
  * that are known to it.
- * 
+ * <P>
  * Therefore, one could create an ordered list of
  * these games actions and call them, one by one,
  * passing in the relevant game object, in order
  * to run a game.
- * 
+ * <P>
  * An example of an action would be 'starting a new
  * round' or 'requesting bets' or 'dealing cards'
- * 
+ * <P>
  * I made this an abstract class, not an interface,
  * in case any common utility methods can be put
  * here.
@@ -52,7 +52,7 @@ public abstract class GameAction {
 	 * the state on protocol -- if it's achievable just 
 	 * by having a reference to the Game object, it's fair
 	 * game.
-	 * 
+     * <P>
 	 * Of important note here is the return value. It DOES
 	 * NOT indicate if the action itself had a successful
 	 * account, but only if the process of performing it

@@ -46,13 +46,13 @@ import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
  * This is the main class of the blackjack client.
- * 
+ * <P>
  * <b>UI:</b> The work involved in setting up the user interface
  * is done in this class.
- * 
+ * <P>
  * <b>CLIENT:</b> Eventually the user will be able to specify
  * the host here.
- * 
+ * <P>
  * <b>SERVICE:</b> The port to connect to is hardcoded. See
  * specific comments with this keyword in them in the source.
  */

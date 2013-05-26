@@ -9,7 +9,7 @@
  * if there has been no client activity for a set amount of time, the connection
  * is dropped. A daemon thread continually monitors connection threads that are
  * registered with it, for this purpose.
- * 
+ * <P>
  * <b>STATEFUL:</b> All classes in this package are concerned with the stateful
  * requirement, as the timeout durations differ from state to state in the protocol.
  *  

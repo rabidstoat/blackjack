@@ -15,7 +15,7 @@ package drexel.edu.blackjack.db.user;
 
 /**
  * Interface that any persistent store for users has to implement.
- * 
+ * <P>
  * The data that has to be stored is a number of user accounts,
  * of which all the data that is in the UserMetadata class has
  * to be stored. There might be 0 users in the user manager, or
@@ -64,7 +64,7 @@ public interface UserManagerInterface {
 	/**
 	 * This method should only be used AFTER a successful load()
 	 * was executed at some point.
-	 * 
+     * <P>
 	 * By examining the UserMetadata in memory, that was 
 	 * previously loaded, look to see if a username and password
 	 * combination as indicated exists. If so, return the
@@ -72,12 +72,12 @@ public interface UserManagerInterface {
 	 * object, as the balance may be updated on it elsewhere
 	 * in the program, with the expectation that it is later
 	 * stored.
-	 * 
+     * <P>
 	 * If multiple UserMetadata objects exist with the same
 	 * username and password passed in, the behavior is undefined.
 	 * Returning any of them is considered valid (as this is 
 	 * really an error condition we're not worrying about).
-	 * 
+     * <P>
 	 * Users who have logged in need to be tracked, and if a
 	 * username is logged in for a second time (with a correct
 	 * password) an exception about them being already logged

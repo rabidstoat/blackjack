@@ -27,7 +27,7 @@ import drexel.edu.blackjack.db.user.UserMetadata;
 /**
  * Game metadata is stored out in a flat file. The format
  * of the flat file is:
- * 
+ * <P>
  * <Duc: Add documentation here about the format of the
  * file.>
  * 

@@ -23,7 +23,7 @@ import drexel.edu.blackjack.server.BlackjackProtocol;
 /**
  * <b>STATEFUL:</b> Commands that the server interprets will implement this class.
  * Pretty much everything in this class is concerned with state.
- * 
+ * <P>
  * These commands should keep track of no state. The state should
  * be derived from the BlackjackProtocol object. The commands will be shared
  * across multiple connections, so they just have the logic that
@@ -36,7 +36,7 @@ public abstract class BlackjackCommand {
 	/**
 	 * The algorithm for all command states should look something
 	 * like this (possibly incomplete):
-	 * 
+     * <P>
 	 * <UL>
 	 * <LI>0. If either parameter is null, return an internal error
 	 * response code
