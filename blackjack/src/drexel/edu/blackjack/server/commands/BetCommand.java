@@ -23,15 +23,21 @@ import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 import drexel.edu.blackjack.server.ResponseCode;
 
 /**
- * Response messages related to the BET command
- * @author Constantine
+ * <b>STATEFUL:</b>: Response messages related to the BET command.
+ * Like all command classes,
+ * it uses the protocol state to determine if it's in a valid
+ * state. It also checks the protocol stateful variable to see
+ * what associated user is making the bet command, and to store
+ * what the bet value is as a stateful variable.
  *
+ * @author Constantine
  */
 
 public class BetCommand extends BlackjackCommand {
 
 	private static final String COMMAND_WORD = "BET";
 	
+	// STATEFUL: Will hold valid states that this command operates in
 	private Set<STATE> validStates = null;
 
 	@Override
@@ -43,7 +49,7 @@ public class BetCommand extends BlackjackCommand {
 					"BetCommand.processCommand() received null arguments" ).toString();
 		}
 		
-		// Steps 1-2: Return an error in not in a valid state for BET command
+		// STATEFUL: Steps 1-2: Return an error in not in a valid state for BET command
 		if( !getValidStates().contains( protocol.getState()) ) {
 			return new ResponseCode( ResponseCode.CODE.INVALID_BET_NOT_EXPECTED,
 					"BetCommand.processCommand(): Received out-of-context Bet command").toString();
@@ -92,7 +98,7 @@ public class BetCommand extends BlackjackCommand {
 					" Bet is over maximum bet allowed").toString();	
 		}
 					
-		//5.4 Success! Need to store the amount on the protocol
+		// STATEFUL: 5.4 Success! Need to store the amount on the protocol
 		protocol.setBet( desiredBet );
 		
 		// Success! Now handle all the odds and ends that have to be done when a bet is placed

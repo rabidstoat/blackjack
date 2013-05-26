@@ -21,13 +21,28 @@ import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 import drexel.edu.blackjack.server.ResponseCode;
 
+/**
+ * <b>STATEFUL:</b> Implements the logic needed to respond to 
+ * the CAPABILITIES command from a client. This is done by
+ * getting a list of commands that are valid regardless of
+ * protocol state, then filtering out the ones that can't
+ * be used in this state. The remaining set are returned in
+ * the appropriate multiline message format as specified in
+ * the protocol.
+ * 
+ * @author Constantine
+ */
 public class CapabilitiesCommand extends BlackjackCommand {
 
 	private static final String COMMAND_WORD = "CAPABILITIES";
 	
+	// STATEFUL: Will hold valid states that this command operates in
 	Set<STATE> validStates = null;
 		
-    /**@param protocol The protocol connection that made that
+    /**
+     * Process the CAPABILITIES command.
+     * 
+     * @param protocol The protocol connection that made that
 	 * command. From there the user, state, and all sorts of
 	 * good information can be found.
 	 * @param cm Information derived from the client associated
@@ -43,10 +58,10 @@ public class CapabilitiesCommand extends BlackjackCommand {
 				"CapabilitiesCommand.processCommand() received null arguments").toString();
 		}
 
-		// 1. Get set of all valid commands, in any state
+		// STATEFUL: 1. Get set of all valid commands, in any state
 		Set<BlackjackCommand> commands = protocol.getAllValidCommands();
 
-		// 2. Get the current state
+		// STATEFUL: 2. Get the current state
 		STATE currentState = protocol.getState();
 		
 		// Build up capabilities list here
@@ -54,9 +69,10 @@ public class CapabilitiesCommand extends BlackjackCommand {
 
 		for( BlackjackCommand command : commands ) {
 			
-			//Get the states in which command is valid
+			//STATEFUL: Get the states in which command is valid
 			Set<STATE> stateSet = command.getValidStates();
 			
+			// STATEFUL: Only report on those valid in the current state 
 			if(stateSet.contains(currentState)){
 
 				//append to string builder:the command word, a space, and any parameters. 

@@ -22,10 +22,19 @@ import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 import drexel.edu.blackjack.server.game.Game;
 import drexel.edu.blackjack.server.game.User;
 
+/**
+ * <b>STATEFUL:</b> Implements the logic needed to respond to 
+ * the LEAVESESSION command from a client. Like all command classes,
+ * it uses the protocol state to determine if it's in a valid
+ * state. 
+ * 
+ * @author Jennifer
+ */
 public class LeaveSessionCommand extends BlackjackCommand {
 
 	private static final String COMMAND_WORD = "LEAVESESSION";
 
+	// STATEFUL: Will hold valid states that this command operates in
 	private Set<STATE> validStates = null;
 
 	public String processCommand(BlackjackProtocol protocol, CommandMetadata cm) {
@@ -36,7 +45,7 @@ public class LeaveSessionCommand extends BlackjackCommand {
 					.toString();
 		}
 
-		// Steps 1-2: Return an error in not in a valid state
+		// STATEFUL: Steps 1-2: Return an error in not in a valid state
 		if (!getValidStates().contains(protocol.getState())) {
 			return getResponseStingForInvalidState(protocol.getState());
 		}
@@ -68,7 +77,7 @@ public class LeaveSessionCommand extends BlackjackCommand {
 		
 		// Step 6: Save out state variables? There are none
 
-		// Step 7: Update the change in state
+		// STATEFUL: Step 7: Update the change in state
 		protocol.setState( STATE.NOT_IN_SESSION );
 
 		// Step 8: Format the user response code
@@ -84,7 +93,7 @@ public class LeaveSessionCommand extends BlackjackCommand {
 	 * The system is in some state where leave a session is not allowed. Need
 	 * to return an error message that's appropriate.
 	 * 
-	 * @param protocol
+	 * @param protocol The associated protocol object
 	 * @return The response code to return for the invalid state passed in
 	 */
 	private String getResponseStingForInvalidState(BlackjackProtocol.STATE state) {

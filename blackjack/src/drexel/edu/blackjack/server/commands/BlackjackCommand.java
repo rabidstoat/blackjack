@@ -21,7 +21,8 @@ import java.util.List;
 import drexel.edu.blackjack.server.BlackjackProtocol;
 
 /**
- * Commands that the server interprets will implement this class.
+ * <b>STATEFUL:</b> Commands that the server interprets will implement this class.
+ * Pretty much everything in this class is concerned with state.
  * 
  * These commands should keep track of no state. The state should
  * be derived from the BlackjackProtocol object. The commands will be shared
@@ -36,32 +37,33 @@ public abstract class BlackjackCommand {
 	 * The algorithm for all command states should look something
 	 * like this (possibly incomplete):
 	 * 
-	 * 0. If either parameter is null, return an internal error
+	 * <UL>
+	 * <LI>0. If either parameter is null, return an internal error
 	 * response code
-	 * 1. Check to see if in a state (get it from the protocol
+	 * <LI><b>STATEFUL:</b> 1. Check to see if in a state (get it from the protocol
 	 * object) where this command is valid.
-	 * 1a. If not, send the error response code (this is hopefully
+	 * <LI>1a. If not, send the error response code (this is hopefully
 	 * specified in our protocol spec, if not, need to figure
 	 * out what the code should be)
-	 * 2b. If it is in a correct protocol state, keep going
-	 * 3. Make sure the syntax of the command is correct (e.g.,
+	 * <LI>2b. If it is in a correct protocol state, keep going
+	 * <LI>3. Make sure the syntax of the command is correct (e.g.,
 	 * if it's the USERNAME command they MUST have a single
 	 * parameter -- you can get parameters off the CommandMetadata
 	 * object, getParameters() method)
-	 * 4a. If not, send a response code (again, look in document,
+	 * <LI>4a. If not, send a response code (again, look in document,
 	 * might be 502 Syntax Error code or might be something
 	 * more specific)
-	 * 5. Do whatever work needs to be done for the command
-	 * 6. Save out any state variables (e.g., on the USERNAME
+	 * <LI> 5. Do whatever work needs to be done for the command
+	 * <LI><b>STATEFUL:</b> 6. Save out any state variables (e.g., on the USERNAME
 	 * command, use BlackjackProtocol.setUsername() to save
 	 * the username)
-	 * 7. Update any change of state using the setState()
+	 * <LI><b>STATEFUL:</b> 7. Update any change of state using the setState()
 	 * method on BlackjackProtocol (e.g., if you were in the
 	 * WAITING_FOR_USERNAME state update the state to
 	 * WAITING_FOR_PASSWORD)
-	 * 8. Generate the proper response code sting and return
+	 * <LI>8. Generate the proper response code sting and return
 	 * it
-	 * 
+	 * </UL>
 	 * 
 	 * @param protocol The protocol connection that made that
 	 * command. From there the user, state, and all sorts of
@@ -80,14 +82,22 @@ public abstract class BlackjackCommand {
 		return str.toString();
 		
 	}
-	
-	// This is the word that commands of this type begin with
+
+	/**
+	 * This is the word that commands of this type begin with
+	 * 
+	 * @return The command word, like BET or USERNAME, as per
+	 * the protocol spec
+	 */
 	public abstract String getCommandWord();
 	
 	/**
 	 * This returns a set of states that the command can validly be used in.
 	 * The CAPABILITIES command will use this to get a list of capabilities
 	 * for the current protocol state to return
+	 * 
+	 * @return The set of all states in which this command can
+	 * validly be used.
 	 **/
 	public abstract Set<BlackjackProtocol.STATE> getValidStates();
 	

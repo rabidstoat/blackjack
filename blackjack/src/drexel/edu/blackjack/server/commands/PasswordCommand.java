@@ -29,8 +29,15 @@ import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.server.game.User;
 
-/***/
-
+/**
+ * <b>STATEFUL:</b> Implements the logic needed to respond to 
+ * the PASSWORD command from a client. Like all command classes,
+ * it uses the protocol state to determine if it's in a valid
+ * state.
+ * 
+ * @author Constantine
+ * @author Jennifer
+ */
 public class PasswordCommand extends BlackjackCommand {
 	
 	// They get 3 tries to login before they're booted
@@ -38,9 +45,12 @@ public class PasswordCommand extends BlackjackCommand {
 
 	private static final String COMMAND_WORD = "PASSWORD";
 
-	Set<STATE> validPasswordStates = null;
+	// STATEFUL: Will hold valid states that this command operates in
+	private Set<STATE> validPasswordStates = null;
 	
-	/**@param protocol The protocol connection that made that
+	/**
+	 * Process the command 
+	 * @param protocol The protocol connection that made that
 	 * command. From there the user, state, and all sorts of
 	 * good information can be found.
 	 * @param cm Information derived from the client associated
@@ -56,7 +66,7 @@ public class PasswordCommand extends BlackjackCommand {
 					"PasswordCommand.processCommand() received null arguments").toString();	
 		}
 
-		/** Step 1-2: Error 2: Return an error if not in valid state for PASSWORD command */
+		/** STATEFUL: Step 1-2: Error 2: Return an error if not in valid state for PASSWORD command */
 		if(!getValidStates().contains( protocol.getState()) ) {
 			
 			return new ResponseCode( ResponseCode.CODE.NOT_EXPECTING_PASSWORD,
@@ -111,7 +121,7 @@ public class PasswordCommand extends BlackjackCommand {
 					
 				protocol.setUser(user);
 				
-				/**Step 7: Update state. The client has authenticated but is not in a session*/
+				/**STATEFUL: Step 7: Update state. The client has authenticated but is not in a session*/
 				
 				protocol.setState(STATE.NOT_IN_SESSION);
 					

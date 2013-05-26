@@ -22,6 +22,15 @@ import drexel.edu.blackjack.server.commands.BlackjackCommand;
 import drexel.edu.blackjack.server.commands.CommandMetadata;
 
 
+/**
+ * This is a special command class, as it is the only
+ * one that doesn't correspond to a valid command keyword.
+ * Instead, it is used when no other valid command class
+ * can be found, based on the first word of the command
+ * from the client. 
+ * 
+ * @author Carol
+ */
 public class UnknownCommand extends BlackjackCommand {
 
 	private Set<STATE> validStates = null;

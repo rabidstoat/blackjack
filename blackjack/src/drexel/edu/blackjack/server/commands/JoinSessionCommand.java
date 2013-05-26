@@ -28,12 +28,22 @@ import drexel.edu.blackjack.server.game.ActiveGameCoordinator;
 import drexel.edu.blackjack.server.game.Game;
 import drexel.edu.blackjack.server.game.User;
 
+/**
+ * <b>STATEFUL:</b> Implements the logic needed to respond to 
+ * the JOINSESSION command from a client. Like all command classes,
+ * it uses the protocol state to determine if it's in a valid
+ * state. 
+ * 
+ * @author Jennifer
+ */
 public class JoinSessionCommand extends BlackjackCommand {
 
 	private static final String COMMAND_WORD = "JOINSESSION";
 
+	// STATEFUL: Will hold valid states that this command operates in
 	private Set<STATE> validStates = null;
 
+	@Override
 	public String processCommand(BlackjackProtocol protocol, CommandMetadata cm) {
 
 		// Step 0: If either object is null, it's an internal error
@@ -43,7 +53,7 @@ public class JoinSessionCommand extends BlackjackCommand {
 					.toString();
 		}
 
-		// Steps 1-2: Return an error in not in a valid state
+		// STATEFUL: Steps 1-2: Return an error in not in a valid state
 		if (!getValidStates().contains(protocol.getState())) {
 			return getResponseStingForInvalidState(protocol.getState());
 		}
@@ -97,7 +107,7 @@ public class JoinSessionCommand extends BlackjackCommand {
 
 		// Step 6: Save out state variables? There are none
 
-		// Step 7: Update the change in state
+		// STATEFUL: Step 7: Update the change in state
 		protocol.setState( STATE.IN_SESSION_AS_OBSERVER );
 
 		// Step 8: Format the user response code
@@ -108,7 +118,7 @@ public class JoinSessionCommand extends BlackjackCommand {
 	 * The system is in some state where joinin a session is not allowed. Need
 	 * to return an error message that's appropriate.
 	 * 
-	 * @param protocol
+	 * @param protocol Associated protocol object
 	 * @return The appropriate response code to return for the invalid state passed in
 	 */
 	private String getResponseStingForInvalidState(BlackjackProtocol.STATE state) {

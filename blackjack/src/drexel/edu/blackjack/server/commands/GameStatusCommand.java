@@ -23,12 +23,25 @@ import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.server.game.User;
 
+/**
+ * <b>STATEFUL:</b> Implements the logic needed to respond to 
+ * the GAMESTATUS command from a client. Like all command classes,
+ * it uses the protocol state to determine if it's in a valid
+ * state. It also checks the protocol stateful variable to see
+ * what associated user is making the account request, and
+ * what game they are in. Only status relate to a game the
+ * user is in will be returned.
+ * 
+ * @author Jennifer
+ */
 public class GameStatusCommand extends BlackjackCommand {
 
 	private static final String COMMAND_WORD = "GAMESTATUS";
 
+	// STATEFUL: Will hold valid states that this command operates in
 	private Set<STATE> validStates = null;
 
+	@Override
 	public String processCommand(BlackjackProtocol protocol, CommandMetadata cm) {
 		
 		//Step 0: If either object is null, it's an internal error
@@ -37,7 +50,7 @@ public class GameStatusCommand extends BlackjackCommand {
 				"ListgamesCommand.processCommand() received null arguments").toString();
 		}
 		
-		// Steps 1-2: Return an error in not in a valid state
+		// STATEFUL: Steps 1-2: Return an error in not in a valid state
 		if( !getValidStates().contains( protocol.getState()) ) {
 			return new ResponseCode( ResponseCode.CODE.NOT_EXPECTING_GAMESTATUS ).toString();
 		}

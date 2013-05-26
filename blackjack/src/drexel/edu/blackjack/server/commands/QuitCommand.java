@@ -22,10 +22,19 @@ import drexel.edu.blackjack.server.commands.BlackjackCommand;
 import drexel.edu.blackjack.server.commands.CommandMetadata;
 
 
+/**
+ * <b>STATEFUL:</b> Implements the logic needed to respond to 
+ * the QUIT command from a client. Like all command classes,
+ * it uses the protocol state to determine if it's in a valid
+ * state. 
+ * 
+ * @author Carol
+ */
 public class QuitCommand extends BlackjackCommand {
 
 	private static final String COMMAND_WORD = "QUIT";
 	
+	// STATEFUL: Will hold valid states that this command operates in
 	private Set<STATE> validStates = null;
 	
 	@Override
@@ -37,7 +46,7 @@ public class QuitCommand extends BlackjackCommand {
 					"QUITCommand.processCommand() received null arguments").toString();
 		}
 		
-		//Steps 1-2: Return error if not in a valid state 
+		//STATEFUL: Steps 1-2: Return error if not in a valid state 
 		//quit command available in any connected state 
 		if( !getValidStates().contains( protocol.getState() )) {
 			return new ResponseCode( ResponseCode.CODE.NEED_TO_BE_AUTHENTICATED).toString();

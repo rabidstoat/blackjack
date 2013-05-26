@@ -21,12 +21,22 @@ import drexel.edu.blackjack.server.commands.BlackjackCommand;
 import drexel.edu.blackjack.server.commands.CommandMetadata;
 
 
+/**
+ * <b>STATEFUL:</b> Implements the logic needed to respond to 
+ * the ACCOUNT command from a client. Like all command classes,
+ * it uses the protocol state to determine if it's in a valid
+ * state. It also checks the protocol stateful variable to see
+ * what associated user is making the account request.
+ * 
+ * @author Carol
+ */
 public class VersionCommand extends BlackjackCommand {
 
 	double version = 1.0;
 	
 	private static final String COMMAND_WORD = "VERSION";
 	
+	// STATEFUL: Will hold valid states that this command operates in
 	private Set<STATE> validStates = null;
 	
 	@Override
@@ -38,7 +48,7 @@ public class VersionCommand extends BlackjackCommand {
 					"VersionCommand.processCommand() received null arguments").toString();
 		}
 		
-		//Steps 1-2: Return error if not in a valid state 
+		//STATEFUL: Steps 1-2: Return error if not in a valid state 
 		//version command available in any connected state 
 		if( !getValidStates().contains( protocol.getState() )) {
 			return new ResponseCode( ResponseCode.CODE.NEED_TO_BE_AUTHENTICATED).toString();

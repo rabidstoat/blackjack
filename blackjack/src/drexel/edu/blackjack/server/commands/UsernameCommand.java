@@ -13,6 +13,14 @@
 package drexel.edu.blackjack.server.commands;
 
 
+/**
+ * <b>STATEFUL:</b> Implements the logic needed to respond to 
+ * the USERNAME command from a client. Like all command classes,
+ * it uses the protocol state to determine if it's in a valid
+ * state. 
+ * 
+ * @author Constantine
+ */
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,10 +34,13 @@ public class UsernameCommand extends BlackjackCommand {
 
 	private static final String COMMAND_WORD = "USERNAME";
 
+	// STATEFUL: Will hold valid states that this command operates in
 	Set<STATE> validUsernameStates = null;
 
 
-	/**@param protocol The protocol connection that made that
+	/**
+	 * Processes the command
+	 * @param protocol The protocol connection that made that
 	 * command. From there the user, state, and all sorts of
 	 * good information can be found.
 	 * @param cm Information derived from the client associated
@@ -46,7 +57,7 @@ public class UsernameCommand extends BlackjackCommand {
 					"UsernameCommand.processCommand() received null arguments").toString();
 			}
 
-			// Step 1-2: Return an error if not in valid state for USERNAME command
+			// STATEFUL: Step 1-2: Return an error if not in valid state for USERNAME command
 			
 			if(!getValidStates().contains( protocol.getState()) ) {
 				return new ResponseCode( ResponseCode.CODE.NOT_EXPECTING_USERNAME,
@@ -63,13 +74,13 @@ public class UsernameCommand extends BlackjackCommand {
 			
 			/**Steps 6-8: Finally, if USERNAME command has only one parameter:*/
 			
-			/**6: Set the username for user of this protocol instance */
+			/**6: STATEFUL: Set the username for user of this protocol instance */
 			
 			String username = cm.getParameters().get(0);
 			
 				protocol.setUsername( username );
 			
-			/**Step 7: Update to next state. The client connected and has given a username, 
+			/**Step 7: STATEFUL: Update to next state. The client connected and has given a username, 
 			 * but needs to give a password */
 			
 			protocol.setState(STATE.WAITING_FOR_PASSWORD);
@@ -84,6 +95,8 @@ public class UsernameCommand extends BlackjackCommand {
 		 * This returns a set of states that the command can validly be used in.
 		 * The CAPABILITIES command will use this to get a list of capabilities
 		 * for the current protocol state to return
+		 * 
+		 * @return The set of valid states
 		 **/	
 
 		public Set<STATE> getValidStates() {
