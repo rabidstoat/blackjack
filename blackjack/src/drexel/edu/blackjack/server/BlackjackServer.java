@@ -32,7 +32,17 @@ import javax.net.ssl.TrustManagerFactory;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
- * The main class for the blackjack server.
+ * <b>SERVICE:</b> The main class for the blackjack server. It
+ * binds a secure socket to the default protocol port (55555)
+ * for the purpose of receiving connections. The exact spot in
+ * the code where this is done is commented with the word
+ * SERVICE.
+ * 
+ * <b>CONCURRENT:</b> It is in this main thread that the socket 
+ * accepts connections, and creates a separate server thread for
+ * each connection. This way, multiple clients can be handled.
+ * The exact spot in the code where this is done is commented
+ * with the word CONCURRENT.
  */
 public class BlackjackServer {
 
@@ -77,13 +87,13 @@ public class BlackjackServer {
 	 ***********************************************************/
 	
 	/**
-	 * Constructor needs a comment
+	 * Creates an instance of the blackjack server.
 	 */
 	public BlackjackServer() {
 	}
 	
 	/**
-	 * Again, with the no comments!
+	 * The main method that starts the server up
 	 * 
 	 * @param args No arguments expected
 	 */
@@ -95,7 +105,9 @@ public class BlackjackServer {
 	}
 
 	/**
-	 * Start the socket and listen for connections
+	 * Start the socket, using TLS encryption, and listen 
+	 * for connections. When a connection is received,
+	 * create a thread to handle the connection.
 	 */
 	private void runServer() {
 		
@@ -124,12 +136,16 @@ public class BlackjackServer {
 
             // And finally for a socket
             SSLServerSocketFactory ssf = sc.getServerSocketFactory();
+            
+            // SERVICE: This is where the socket binds to its predetermined port.
             serverSocket = ssf.createServerSocket(PORT);
             LOGGER.info( "Started a server on port " + PORT );
             System.out.println( "The server is now ready to accept connections." );
             
             // Now we do an endless loop, accepting clients
             while( true ) {
+            	// CONCURRENT: This is where each new connection gets its
+            	// own thread to deal with it
             	new BlackjackServerThread( serverSocket.accept() ).start();
             }
             

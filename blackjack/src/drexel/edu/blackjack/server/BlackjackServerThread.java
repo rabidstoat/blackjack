@@ -28,9 +28,14 @@ import drexel.edu.blackjack.server.timeouts.IdleTimeoutDaemon;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
- * One thread per client. Better comments needed.
+ * <b>CONCURRENT:</b> The whole purpose of this code and, thus,
+ * all the comments, have to do with concurrency in the system.
+ * Each client that is connected gets its own thread, to allow
+ * for multiple clients to be handled at a time. The thread has
+ * references to the socket connection, for purposes of I/O,
+ * and to a protocol state, so the state can be maintained.
+ * 
  * @author Jennifer
- *
  */
 public class BlackjackServerThread extends Thread {
 
@@ -55,6 +60,14 @@ public class BlackjackServerThread extends Thread {
 	 * Constructor goes here
 	 *********************************************************/
 
+	/**
+	 * Create a thread that is centered around processing input from,
+	 * and providing output to, a client that is connected through
+	 * this socket.
+	 * 
+	 * @param socket The secure socket for the connection to the
+	 * client. It must already be open.
+	 */
 	public BlackjackServerThread( Socket socket ) {
 		super( "BlackjackServerThread" );
 		this.socket = socket;
@@ -63,7 +76,18 @@ public class BlackjackServerThread extends Thread {
 	}
 
 	/**********************************************************
-	 * This is the meat of the thread, the run() method
+	 * This is the meat of the thread, the run() method. It
+	 * starts by registering the thread with the 
+	 * {@link drexel.edu.blackjack.server.timeouts.IdleTimeoutDaemon},
+	 * then opens an input Reader and output Writer for the
+	 * socket. Finally, it goes into a loop where it waits for
+	 * client I/O, takes the message (presumably a valid command
+	 * in the protocol specification), passes it to the protocol
+	 * state for processing, then takes the response from the
+	 * protocol object (should be a response code and parameters
+	 * as specified by the protocol) and sends it to the 
+	 * client. It's basically a request-response loop that
+	 * ends when the client connection is severed.
 	 *********************************************************/
 	@Override
 	public void run() {
@@ -143,6 +167,7 @@ public class BlackjackServerThread extends Thread {
 	}
 
 	/**
+	 * Get the (open) socket reference
 	 * @return the socket
 	 */
 	public Socket getSocket() {
@@ -150,6 +175,7 @@ public class BlackjackServerThread extends Thread {
 	}
 
 	/**
+	 * Get the protocol instance associated with this thread.
 	 * @return the protocol
 	 */
 	public BlackjackProtocol getProtocol() {
@@ -179,7 +205,7 @@ public class BlackjackServerThread extends Thread {
 	/**
 	 * Sends a response code through the socket by using the
 	 * writer, and sending the toString() of the response
-	 * code
+	 * code.
 	 * 
 	 * @param code What to send
 	 */

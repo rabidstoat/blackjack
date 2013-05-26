@@ -28,6 +28,12 @@ import drexel.edu.blackjack.server.commands.PasswordCommand;
  * by encapsulating the functionality we can change codes
  * in just one place if we get them wrong.
  * 
+ * <b>STATEFUL</b>: The enumeration lists the various messages
+ * that are sent. Some of these messages signify transitions
+ * in the DFA for the protocol, though the actual code that
+ * does the transition reside elsewhere, in the various classes
+ * in the {@link drexel.edu.blackjack.server.commands} package.
+ * 
  * @author Jennifer
  */
 public class ResponseCode {
@@ -51,62 +57,353 @@ public class ResponseCode {
 	 */
 	public enum CODE {
 		
+		/**
+		 * Successful response to CAPABILITIES command. No state
+		 * change occurs with this response.
+		 */
 		CAPABILITIES_FOLLOW ( 101, "Capabilities list follows." ),
+		/**
+		 * Successful response to a LISTGAMES command. It signals the
+		 * start of a multiline message where a list of games, in a 
+		 * format specified by the protocol, follows. No state
+		 * change occurs with this response.
+		 */
 		GAMES_FOLLOW ( 102, null ),
+		/**
+		 * Successful response to a VERSION command. No state
+		 * change occurs with this response.
+		 */
 		VERSION ( 103, null ),
+		/**
+		 * Successful response to an ACCOUNT command. No state
+		 * change occurs with this response.
+		 */
 		ACCOUNT_BALANCE ( 104, null ),
+		/**
+		 * A successful, but single-line, response to the LISTGAMES
+		 * command, which indicates that there are no games. No state
+		 * change occurs with this response.
+		 */
 		NO_GAMES_HOSTED ( 105, "There are no games hosted on this server." ),
-		// TODO: Shouldn't these next to be in the 'client error' range of codes
+		/**
+		 * Sent to the client without a prompting request, to indicate when
+		 * the client has not bet in time and has been dropped from the game
+		 * session. This also signifies a state change in the DFA, from the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AWAITING_BETS}
+		 * to the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#NOT_IN_SESSION}
+		 * state.
+		 */
 		TIMEOUT_EXCEEDED_WHILE_BETTING ( 106, "Client idle too long while server was expecting a BET." ),
+		/**
+		 * Sent to the client without a prompting request, to indicate when
+		 * the client has not specified a game play in time and has been dropped from the game
+		 * session. This also signifies a state change in the DFA, from the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AND_YOUR_TURN}
+		 * to the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#NOT_IN_SESSION}
+		 * state.
+		 */
 		TIMEOUT_EXCEEDED_WHILE_PLAYING ( 107, "Client idle too long while server was expecting HIT or STAND." ),
 		
+		/**
+		 * Successful response to a PASSWORD command. In the DFA,
+		 * it transitions from the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#WAITING_FOR_PASSWORD}
+		 * to the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#NOT_IN_SESSION}
+		 * state.
+		 */
 		SUCCESSFULLY_AUTHENTICATED( 200, "The username and password were correct. Welcome to the game!" ),
+		/**
+		 * Successful response to a QUIT command. In the DFA,
+		 * it transitions from the current state to the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#DISCONNECTED}
+		 * state.
+		 */
 		SUCCESSFULLY_QUIT( 201, "Come back soon!" ),
+		/**
+		 * Successful response to a JOINSESSION command. In the DFA,
+		 * it transitions from the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#NOT_IN_SESSION}
+		 * to the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AS_OBSERVER}
+		 * state.
+		 */
 		SUCCESSFULLY_JOINED_SESSION( 211, "Successfully joined game session." ),
+		/**
+		 * Successful response to a BET command. In the DFA, it involves
+		 * no state transition.
+		 */
 		SUCCESSFULLY_BET( 220, "Bet successfully placed. Good luck!" ),
+		/**
+		 * Successful response to a LEAVESESSION command. In the DFA, it involves
+		 * a transition from either the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AS_OBSERVER}
+		 * or the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AWAITING_BETS}
+		 * state to the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#NOT_IN_SESSION}
+		 * state.
+		 */
 		SUCCESSFULLY_LEFT_SESSION_NOT_MIDPLAY( 221, "Successfully left the game session. No bet was forfeited." ),
+		/**
+		 * Successful response to a LEAVESESSION command. In the DFA, it involves
+		 * a transition from one of the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AND_YOUR_TURN},
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AFTER_YOUR_TURN},
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_BEFORE_YOUR_TURN},
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_DEALER_BLACKJACK}, or
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_SERVER_PROCESSING},
+		 * states to the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#NOT_IN_SESSION}
+		 * state.
+		 */
 		SUCCESSFULLY_LEFT_SESSION_FORFEIT_BET( 222, null ),
+		/**
+		 * Successful response to a STAND command. In the DFA, it involves
+		 * a transition from the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AND_YOUR_TURN}
+		 * state to the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AFTER_YOUR_TURN}
+		 * state.
+		 */
 		SUCCESSFULLY_STAND( 223, "Okay, you stand. No more cards will be dealt." ),
 
+		/**
+		 * Successful response to a USERNAME command. In the DFA, it involves
+		 * a transition from the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#WAITING_FOR_USERNAME}
+		 * state to the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#WAITING_FOR_PASSWORD}
+		 * state.
+		 */
 		WAITING_FOR_PASSWORD( 300, "User acknowledged. Send PASSWORD." ),
-		// TODO: Shouldn't this be in the 200 block? Where SUCCESSFULLY_STAND is?
+		/**
+		 * Successful response to a HIT command. In the DFA, it involves
+		 * no state transition.
+		 */
 		SUCCESSFULLY_HIT( 320, null ),
 
+		/**
+		 * Unsuccessful response to any command in any state, it
+		 * involves no state transition. It signifies that an unknown
+		 * internal error (like a null pointer) occurred in the server,
+		 * presumably as the result of a bug.
+		 */
 		INTERNAL_ERROR ( 400, "An internal error occured in the server." ),
+		/**
+		 * Unsuccessful response to any command that is valid only in
+		 * an authenticated DFA state, if the protocol is not in such
+		 * a state. It involves no state transition.
+		 */
 		NEED_TO_BE_AUTHENTICATED( 401, "The client must authenticate before using this command." ),
+		/**
+		 * Unsuccessful response to a PASSWORD command, it involves
+		 * a state transition from the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#WAITING_FOR_PASSWORD}
+		 * to the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#WAITING_FOR_USERNAME}
+		 * state. It signifies that either the username was invalid, or the
+		 * password was not correct.
+		 */
 		INVALID_LOGIN_CREDENTIALS( 402, "The username and password are incorrect." ),
+		/**
+		 * Unsuccessful response to a PASSWORD command if the protocol state is not
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#WAITING_FOR_PASSWORD}.
+		 * It involves no state transition.
+		 */
 		NOT_EXPECTING_PASSWORD( 403, "Server was not expected to receive a PASSWORD command just now." ),
+		/**
+		 * Unsuccessful response to a USERNAME command if the protocol state is not
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#WAITING_FOR_USERNAME}.
+		 * It involves no state transition.
+		 */
 		NOT_EXPECTING_USERNAME( 404, "Server was not expected to receive a USERNAME command just now." ),
+		/**
+		 * Unsuccessful response to a PASSWORD command, it involves
+		 * a state transition from the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#WAITING_FOR_PASSWORD}
+		 * to the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#DISCONNECTED} state.
+		 * It signifies that the user has failed the login attempt too many times.
+		 */
 		LOGIN_ATTEMPTS_EXCEEDED( 405, "Exceeded allowed " + PasswordCommand.INCORRECT_LOGIN_LIMIT + " incorrect login attempts" ),
+		/**
+		 * Unsuccessful response to a PASSWORD command, it involves
+		 * a state transition from the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#WAITING_FOR_PASSWORD}
+		 * to the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#DISCONNECTED} state.
+		 * It signifies that the user is already logged in with a different connection
+		 * elsewhere.
+		 */
 		ALREADY_LOGGED_IN( 406, "Already logged in elsewhere" ),
+		/**
+		 * Unsuccessful response to a JOINSESSION command, it involves
+		 * no state change. It signifies that the session ID used does
+		 * not exist.
+		 */
 		JOIN_SESSION_DOES_NOT_EXIST( 410, "Tried to join a non-existent game session." ),
+		/**
+		 * Unsuccessful response to a JOINSESSION command, it involves
+		 * no state change. It signifies that there are too many players
+		 * already in the game session.
+		 */
 		JOIN_SESSION_AT_MAX_PLAYERS( 411, "Cannot join a session at the maximum number of players." ),
+		/**
+		 * Unsuccessful response to a JOINSESSION command, it involves
+		 * no state change. It signifies that the user does not have a large
+		 * enough account balance to meet the minimum bet of the game.
+		 */
 		JOIN_SESSION_TOO_POOR( 412, "Cannot join the session as bank account is too low." ),
-		USER_NOT_IN_GAME_ERROR( 413, "That comman can't be used if not in a game session." ),
+		/**
+		 * Unsuccessful response to a LEAVESESSION command if the user is not
+		 * in a game session. It involves no state transition.
+		 */
+		USER_NOT_IN_GAME_ERROR( 413, "That command can't be used if not in a game session." ),
+		/**
+		 * Unsuccessful response to a BET command if the protocol state is not
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AWAITING_BETS}.
+		 * It involves no state transition.
+		 */
 		INVALID_BET_NOT_EXPECTED( 420, "The server was not expecting a BET command now. Be patient." ),
+		/**
+		 * Unsuccessful response to a BET command if the bet is below
+		 * the minimum value or above the maximum value. It involves no
+		 * state transition.
+		 */
 		INVALID_BET_OUTSIDE_RANGE( 421, "That bet amount is either below the minimum or above the maximum allowed." ),
+		/**
+		 * Unsuccessful response to a BET command if the user's account
+		 * is not large enough to cover th bet. It involves no
+		 * state transition.
+		 */
 		INVALID_BET_TOO_POOR( 422, "That bet amount is more than the user's account balance." ),
+		/**
+		 * Unsuccessful response to a HIT command when the user goes
+		 * over 21 points. It signals a state transition from the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AND_YOUR_TURN}
+		 * state to the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AFTER_YOUR_TURN}
+		 * state.
+		 */
 		USER_BUSTED( 423, null ),
+		/**
+		 * Unsuccessful response to a HIT command if the protocol state is not
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AND_YOUR_TURN} state.
+		 * It involves no state transition.
+		 */
 		NOT_EXPECTING_HIT( 424, "The server was not expecting a HIT command now. Be patient." ),
+		/**
+		 * Unsuccessful response to a STAND command if the protocol state is not
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AND_YOUR_TURN} state.
+		 * It involves no state transition.
+		 */
 		NOT_EXPECTING_STAND( 425, "The server was not expecting a STAND command now. Be patient." ),
+		/**
+		 * Unsuccessful response to a JOINSESSION command if the protocol state is not
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#NOT_IN_SESSION} state.
+		 * It involves no state transition.
+		 */
 		ALREADY_IN_SESSION( 426, "Cannot JOINSESSION when already in a session." ),
+		/**
+		 * Unsuccessful response to a GAMESTATUS command if the protocol state is not
+		 * in one of the IN_SESSION* states. It involves no state transition.
+		 */
 		NOT_EXPECTING_GAMESTATUS( 427, "The server was not expecting a GAMESTATUS command now. Are you even in a session?" ),
+		/**
+		 * Unsuccessful response to a GAMESTATUS command if the game session
+		 * identified does not exist. It involves no state transition.
+		 */
 		GAMESTATUS_DOES_NOT_EXIST( 428, "Tried to request status of a non-existent game session." ),
 
+		/**
+		 * Unsuccessful response to any command if the server does not
+		 * recognize it as a required or optional command in the protocol.
+		 * It involves no state transition.
+		 */
 		UNKNOWN_COMMAND( 500, "That command is unknown to the server." ),
+		/**
+		 * Unsuccessful response to any optional command that is not
+		 * implemented by the server. It involves no state transition.
+		 */
 		UNSUPPORTED_COMMAND( 501, "That command is not supported on this server." ),
+		/**
+		 * Unsuccessful response to any command that required parameters to
+		 * be specified, and did not, or had invalid parameters specified.
+		 * In involves no state transition.
+		 */
 		SYNTAX_ERROR( 502, "That command had a syntax error." ),	
 		
+		/**
+		 * Informative message alerting the client that another user
+		 * has joined the game session they have joined.
+		 * In involves no state transition.
+		 */
 		PLAYER_JOINED( 620, null ),
+		/**
+		 * Informative message alerting the client that another user
+		 * has left the game session they have joined.
+		 * In involves no state transition.
+		 */
 		PLAYER_LEFT( 621, null ),
+		/**
+		 * Informative message alerting the client that another user
+		 * has made a bet in the game session they have joined.
+		 * In involves no state transition.
+		 */
 		PLAYER_BET( 622, null ),
+		/**
+		 * Informative message alerting the client that another user
+		 * or the dealer has performed some action in the game session 
+		 * they have joined.
+		 * In involves no state transition.
+		 */
 		PLAYER_ACTION( 623, null ),
+		/**
+		 * Informative message alerting the client that new cards
+		 * have been dealt in the current game session.
+		 * In involves no state transition.
+		 */
 		CARD_DEALT(624, null ),
+		/**
+		 * Informative message alerting the client that, while no
+		 * new cards have been dealt, the hand has been updatd in
+		 * that previously facedown cards are now visible.
+		 * In involves no state transition.
+		 */
 		UPDATED_HAND( 625, null),
+		/**
+		 * Informative message alerting the client as to the outcome
+		 * of the game session they have joined.
+		 * In involves no state transition.
+		 */
 		GAME_OUTCOME( 626, null ),
+		/**
+		 * Informative message that is a response to the GAMESTATUS
+		 * command, while the protocol is in one of the IN_SESSION*
+		 * states. In involves no state transition.
+		 */
 		GAME_STATUS( 627, null ),
 		
+		/**
+		 * Alert to the client that the server is expecting a BET
+		 * command. It involves a transition from the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AS_OBSERVER}
+		 * to the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AWAITING_BETS}
+		 * state.
+		 */
 		REQUEST_FOR_BET( 720, "What amount do you wish to bet?" ),
+		/**
+		 * Alert to the client that the server is expecting either a HIT or STAND
+		 * command. It involves a transition from the 
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_BEFORE_YOUR_TURN}
+		 * to the
+		 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AND_YOUR_TURN}
+		 * state.
+		 */
 		REQUEST_FOR_GAME_ACTION( 721, "What game action would you like to take?" );
 
 		// 3-digit response code
@@ -341,6 +638,7 @@ public class ResponseCode {
 	 ************************************************************************************/
 
 	/**
+	 * Get the numeric code of this response code
 	 * @return the code
 	 */
 	public Integer getCode() {
@@ -348,6 +646,7 @@ public class ResponseCode {
 	}
 
 	/**
+	 * Set the numeric code of this response code
 	 * @param code the code to set
 	 */
 	public void setCode(Integer code) {
@@ -355,6 +654,7 @@ public class ResponseCode {
 	}
 
 	/**
+	 * Get the text of this response messages
 	 * @return the text
 	 */
 	public String getText() {
@@ -362,6 +662,7 @@ public class ResponseCode {
 	}
 
 	/**
+	 * Set the text of this response messages
 	 * @param text the text to set
 	 */
 	public void setText(String text) {
@@ -672,6 +973,8 @@ public class ResponseCode {
 	 * Get number of lines in the message. Unless this is
 	 * a multiline message, it should be 1. If it's a multiline
 	 * message, it should be > 1
+	 * 
+	 * @return Number of lines in the message
 	 */
 	public int getNumberOfLines() {
 		

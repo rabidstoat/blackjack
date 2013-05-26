@@ -33,11 +33,25 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 /**
- * Our protocol class is where we keep track of the user
- * that is attached to this connection, along with the
- * protocol state. The user is initially null until they
- * authenticate. Local variables connected to state are
- * also stored here.
+ * <b>STATEFUL:</b> Our protocol class is where we keep 
+ * track of the protocol state, along with any stateful
+ * variables. These variables include, for example, which 
+ * user is authenticated in a particular instantiation of
+ * the protocol. The user is initially null until they
+ * authenticate. There are other local variables too, such
+ * as the amount bet, or the number of incorrect login
+ * attempts made.
+ * 
+ * All state information is kept associated with the
+ * protocol object. When a command is called on the
+ * protocol option, the command itself is stateless.
+ * It just queries the protocol object it's passed for
+ * the state. In this way, one instantiation of the
+ * command option can handle an arbitrary number of
+ * different protocols' commands.
+ * 
+ * Pretty much everything in this class has to do with
+ * our requirement for being stateful.
  */
 public class BlackjackProtocol {
 
@@ -69,53 +83,76 @@ public class BlackjackProtocol {
 	 * The enumeration of protocol states
 	 ************************************************************/
 	public enum STATE {
-		// The client connected but hasn't supplied a username yet
+		
+		/**
+		 * The client connected but hasn't supplied a username yet
+		 */
 		WAITING_FOR_USERNAME,
 		
-		// The client connected and has given a username, but needs to give a password
-		// username variable holds the username
+		/**
+		 * The client connected and has given a username, but needs to give a password
+		 * username variable holds the username
+		 */
 		WAITING_FOR_PASSWORD,
 		
-		// The client has authenticated but is not in a session
-		// In this and all states below, the user variable should be set
+		/**
+		 * The client has authenticated but is not in a session
+		 * In this and all states below, the user variable should be set
+		 */
 		NOT_IN_SESSION,	
 		
-		// The user has joined a session, but there's a game in progress and they
-		// aren't playing, they have to wait until the next round of betting
+		/**
+		 * The user has joined a session, but there's a game in progress and they
+		 * aren't playing, they have to wait until the next round of betting
+		 */
 		IN_SESSION_AS_OBSERVER,
 		
-		// The server has requested that the client give its bet
+		/**
+		 * The server has requested that the client give its bet
+		 */
 		IN_SESSION_AWAITING_BETS,
 		
-		// Bets have been made and cards are being dealt and other
-		// players may be taking their turn. The server is not waiting 
-		// for any client input. The bet variable should be set to the 
-		// value of the bet
+		/**
+		 * Bets have been made and cards are being dealt and other
+		 * players may be taking their turn. The server is not waiting 
+		 * for any client input. The bet variable should be set to the 
+		 * value of the bet
+		 */
 		IN_SESSION_BEFORE_YOUR_TURN,
 		
-		// This is after the cards are dealt, and the dealer doesn't have
-		// a blackjack. Now waiting for client input as to whether
-		// they HIT or STAND. The bet variable should be set to the value of the bet.
+		/**
+		 * This is after the cards are dealt, and the dealer doesn't have
+		 * a blackjack. Now waiting for client input as to whether
+		 * they HIT or STAND. The bet variable should be set to the value of the bet.
+		 */
 		IN_SESSION_AND_YOUR_TURN,
 		
-		// In this case, the dealer has a blackjack. Too bad for the
-		// client! The thread has to do some bookkeeping and is not
-		// expecting client input. The bet value should be set to 
-		// what the client bet.
+		/**
+		 * In this case, the dealer has a blackjack. Too bad for the
+		 * client! The thread has to do some bookkeeping and is not
+		 * expecting client input. The bet value should be set to 
+		 * what the client bet.
+		 */
 		IN_SESSION_DEALER_BLACKJACK,
 		
-		// The dealer didn't have blackjack, and the client already 
-		// played out their hand. It's just waiting for others to 
-		// finish playing now. The bet value should be set to what
-		// the client bet.
+		/**
+		 * The dealer didn't have blackjack, and the client already 
+		 * played out their hand. It's just waiting for others to 
+		 * finish playing now. The bet value should be set to what
+		 * the client bet.
+		 */
 		IN_SESSION_AFTER_YOUR_TURN,
 		
-		// Now everyone is done playing and the server is processing
-		// the results. The bet value should be set to what the client bet.
+		/**
+		 * Now everyone is done playing and the server is processing
+		 * the results. The bet value should be set to what the client bet.
+		 */
 		IN_SESSION_SERVER_PROCESSING,
 				
-		// This is, like it says, the state of being disconnected. Not much
-		// exciting happens in this state.
+		/**
+		 * This is, like it says, the state of being disconnected. Not much
+		 * exciting happens in this state.
+		 */
 		DISCONNECTED
 
 	}
@@ -141,6 +178,9 @@ public class BlackjackProtocol {
 	private Integer bet = null;
 	
 	// Pointer to the server thread, for sending stuff
+	// CONCURRENT: Since there are multiple protocol instantiations
+	// they will correspond to multiple server threads, which handle
+	// the socket traffic
 	private BlackjackServerThread thread = null;
 	
 	
@@ -163,6 +203,9 @@ public class BlackjackProtocol {
 	 * that it knows how to handle, if that hasn't been done
 	 * already. Since everyone can share that list, it's done
 	 * as static variables.
+	 * 
+	 * @param thread The thread that handles the connection
+	 * for this protocol state
 	 */
 	public BlackjackProtocol( BlackjackServerThread thread ) {
 		
@@ -211,6 +254,14 @@ public class BlackjackProtocol {
 	 * Private methods go here
 	 ************************************************************/
 
+	/**
+	 * Instead of being hard-coded, the list of commands is in a 
+	 * config file. The file contains full-path class names. So
+	 * this method reads the file, and uses reflection to
+	 * instantiate those classes.
+	 * 
+	 * @return True if successfully initialized, else false
+	 */
 	private boolean initializeCommands() {
 		
 		// The file of commands should be on the classpath
@@ -308,7 +359,16 @@ public class BlackjackProtocol {
 	 ************************************************************/
 
 	/**
-	 * This is how we handle messages.
+	 * This is how we handle messages. This method is called whenever
+	 * a single-line command is received at the server. This
+	 * method is responsible for deserializing the command information
+	 * into a {@link CommandMetadata} object. It then uses a map
+	 * that matches command words, to the Command class that 
+	 * implements handling the command. Assuming it finds one,
+	 * it hands off the command metadata, and this protocol
+	 * state, to the object to process. Otherwise, it uses a
+	 * special UnknownCommand class to handle what to do when
+	 * a command that isn't recognized is received.
 	 * 
 	 * @param inputLine The message as received from the client
 	 * @return The message that should be sent back to the client
@@ -349,13 +409,20 @@ public class BlackjackProtocol {
 	}
 
 	/**
-	 * @return the commands
+	 * Get a map of command words, to the Command classes that
+	 * implement responding to them.
+	 * 
+	 * @return A map of command words to their implementing
+	 * command class
 	 */
 	public static Map<String, BlackjackCommand> getCommands() {
 		return commands;
 	}
 
 	/**
+	 * Set a map of command words, to the Command classes that
+	 * implement responding to them.
+	 * 
 	 * @param commands the commands to set
 	 */
 	public static void setCommands(Map<String, BlackjackCommand> commands) {
@@ -363,14 +430,23 @@ public class BlackjackProtocol {
 	}
 
 	/**
-	 * @return the user
+	 * Get the user, which is a stateful variable associated with
+	 * an instantiated protocol session. This refers to a user who
+	 * has successfully authenticated themselves. 
+	 * 
+	 * @return The authenticated user, or null if there is no
+	 * properly authenticated user
 	 */
 	public User getUser() {
 		return user;
 	}
 
 	/**
-	 * @param user the user to set
+	 * Set the user, which is a stateful variable associated with
+	 * an instantiated protocol session. This refers to a user who
+	 * has successfully authenticated themselves. 
+	 * @param user The authenticated user, or null if there is no
+	 * properly authenticated user
 	 */
 	public void setUser(User user) {
 		// Don't just set them here, insert a reference to their server thread
@@ -379,6 +455,7 @@ public class BlackjackProtocol {
 	}
 
 	/**
+	 * Get the state of the protocol
 	 * @return the state
 	 */
 	public STATE getState() {
@@ -386,6 +463,7 @@ public class BlackjackProtocol {
 	}
 
 	/**
+	 * Set the state of the protocol
 	 * @param state the state to set
 	 */
 	public void setState(STATE state) {
@@ -393,6 +471,13 @@ public class BlackjackProtocol {
 	}
 
 	/**
+	 * Get the username that is associated with this protocol
+	 * state. It is stored on the protocol after the USERNAME
+	 * command has specified a username, but before the PASSWORD
+	 * command has specified the password so that the authentication
+	 * can be attempted. It should be set in the {@link STATE#WAITING_FOR_PASSWORD}
+	 * state.
+	 * 
 	 * @return the username
 	 */
 	public String getUsername() {
@@ -400,13 +485,31 @@ public class BlackjackProtocol {
 	}
 
 	/**
-	 * @param username the username to set
+	 * Set the username that is associated with this protocol
+	 * state. It is stored on the protocol after the USERNAME
+	 * command has specified a username, but before the PASSWORD
+	 * command has specified the password so that the authentication
+	 * can be attempted.
+	 * 
+	 * @return the username
 	 */
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
 	/**
+	 * Set the bet that is associated with this protocol
+	 * state. It is stored on the protocol after the BET
+	 * command has specified a value, so that if the
+	 * user wins they can have the appropriate amount
+	 * credited to their account. It should be set
+	 * in the {@link STATE#IN_SESSION_BEFORE_YOUR_TURN},
+	 * {@link STATE#IN_SESSION_AFTER_YOUR_TURN},
+	 * {@link STATE#IN_SESSION_AND_YOUR_TURN},
+	 * {@link STATE#IN_SESSION_DEALER_BLACKJACK},
+	 * and {@link STATE#IN_SESSION_SERVER_PROCESSING}
+	 * states.
+	 * 
 	 * @return the bet
 	 */
 	public Integer getBet() {
@@ -414,6 +517,12 @@ public class BlackjackProtocol {
 	}
 
 	/**
+	 * Get the bet that is associated with this protocol
+	 * state. It is stored on the protocol after the BET
+	 * command has specified a value, so that if the
+	 * user wins they can have the appropriate amount
+	 * credited to their account.
+	 * 
 	 * @param bet the bet to set
 	 */
 	public void setBet(Integer bet) {
@@ -421,22 +530,43 @@ public class BlackjackProtocol {
 	}
 
 	/**
-	 * @return the lastCommand
+	 * Get the timestamp (expressed in system time as
+	 * number of milliseconds since 1970) of when the 
+	 * last command was received through this protocol.
+	 * It is used so that the idle disconnect daemon
+	 * can detect connections that have been idle for
+	 * too long.
+	 * 
+	 * @return the lastCommand Number of milliseconds since
+	 * 1970 since the last command (successful or not)
+	 * was received
 	 */
 	public Long getLastCommand() {
 		return lastCommand;
 	}
 
 	/**
-	 * @param lastCommand the lastCommand to set
+	 * Set the timestamp (expressed in system time as
+	 * number of milliseconds since 1970) of when the 
+	 * last command was received through this protocol.
+	 * It is used so that the idle disconnect daemon
+	 * can detect connections that have been idle for
+	 * too long.
+	 * 
+	 * @param lastCommand the lastCommand Number of milliseconds since
+	 * 1970 since the last command (successful or not)
+	 * was received
 	 */
 	public void setLastCommand(Long lastCommand) {
 		this.lastCommand = lastCommand;
 	}
 
 	/**
-	 * A count is kept of incorrect login attempts. If it exceeds
-	 * the MAX_INVALID_LOGINS, the session is ended
+	 * A count is kept of incorrect login attempts, as
+	 * a state variable. If it exceeds the MAX_INVALID_LOGINS, 
+	 * the session is ended. This state variable is used
+	 * to responding to incorrect PASSWORD messages, in the
+	 * {@link STATE#WAITING_FOR_PASSWORD} state.
 	 */
 	public void incrementIncorrectLogins() {
 		incorrectLogins++;
