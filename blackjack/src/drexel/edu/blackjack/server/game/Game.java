@@ -63,7 +63,7 @@ public class Game {
 	public Game(GameMetadata metadata) {
 		this.metadata = metadata;
 		if( metadata != null && metadata.getId() != null ) {
-			state = new GameState( metadata.getId() );
+			state = new GameState( metadata.getId(), metadata.getNumDecks() );
 		}
 	}
 	

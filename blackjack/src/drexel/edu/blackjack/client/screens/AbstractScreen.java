@@ -16,6 +16,7 @@ import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
 import drexel.edu.blackjack.client.screens.util.ClientSideGame;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.server.game.Game;
+import drexel.edu.blackjack.server.game.GameState;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
@@ -241,6 +242,8 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 					displayPlayerMovement( code );
 				} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_BET ) ) {
 					displayPlayerBet( code );
+				} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_ACTION ) ) {
+					displayPlayerAction( code );
 				} else {
 					// TODO: Handle game state codes
 					LOGGER.info( "Received unhandled game state code of '" + code.toString() + "'." );
@@ -260,6 +263,55 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 			}
 		}
 	}
+
+	/**
+	 * This handles codes about players (or the dealer) peforming
+	 * actions. The first variable is the game ID. The second 
+	 * variable is the username. The third variable is the action.
+	 * 
+	 * @param code Hopefully of type ResponseCode.CODE.PLAYER_ACTION
+	 */
+	private void displayPlayerAction(ResponseCode code) {
+		
+		if( code != null  ) {
+
+			// Our parameters
+			List<String> params = code.getParameters();
+
+			// All player update messages start the same
+			StringBuilder str = createStringBuilderForUserUpdate(params);
+			str.append( " " );
+			
+			// What was the action? It's in parameter two
+			String action = null;
+			if( params != null && params.size() >= 3 ) {
+				action = params.get(2);
+			}
+			
+			// Decide what to state based on the action
+			if( action == null ) {
+				str.append( "performed an unknown action" );
+			} else if( action.equalsIgnoreCase( GameState.SHUFFLED_KEYWORD ) ) {
+				str.append( "shuffled all the cards in the shoe" );
+			} else if( action.equalsIgnoreCase( GameState.BUST_KEYWORD ) ) {
+				str.append( "just went bust!" );
+			} else if( action.equalsIgnoreCase( GameState.HIT_KEYWORD ) ) {
+				str.append( "decided to take another card" );
+			} else if( action.equalsIgnoreCase( GameState.STAND_KEYWORD ) ) {
+				str.append( "decided to stand" );
+			} else if( action.equalsIgnoreCase( GameState.BLACKJACK_KEYWORD ) ) {
+				str.append( "has a blackjack!" );
+			} else {
+				str.append( "performed an unknown action" );
+			}
+
+			str.append( "." );
+			
+			// Display to the string
+			updateStatus( str.toString() );
+		}
+	}
+
 
 	/**
 	 * This handles codes about players entering or leaving the
@@ -331,20 +383,30 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 
 	/**
 	 * Creates a string builder to be used for displaying messages about a
-	 * particular user, by starting it off with a line like: "The player <username>"
+	 * particular user, by starting it off with a line like: "The player <username>",
+	 * unless the username is the special DEALER_USERNAME, in which case it starts
+	 * off with "The dealer".
 	 * 
 	 * @param The parameters. The second parameter should have the username. This
-	 * correspons to the format of player update messages from the server
+	 * corresponds to the format of player update messages from the server
 	 * @return The stringbuilder, initialized to this leadin phrase
 	 */
 	private StringBuilder createStringBuilderForUserUpdate(List<String> params) {
 		// Start with their username
 		StringBuilder str = new StringBuilder( "The player " );
 		if( params == null || params.size() < 2 ) {
-			str.append( "(unknown)" );
+			str.append( GameState.UNKNOWN_USERNAME );
 		} else {
 			String username = params.get(1);
-			str.append( username == null ? "(unknown)" : username );
+			
+			if( username == null ) {
+				str.append( GameState.UNKNOWN_USERNAME );
+			} else if( username.equals( GameState.DEALER_USERNAME ) ) {
+				// Have to replace the whole thing
+				str = new StringBuilder( "The dealer" );
+			} else {
+				str.append( username );
+			}
 		}
 		return str;
 	}

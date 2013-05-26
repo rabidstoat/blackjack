@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
+import drexel.edu.blackjack.cards.DealerShoeInterface;
+import drexel.edu.blackjack.cards.SimpleDealerShoe;
 import drexel.edu.blackjack.db.user.UserMetadata;
 import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.ResponseCode;
@@ -36,15 +38,31 @@ public class GameState {
 	public static final String STARTED_KEYWORD		= "STARTED";
 	public static final String NOT_STARTED_KEYWORD	= "NOT_STARTED";
 	
+	// And for some 'special' users
+	public static final String DEALER_USERNAME		= "dealer";
+	public static final String UNKNOWN_USERNAME		= "(unknown)";
+	
+	// Some words for actions in the game
+	public static final String SHUFFLED_KEYWORD		= "SHUFFLED";
+	public static final String STAND_KEYWORD		= "STAND";
+	public static final String HIT_KEYWORD			= "HIT";
+	public static final String BUST_KEYWORD			= "BUST";
+	public static final String BLACKJACK_KEYWORD	= "BLACKJACK";
+	
+	
 	// An ordered list of players involved in the game. Gameplay will
 	// occur in this order, amongst the ACTIVE users. 
-	private List<User> players 		= null;
+	private List<User> players 			= null;
 	
 	// The current player in terms of play
-	private User currentPlayer		= null;
+	private User currentPlayer			= null;
 	
 	// Every game has an identifier
-	private String gameId			= null;
+	private String gameId				= null;
+	
+	// Needs to be a dealer shoe, with cards, and track the number of decks used
+	private int numberOfDecks			= 1;
+	private DealerShoeInterface	shoe	= null;
 
 	
 	/*********************************************************************
@@ -58,8 +76,9 @@ public class GameState {
 	 * @param gameId A game's unique identifier to be used in
 	 * constructed messages
 	 */
-	public GameState( String gameId ) {
+	public GameState( String gameId, int numberOfDecks ) {
 		this.gameId = gameId;
+		this.numberOfDecks = numberOfDecks;
 		players = Collections.synchronizedList(new ArrayList<User>());
 	}
 
@@ -68,6 +87,34 @@ public class GameState {
 	 * Notification methods. These are used to alert others in the game
 	 * of some sort of player action.
 	 ********************************************************************/
+
+	
+	/**
+	 * Need to send out messages to all players and notify them about
+	 * the dealer shoe being shuffled.
+	 * 
+	 * This is a ResponseCode.CODE.PLAYER_ACTION code, specifying that
+	 * the performer of the action is the dealer and the action itself
+	 * is a SHUFFLE.
+	 *
+	 * @return True if notifications were sent successfully, false
+	 * if there were problems
+	 */
+	public boolean notifyAllOfShuffle() {
+		
+		boolean success = false;
+		
+		// Create the response code: gameid dealer_username SHUFFLED_KEYWORD
+		StringBuilder str = new StringBuilder( getStringForGameAndUser( null ) );
+		str.append( " " );
+		str.append( SHUFFLED_KEYWORD );
+		ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_ACTION, str.toString() );
+
+		// Then send it to all the players except the one who generated
+		success = notifyOtherPlayers( code, null );		
+
+		return success;
+	}
 
 	
 	/**
@@ -152,8 +199,9 @@ public class GameState {
 	 * the one passed in (who might be null)
 	 * 
 	 * @param code What to send
-	 * @param player Who not to send it to
-	 * @return True if successfully sent, false othrewise
+	 * @param player Who not to send it to. Set to null if it should
+	 * go to everyone
+	 * @return True if successfully sent, false otherwise
 	 */
 	private boolean notifyOtherPlayers(ResponseCode code, User player) {
 		
@@ -188,7 +236,8 @@ public class GameState {
 	 * the gameid and username up front. So make a convenient method
 	 * that computes this
 	 * 
-	 * @param player The 'user' part of the 'GameAndUser'
+	 * @param player The 'user' part of the 'GameAndUser', or NULL if
+	 * the user is the dealer
 	 * @return The string of the gameid and username, unless something
 	 * went wrong and then null
 	 */
@@ -197,13 +246,16 @@ public class GameState {
 		StringBuilder str = new StringBuilder( gameId );
 		str.append( " " );
 		UserMetadata metadata = (player == null ? null : player.getUserMetadata());
-		if( metadata == null || metadata.getUsername() == null ) {
-			str.append( "(unknown)" );
+		if( player == null ) {
+			str.append( DEALER_USERNAME );
+		} else if( metadata == null || metadata.getUsername() == null ) {
+			str.append( UNKNOWN_USERNAME );
 		} else {
 			str.append( metadata.getUsername() );
 		}
 		return str.toString();
 	}
+	
 	
 	/*********************************************************************
 	 * These deal with managing the players in the game session
@@ -333,6 +385,48 @@ public class GameState {
 	}
 	
 
+	
+	/*********************************************************************
+	 * These have to do with the game shoe, and dealing cards, and all
+	 * of that.
+	 ********************************************************************/
+
+	/**
+	 * Checks to see if the cards need to be shuffled. Rules for
+	 * this include: if you just started, of course you need to
+	 * shuffle. Otherwise you shuffle if less than 50% of the cards
+	 * are remaining.
+	 * 
+	 * @return True if a shuffle is needed as per these rules, false
+	 * otherwise
+	 */
+	public boolean needToShuffle() {
+		
+		boolean needToReshuffle = true;
+		
+		if( shoe != null ) {
+			if( shoe.getPercentageOfDealtCards() > 50.0 ) {
+				needToReshuffle = true;
+			}
+		}
+		
+		return needToReshuffle;
+	}
+	
+	/**
+	 * Perform the action of reshuffling. Notify players about
+	 * the cards being shuffled.
+	 */
+	public void shuffle() {
+		
+		// If the shoe is empty, we better create it
+		if( shoe == null ) {
+			shoe = new SimpleDealerShoe( numberOfDecks );
+		}
+		
+		shoe.shuffle();
+		notifyAllOfShuffle();
+	}
 	
 	/*********************************************************************
 	 * These deal with altering the game state in response to activity

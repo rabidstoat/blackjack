@@ -3,6 +3,7 @@ package drexel.edu.blackjack.server.game.driver;
 import java.util.logging.Logger;
 
 import drexel.edu.blackjack.server.game.Game;
+import drexel.edu.blackjack.server.game.GameState;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
@@ -23,7 +24,18 @@ public class ShuffleIfNeededAction extends GameAction {
 		
 		boolean success = false;
 		
-		// TODO: Implement?
+		if( game != null ) {
+			GameState state = game.getGameState();
+			if( state == null ) {
+				LOGGER.severe( "Trying to decide if we should shuffle, but there's no game state..." );
+			} else {
+				// We let the state handle it, mostly
+				if( state.needToShuffle() ) {
+					state.shuffle();
+				}
+				success = true;
+			}
+		}
 		
 		return success;
 	}
