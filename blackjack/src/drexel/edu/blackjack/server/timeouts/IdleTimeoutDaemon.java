@@ -28,12 +28,16 @@ import drexel.edu.blackjack.server.BlackjackServerThread;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
- * This class keeps track of all client connections. Every 5 seconds
+ * <b>STATEFUL:</b> This class keeps track of all client connections. Every 5 seconds
  * it steps through them, looks at their last activity time, and sees
- * if they've hit a timeout.
+ * if they've hit a timeout. The consideration of how long they are
+ * allowed to remain idle before a timeout occurs is dependent on
+ * the same of the protocol, as different protocol states have 
+ * different timeout duartions.
  * 
  * This is ONLY needed for states where timing out disconnects them.
- * If the timeout does something else, it should be handle elsewhere.
+ * If the timeout does something else, it should be handle elsewhere,
+ * in the relevant {@link drexel.edu.blackjack.server.game.driver.GameAction}.
  * 
  * @author Jennifer
  */
@@ -49,7 +53,7 @@ public class IdleTimeoutDaemon extends Thread {
 	// And how long we pause between checking for idle connections
 	private static final int SWEEP_DELAY			= 5 * SECOND_IN_MILLISECONDS;
 	
-	// Since we only have one timer per state, we'll store them
+	// STATEFUL: Since we only have one timer per state, we'll store them
 	// in a map for ease of lookup
 	private Map<BlackjackProtocol.STATE,TimeoutDefinition> timeoutMap;
 	
@@ -175,6 +179,8 @@ public class IdleTimeoutDaemon extends Thread {
 							
 							// If it's more than the timeout, we have to do something
 							if( delta > timeout.getTimeoutInMilliseconds() ) {
+								// STATEFUL: This will actually force a state change, to the
+								// disconnected state.
 								thread.forceDisconnectDueToTimeout();
 							}
 						}
@@ -204,17 +210,17 @@ public class IdleTimeoutDaemon extends Thread {
 		
 		timeoutMap = new HashMap<BlackjackProtocol.STATE,TimeoutDefinition>();
 		
-		// They get disconnected after 45 seconds of no activity when waiting for a username
+		// STATEFUL: They get disconnected after 45 seconds of no activity when waiting for a username
 		timeoutMap.put( BlackjackProtocol.STATE.WAITING_FOR_USERNAME, new TimeoutDefinition(
 				BlackjackProtocol.STATE.WAITING_FOR_USERNAME,
 				45 * SECOND_IN_MILLISECONDS) );
 		
-		// Same is true when waiting for a password
+		// STATEFUL: Same is true when waiting for a password
 		timeoutMap.put( BlackjackProtocol.STATE.WAITING_FOR_PASSWORD, new TimeoutDefinition(
 				BlackjackProtocol.STATE.WAITING_FOR_PASSWORD,
 				45 * SECOND_IN_MILLISECONDS) );
 
-		// When authenticated but not in a game, they get 900 seconds
+		// STATEFUL: When authenticated but not in a game, they get 900 seconds
 		timeoutMap.put( BlackjackProtocol.STATE.NOT_IN_SESSION, new TimeoutDefinition(
 				BlackjackProtocol.STATE.NOT_IN_SESSION,
 				900 * SECOND_IN_MILLISECONDS) );

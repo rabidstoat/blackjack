@@ -17,13 +17,18 @@ import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 import drexel.edu.blackjack.server.ResponseCode;
 
 /**
- * This class is a POJO that holds information about timeouts.
+ * <b>STATEFUL:</b> This class is a POJO that holds information 
+ * about idle timeouts, which are a way to keep the client
+ * from tying up a socket connection indefinitely if they
+ * aren't sending any information throught it. The only things 
+ * that's needed to know is what state the timeout applies to, 
+ * and what the timeout duration.
  * 
  * @author Jennifer
  */
 public class TimeoutDefinition {
 	
-	// The state in which the timeout applies. Defaults to
+	// STATEFUL: The state in which the timeout applies. Defaults to
 	// null, but it's required that this be set.
 	private BlackjackProtocol.STATE	applicableState = null;
 	
