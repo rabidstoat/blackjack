@@ -83,7 +83,7 @@ public class UserMetadata implements Serializable {
 		return username;
 	}
 	/**
-	 * @param userame the username to set
+	 * @param username the username to set
 	 */
 	protected void setUsername(String username) {
 		this.username = username;

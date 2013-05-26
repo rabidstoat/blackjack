@@ -61,7 +61,7 @@ public class ActiveGameCoordinator {
 	/**
 	 * Following the game singleton pattern, we only have one of
 	 * these ever instantiated.
-	 * @return
+	 * @return A singleton instance of the controller
 	 */
 	public static ActiveGameCoordinator getDefaultActiveGameCoordinator() {
 		if( coordinator == null ) {

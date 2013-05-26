@@ -85,7 +85,7 @@ public interface UserManagerInterface {
 	 * 
 	 * @param username Corresponds to username on the UserMetadata
 	 * object
-	 * @param passord Corresponds to password on the UserMetadata
+	 * @param password Corresponds to password on the UserMetadata
 	 * object
 	 * @return If some UserMetadata object exists with an equivalent
 	 * username and password string, then return the object (not

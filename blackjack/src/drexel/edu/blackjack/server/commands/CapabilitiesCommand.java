@@ -107,7 +107,7 @@ public class CapabilitiesCommand extends BlackjackCommand {
 	 * The CAPABILITIES command makes use of this for sending the 
 	 * capabilities list.
 	 * 
-	 * @return
+	 * @return A null list as there are no parameters needed
 	 */
 	@Override
 	public ArrayList<String> getRequiredParameterNames() {

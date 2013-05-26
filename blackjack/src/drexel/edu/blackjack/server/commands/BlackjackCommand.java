@@ -98,7 +98,10 @@ public abstract class BlackjackCommand {
 	 * parameter. The CAPABILITIES command makes use of this
 	 * for sending the capabilities list
 	 * 
-	 * @return
+	 * @return An ordered list of names for the parameters that
+	 * are required for this command, in human-readable terms.
+	 * If there are no parameters, both a null and an empty
+	 * list are okay to return.
 	 */
 	public abstract List<String> getRequiredParameterNames();
 

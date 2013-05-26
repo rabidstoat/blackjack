@@ -85,7 +85,7 @@ public class LeaveSessionCommand extends BlackjackCommand {
 	 * to return an error message that's appropriate.
 	 * 
 	 * @param protocol
-	 * @return
+	 * @return The response code to return for the invalid state passed in
 	 */
 	private String getResponseStingForInvalidState(BlackjackProtocol.STATE state) {
 		

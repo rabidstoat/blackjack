@@ -43,38 +43,38 @@ public interface DealerShoeInterface {
    * multiple times. Though, if there are four decks, then up
    * to four Ace of Hearts can be returned, but not a fifth.
    * 
-   * @return
+   * @return The topmost card that is 'dealt'
    */
 	Card dealTopCard();
 	
 	/**
 	 * If there's no more cards that can be dealt with dealTopCard().
-	 * @return
+	 * @return True if no more cards, false otherwise
 	 */
 	boolean isEmpty();
 	
 	/**
 	 * This is just a getter/setter method.
-	 * @return
+	 * @return number of decks
 	 */
 	int getNumberDecks();
 	
 	/**
 	 * Figure out how many cards have been dealt with
 	 * the dealTopCard() method since the last shuffle().
-	 * @return
+	 * @return number of dealt cards
 	 */
 	int getNumberOfDealtCards();
 	
 	/**
 	 * This is just math, dealt versus undealt cards.
-	 * @return
+	 * @return percentage of dealt cards
 	 */
 	float getPercentageOfDealtCards();
 	
 	/**
 	 * This would just be the number of cards * 52.
-	 * @return
+	 * @return total number of cards (dealt and undealt combined)
 	 */
 	int getTotalNumberOfCards();
 

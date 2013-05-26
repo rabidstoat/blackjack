@@ -240,7 +240,7 @@ public class Game {
 	 * about the session it's in -- what players, what are their bets,
 	 * what are their cards.
 	 * 
-	 * @param The user on whose behalf to get the status. This is needed
+	 * @param user The user on whose behalf to get the status. This is needed
 	 * because the way the hands are shown differ depending on if it's
 	 * the user's hand, or someone else's, where facedown cards are not
 	 * shown.

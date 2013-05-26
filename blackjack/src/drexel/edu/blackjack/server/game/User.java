@@ -121,7 +121,7 @@ public class User {
 	 * If the user is connected (and they should be), keep a pointer
 	 * to their server thread around, so messages can get sent
 	 * 
-	 * @param blackjackProtocol
+	 * @param thread The server thread to set
 	 */
 	public void setBlackjackServerThread(BlackjackServerThread thread) {
 		this.thread = thread;

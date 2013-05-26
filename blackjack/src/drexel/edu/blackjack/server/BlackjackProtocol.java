@@ -194,7 +194,8 @@ public class BlackjackProtocol {
 	 * can process. The CAPABILITIES command in particular will
 	 * be interested in this.
 	 * 
-	 * @return
+	 * @return A set of all commands that are valid in at least
+	 * one state.
 	 */
 	public Set<BlackjackCommand> getAllValidCommands() {
 		

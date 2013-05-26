@@ -58,6 +58,9 @@ public class Hand {
 	}
 	
 	/**
+	 * Get all possible point values that the hand could
+	 * have. There are multiple ones as some cards (like
+	 * Ace) have multiple point values.
 	 * @return all possibly interpreted values of hand
 	 */
 	public List<Integer> getPossibleValues() {
@@ -101,7 +104,7 @@ public class Hand {
 	 * In the modern game, a blackjack refers to any hand of an ace
 	 *  plus a ten or face card, regardless of suits or colours
 	 *  http://www.casino.org/games/blackjack/history.php
-	 * @return
+	 * @return True if it's a blackjack, false otherwise
 	 */
 	public boolean getIsBlackJack() {
 		// a black jack if there are only two cards, and possible value is 21
@@ -177,10 +180,12 @@ public class Hand {
 	}
 	
 	/**
-	 * @param callingUser
-	 * @return
-	 * @see toStringIfNotThisPlayer()
-	 * @see toStringIfThisPlayer()
+	 * String representation of card
+	 * @param callingUser Who the representation is being 
+	 * constructed for
+	 * @return A string representation of cards in the hand
+	 * @see #toStringIfNotThisPlayer()
+	 * @see #toStringIfThisPlayer()
 	 */
 	public String toString(User callingUser) {
 		StringBuilder b = new StringBuilder();
@@ -203,10 +208,13 @@ public class Hand {
 
 	
 	/**
-	 * @param callingUser
-	 * @return
-	 * @see toStringIfNotThisPlayer()
-	 * @see toStringIfThisPlayer()
+	 * Construct a string representing the cards in this hand
+	 * @param isOwner True if this is being constructed for the
+	 * 'owner' of the hand, who can see facedown card values,
+	 * or false otherwise
+	 * @return String representation of the hand
+	 * @see #toStringIfNotThisPlayer()
+	 * @see #toStringIfThisPlayer()
 	 */
 	public String toString(boolean isOwner) {
 		StringBuilder b = new StringBuilder();

@@ -187,7 +187,8 @@ public class GameState {
 	 * Need to send out messages to the other players (if any) about
 	 * how a bet was placed
 	 * 
-	 * @param newPlayer Who just joined
+	 * @param player Who placed the bet
+	 * @param bet The amount bet
 	 */
 	public boolean notifyOthersOfBetPlaced( User player, int bet ) {
 		

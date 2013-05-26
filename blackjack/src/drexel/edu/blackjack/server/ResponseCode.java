@@ -611,7 +611,7 @@ public class ResponseCode {
 	 * This basically is like an equality on the code attribute,
 	 * ignoring whether or not the text is equal.
 	 * 
-	 * @param code The response code comparing to
+	 * @param compareToCode The response code comparing to
 	 * @return True if just the code part of the ResponseCode
 	 * is equal (ignoring any text differences), false otherwise
 	 */
@@ -694,7 +694,8 @@ public class ResponseCode {
 	 * Does this code indicate that a disconnect is needed? Certain
 	 * CODE value indicate that
 	 * 
-	 * @return
+	 * @return True if this code's presence requires a disconnect
+	 * of the client, falseotherwise
 	 */
 	public boolean requiresDisconnect() {
 		
