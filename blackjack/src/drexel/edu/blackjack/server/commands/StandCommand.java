@@ -18,6 +18,7 @@ import java.util.Set;
 
 import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
+import drexel.edu.blackjack.server.ResponseCode;
 
 public class StandCommand extends BlackjackCommand {
 
@@ -26,8 +27,16 @@ public class StandCommand extends BlackjackCommand {
 	private Set<STATE> validStates = null;
 
 	public String processCommand(BlackjackProtocol protocol, CommandMetadata cm) {
-		// We need to implement something here....
-		return super.processCommand(protocol, cm);
+		if (protocol == null || cm == null) { 
+			return new ResponseCode(ResponseCode.CODE.INTERNAL_ERROR).toString();
+		}
+		if (cm.getParameters() == null || cm.getParameters().size() != 0) {
+			return new ResponseCode(ResponseCode.CODE.SYNTAX_ERROR).toString();
+		}
+		if (protocol.getState() != STATE.IN_SESSION_AND_YOUR_TURN) {
+			return new ResponseCode(ResponseCode.CODE.NOT_EXPECTING_STAND).toString();
+		}
+		return new ResponseCode(ResponseCode.CODE.SUCCESSFULLY_STAND).toString();
 	}
 
 	@Override
