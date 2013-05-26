@@ -318,19 +318,19 @@ public class InSessionScreen extends AbstractScreen {
 				
 				if( str == null ) {
 					reset();
-				} else if( str.trim().equals(CAPABILITIES_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(CAPABILITIES_OPTION) ) {
 					sendCapabilitiesRequest();
-				} else if( str.trim().equals(TOGGLE_MONITOR_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(TOGGLE_MONITOR_OPTION) ) {
 					toggleMessageMonitorFrame();
-				} else if( str.trim().equals(MENU_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(MENU_OPTION) ) {
 					displayMenu();
-				} else if( str.trim().equals(INFO_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(INFO_OPTION) ) {
 					sendGameStatusRequest();
-				} else if( str.trim().equals(VERSION_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(VERSION_OPTION) ) {
 					sendVersionRequest();
-				} else if( str.trim().equals(ACCOUNT_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(ACCOUNT_OPTION) ) {
 					sendAccountRequest();
-				} else if( str.trim().equals(LEAVE_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(LEAVE_OPTION) ) {
 					sendLeaveGameRequest();
 				} else if( state == NEED_BET ) {
 					interpretUserBet( str );

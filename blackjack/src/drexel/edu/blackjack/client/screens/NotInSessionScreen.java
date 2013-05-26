@@ -211,19 +211,19 @@ public class NotInSessionScreen extends AbstractScreen {
 
 				if( str == null ) {
 					reset();
-				} else if( str.trim().equals(CAPABILITIES_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(CAPABILITIES_OPTION) ) {
 					sendCapabilitiesRequest();
-				} else if( str.trim().equals(JOIN_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(JOIN_OPTION) ) {
 					sendListGamesRequest();
-				} else if( str.trim().equals(MENU_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(MENU_OPTION) ) {
 					displayMenu();
-				} else if( str.trim().equals(QUIT_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(QUIT_OPTION) ) {
 					sendQuitRequest();
-				} else if( str.trim().equals(VERSION_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(VERSION_OPTION) ) {
 					sendVersionRequest();
-				} else if( str.trim().equals(ACCOUNT_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(ACCOUNT_OPTION) ) {
 					sendAccountRequest();
-				} else if( str.trim().equals(TOGGLE_MONITOR_OPTION) ) {
+				} else if( str.trim().equalsIgnoreCase(TOGGLE_MONITOR_OPTION) ) {
 					toggleMessageMonitorFrame();
 				} else {
 					System.out.println( "Unrecognized user input: " + str );
