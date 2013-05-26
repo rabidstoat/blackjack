@@ -30,7 +30,17 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * This class creates a nice object-oriented view of 
  * the game status. It takes a ResponseCode that represents
  * it, then parses it out, and is able to present information
- * in a nice manner to users of the class.
+ * in a nice manner to users of the class. Information
+ * exprssed include items like the active and observer
+ * players, their bets, their card hands, and the dealer
+ * hands. Only the players need to be specified. The rest
+ * of the data is optional, depending on the game state.
+ * That is, if bets haven't been placed, they obviously
+ * can't be shown.
+ * 
+ * <b>UI:</b> It's important to the UI because the UI uses 
+ * the {@link #toString()} method to display information 
+ * about the game status.
  * 
  * @author Jennifer
  */
@@ -222,8 +232,10 @@ public class ClientSideGameStatus {
 
 
 	/**
-	 * This returns a summary line about the game, that 
+	 * <b>UI:</b> This returns a summary line about the game, that 
 	 * says what state it is in and how many players there are.
+	 * The user interface uses this to get a string that is 
+	 * presented, unmodified, to end users.
 	 * 
 	 * @return A string representing a summary status, guaranteed
 	 * to be non-null
