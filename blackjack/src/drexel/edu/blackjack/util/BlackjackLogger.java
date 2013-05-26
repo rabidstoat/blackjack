@@ -16,7 +16,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Handles creating nicely formatted loggers.
+ * Handles creating nicely formatted loggers by applying some
+ * custom formats to them. Also uses an optional environment
+ * variable to decide what logging level to initialize the
+ * logger at.
  * 
  * @author Jennifer
  */

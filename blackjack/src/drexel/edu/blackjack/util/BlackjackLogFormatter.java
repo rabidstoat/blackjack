@@ -17,9 +17,18 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
+/**
+ * The Java logging package uses formatters for determining
+ * how to output a logging message. This override the default
+ * format to one more like log4j default output, which I'm
+ * used to looking at.
+ * 
+ * @author Jennifer *
+ */
 public class BlackjackLogFormatter extends Formatter {
 
-	// Technically we shouldn't do this static, it can lead to occasional subtle errors, but eh.
+	// Technically we shouldn't do this static, it can lead to occasional subtle 
+	// errors or so they say, but eh.
     private static final DateFormat df = new SimpleDateFormat("hh:mm:ss.S");
 
     @Override

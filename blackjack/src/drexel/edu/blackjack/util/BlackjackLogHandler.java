@@ -13,6 +13,12 @@ package drexel.edu.blackjack.util;
 
 import java.util.logging.ConsoleHandler;
 
+/**
+ * We need to override the standard console output
+ * handler with our new, custom formatter.
+ * 
+ * @author Jennifer
+ */
 public class BlackjackLogHandler extends ConsoleHandler {
 
 	public BlackjackLogHandler() {
