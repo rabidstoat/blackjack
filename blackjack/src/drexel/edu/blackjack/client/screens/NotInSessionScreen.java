@@ -121,7 +121,10 @@ public class NotInSessionScreen extends AbstractScreen {
 				System.out.println( "Successfully joined the game." );
 				state = MAIN_MENU;	// Reset the internal state just in case....
 				client.setCurrentGameById( requestedGameId );
-				showNextScreen();	// Move to the next screen
+				showNextScreen( false );	// Move to the next screen, but don't show the menu
+				
+				// And request some basic give info to show them
+				helper.sendGameStatusRequest( requestedGameId );
 			} else {
 				super.handleResponseCode( code );
 			}

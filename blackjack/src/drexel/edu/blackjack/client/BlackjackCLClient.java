@@ -157,7 +157,7 @@ public class BlackjackCLClient {
             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
             // Set the screen to the login input screen
-            setScreen( LoginInputScreen.getDefaultScreen( this, input, output ) );
+            setScreen( LoginInputScreen.getDefaultScreen( this, input, output ), true );
             
             // Set up the messages frame
             if( "true".equals(System.getProperty(SHOW_MESSAGES)) ) {
@@ -218,30 +218,6 @@ public class BlackjackCLClient {
 	}
 
 	/**
-	 * Establishes the default screen. It should set any previous
-	 * screen to active, set this new screen as active, and dispay
-	 * the menu.
-	 * 
-	 * @param screen
-	 */
-	private void setScreen(AbstractScreen screen) {
-		
-		// Set any previous screen inactive
-		if( this.currentScreen != null ) {
-			this.currentScreen.setIsActive( false );
-		}
-		
-		// Handle establishing this new screen
-		if( screen != null ) {
-			
-			screen.setIsActive( true );
-			screen.displayMenu();
-			currentScreen = screen;
-			
-		}
-	}
-
-	/**
 	 * This method is called when the client needs to be shut down,
 	 * for example, because the server has broken the connection.
 	 * Probably it should be printing a message and calling the
@@ -255,22 +231,51 @@ public class BlackjackCLClient {
 	}
 
 	/**
+	 * Establishes the default screen. It should set any previous
+	 * screen to active, set this new screen as active, and dispay
+	 * the menu.
+	 * 
+	 * @param screen The screen to advance (or retreat) to
+	 * @param displayMenu True if it should immediately show the menu
+	 */
+	private void setScreen(AbstractScreen screen, boolean displayMenu ) {
+		
+		// Set any previous screen inactive
+		if( this.currentScreen != null ) {
+			this.currentScreen.setIsActive( false );
+		}
+		
+		// Handle establishing this new screen
+		if( screen != null ) {
+			
+			screen.setIsActive( true );
+			if( displayMenu ) {
+				screen.displayMenu();
+			}
+			currentScreen = screen;
+			
+		}
+	}
+
+	/**
 	 * Do whatever needs to be done to show the next interface screen.
 	 * This typically involves looking at the current screen, then
 	 * finding an appropriate new screen, and setting it.
+	 * 
+	 * @param displayMenu True if it should immediately show the menu
 	 */
-	public void showNextScreen() {
+	public void showNextScreen( boolean displayMenu ) {
 		
 		if( currentScreen == null ) {
 			LOGGER.severe( "Could not showNextScreen() because no current screen was set." );
 		} else if( currentScreen.getScreenType() != null && 
 				currentScreen.getScreenType().equals(AbstractScreen.SCREEN_TYPE.LOGIN_SCREEN) ) {
 			// If we were showing the login screen, now need to show the NotInSessionScreen
-			this.setScreen( NotInSessionScreen.getDefaultScreen(this, input, output) );
+			this.setScreen( NotInSessionScreen.getDefaultScreen(this, input, output), displayMenu );
 		} else if( currentScreen.getScreenType() != null && 
 				currentScreen.getScreenType().equals(AbstractScreen.SCREEN_TYPE.NOT_IN_SESSION_SCREEN) ) {
 			// If we were showing the NotInSession screen, now need to show the InSessionScreen
-			this.setScreen( InSessionScreen.getDefaultScreen(this, input, output) );
+			this.setScreen( InSessionScreen.getDefaultScreen(this, input, output), displayMenu );
 		} else {
 			// This is a weird error
 			LOGGER.severe( "Had a request to move to the next UI screen, but there was no next one defined." );
@@ -281,14 +286,16 @@ public class BlackjackCLClient {
 	 * Do whatever needs to be done to show the previous interface screen.
 	 * Probably this only makes sense moving from 'in session' to 'not
 	 * in session' user interfaces.
+	 * 
+	 * @param displayMenu True if it should immediately show the menu
 	 */
-	public void showPreviousScreen() {
+	public void showPreviousScreen( boolean displayMenu ) {
 		
 		if( currentScreen == null ) {
 			LOGGER.severe( "Could not showPreviousScreen() because no current screen was set." );
 		} else if( currentScreen.getScreenType() != null && 
 				currentScreen.getScreenType().equals(AbstractScreen.SCREEN_TYPE.IN_SESSION_SCREEN) ) {
-			this.setScreen( NotInSessionScreen.getDefaultScreen(this, input, output) );
+			this.setScreen( NotInSessionScreen.getDefaultScreen(this, input, output), displayMenu );
 		} else {
 			// This is a weird error
 			LOGGER.severe( "Had a request to move to the next UI screen, but there was no next one defined." );

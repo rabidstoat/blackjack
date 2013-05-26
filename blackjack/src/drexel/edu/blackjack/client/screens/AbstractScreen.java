@@ -154,26 +154,30 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	/**
 	 * Request that the user interface show the 'next screen', which is
 	 * based on what the currentScreen is
+	 * 
+	 * @param displayMenu True if it should immediately show the menu
 	 */
-	public void showNextScreen() {
+	public void showNextScreen( boolean displayMenu ) {
 		
 		if( client == null ) {
 			LOGGER.severe( "Cannot show the next user interface screen as we don't seem to have a client set." );
 		} else {
-			client.showNextScreen();
+			client.showNextScreen( displayMenu );
 		}
 	}
 	
 	/**
 	 * Request that the user interface show the 'previous screen', which is
 	 * based on what the currentScreen is
+	 * 
+	 * @param displayMenu True if it should immediately show the menu
 	 */
-	public void showPreviousScreen() {
+	public void showPreviousScreen( boolean displayMenu ) {
 		
 		if( client == null ) {
 			LOGGER.severe( "Cannot show the previous user interface screen as we don't seem to have a client set." );
 		} else {
-			client.showPreviousScreen();
+			client.showPreviousScreen( displayMenu );
 		}
 	}
 

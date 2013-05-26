@@ -56,7 +56,7 @@ public class LoginInputScreen extends AbstractScreen {
 				// This needs to say that they successfully logged in, and move them to the next screen
 				System.out.println( "Successfully logged in. Welcome to the game." );
 				loginScreenState = ENTER_PASSWORD;	// Reset the internal state just in case....
-				showNextScreen();	// Move to the next screen
+				showNextScreen( true );	// Move to the next screen
 			} else if( code.hasSameCode(ResponseCode.CODE.LOGIN_ATTEMPTS_EXCEEDED ) ) {
 				System.out.println( "Exceeded the allowed number of login attempts." );
 				// They're about to get disconnected....
