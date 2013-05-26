@@ -101,24 +101,24 @@ public class NotInSessionScreen extends AbstractScreen {
 				state = JOIN_GAME;
 				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.NO_GAMES_HOSTED ) ) {
-				System.out.println( "Unfortunately, no games are hosted on this server" );
+				updateStatus( "Unfortunately, no games are hosted on this server" );
 				state = MAIN_MENU;
 				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.JOIN_SESSION_AT_MAX_PLAYERS ) ) {
-				System.out.println( "The game you selected already has the maximum number of players." );
+				updateStatus( "The game you selected already has the maximum number of players." );
 				state = MAIN_MENU;
 				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.JOIN_SESSION_DOES_NOT_EXIST ) ) {
-				System.out.println( "That game no longer is hosted by the server. Sorry about that." );
+				updateStatus( "That game no longer is hosted by the server. Sorry about that." );
 				state = MAIN_MENU;
 				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.JOIN_SESSION_TOO_POOR ) ) {
-				System.out.println( "You don't have enough money in your account to cover the minimum bet." );
+				updateStatus( "You don't have enough money in your account to cover the minimum bet." );
 				state = MAIN_MENU;
 				displayMenu();
 			} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_JOINED_SESSION ) ) {
 				// This needs to say that they successfully joined a game, and move them to the next screen
-				System.out.println( "Successfully joined the game." );
+				updateStatus( "Successfully joined the game." );
 				state = MAIN_MENU;	// Reset the internal state just in case....
 				client.setCurrentGameById( requestedGameId );
 				showNextScreen( false );	// Move to the next screen, but don't show the menu
@@ -193,7 +193,7 @@ public class NotInSessionScreen extends AbstractScreen {
 
 		if( this.isActive ) {
 			// For us, resetting the screen involves showing the menu again
-			System.out.println( "Whoops, the user interface got confused. Let's try this again." );
+			updateStatus( "Whoops, the user interface got confused. Let's try this again." );
 			state = MAIN_MENU;
 			displayMenu();
 		}
@@ -229,7 +229,7 @@ public class NotInSessionScreen extends AbstractScreen {
 				} else if( str.trim().equalsIgnoreCase(TOGGLE_MONITOR_OPTION) ) {
 					toggleMessageMonitorFrame();
 				} else {
-					System.out.println( "Unrecognized user input: " + str );
+					updateStatus( "Unrecognized user input: " + str );
 					displayMenu();
 				}
 				
@@ -238,7 +238,7 @@ public class NotInSessionScreen extends AbstractScreen {
 				processJoinGameResponse( str );
 				
 			} else {
-				System.out.println( "Uh oh. The UI got into a weird state, resetting it for you." );
+				updateStatus( "Uh oh. The UI got into a weird state, resetting it for you." );
 				reset();
 			}
 		}
@@ -252,12 +252,12 @@ public class NotInSessionScreen extends AbstractScreen {
 
 	
 	private void sendQuitRequest() {
-		System.out.println( "One moment, informing the server of your departure..." );
+		updateStatus( "One moment, informing the server of your departure..." );
 		helper.sendQuitRequest();
 	}
 
 	private void sendListGamesRequest() {
-		System.out.println( "One moment, fetching a list of games from the server..." );
+		updateStatus( "One moment, fetching a list of games from the server..." );
 		System.out.println( "***********************************************************" );
 		System.out.println( "                  Viewing Games Screen                    " );
 		System.out.println( "***********************************************************" );
@@ -265,7 +265,7 @@ public class NotInSessionScreen extends AbstractScreen {
 	}
 
 	private void sendJoinGameRequest( String id ) {
-		System.out.println( "Alerting the server that you wish to join this game..." );
+		updateStatus( "Alerting the server that you wish to join this game..." );
 		// Remember to track it internally
 		requestedGameId = id;
 		helper.sendJoinSessionRequest( id );
@@ -297,20 +297,20 @@ public class NotInSessionScreen extends AbstractScreen {
 		if( number == null ) {
 			// Maybe they just wanted to go back to the previous menu?
 			if( str != null && str.equalsIgnoreCase(BACK_OPTION) ) {
-				System.out.println( "Returning you to the previous menu." );
+				updateStatus( "Returning you to the previous menu." );
 				state = MAIN_MENU;
 				displayMenu();
 			} else {				
 				// If not, force them to try again
-				System.out.println( "You need to enter a number from 1-" + menuNumberToGameIdMap.size() + "," );
-				System.out.println( "or '" + BACK_OPTION + "' to return to the previous menu. Try again." );
+				updateStatus( "You need to enter a number from 1-" + menuNumberToGameIdMap.size() + "," );
+				updateStatus( "or '" + BACK_OPTION + "' to return to the previous menu. Try again." );
 				sendListGamesRequest();
 			}
 		} else {
 			// We got a valid number, so we need to join the game
 			String id = menuNumberToGameIdMap.get( Integer.valueOf(number) );
 			if( id == null ) {
-				System.out.println( "Whoops. Could not find the game to request due to an internal error!" );
+				updateStatus( "Whoops. Could not find the game to request due to an internal error!" );
 				reset();
 			} else {
 				sendJoinGameRequest( id );

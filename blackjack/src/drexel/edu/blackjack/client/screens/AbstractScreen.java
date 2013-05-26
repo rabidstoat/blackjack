@@ -358,12 +358,12 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		// Make sure this is a valid capabilities list first
 		if( code == null ||  
 				!code.hasSameCode( ResponseCode.CODE.CAPABILITIES_FOLLOW ) ) {
-			System.out.println( "Internal error, sorry. Can't display the capabilities list." );
+			updateStatus( "Internal error, sorry. Can't display the capabilities list." );
 		} else {
-			System.out.println( "The server supports " + (code.getNumberOfLines()-1) + " protocol commands in this current state." );
-			System.out.println( "They are: " );
+			updateStatus( "The server supports " + (code.getNumberOfLines()-1) + " protocol commands in this current state." );
+			updateStatus( "They are: " );
 			for( int i = 1; i < code.getNumberOfLines(); i++ ) {
-				System.out.println( i + ". " + code.getMultiline(i) );
+				updateStatus( i + ". " + code.getMultiline(i) );
 			}
 		}				
 	}
@@ -377,7 +377,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		// Make sure this is a valid account balance response first
 		if( code == null ||  
 				!code.hasSameCode( ResponseCode.CODE.ACCOUNT_BALANCE ) ) {
-			System.out.println( "Internal error, sorry. Can't display the account balance." );
+			updateStatus( "Internal error, sorry. Can't display the account balance." );
 		} else {
 			updateStatus( "Your account balance is $" + code.getFirstParameterAsString() + "." );
 		}
@@ -392,7 +392,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		// Make sure this is a valid version response first
 		if( code == null ||  
 				!code.hasSameCode( ResponseCode.CODE.VERSION ) ) {
-			System.out.println( "Internal error, sorry. Can't display the version." );
+			updateStatus( "Internal error, sorry. Can't display the version." );
 		} else {
 			updateStatus( "Server version " + code.getText().trim() );
 		}
@@ -423,17 +423,17 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 
 	
 	protected void sendVersionRequest() {
-		System.out.println( "One moment, fetching the version from the server..." );
+		updateStatus( "One moment, fetching the version from the server..." );
 		helper.sendVersionRequest();
 	}
 
 	protected void sendAccountRequest() {
-		System.out.println( "One moment, fetching your account balance from the server..." );
+		updateStatus( "One moment, fetching your account balance from the server..." );
 		helper.sendAccountRequest();
 	}
 
 	protected void sendCapabilitiesRequest() {
-		System.out.println( "One moment, fetching a list of capabilities from the server..." );
+		updateStatus( "One moment, fetching a list of capabilities from the server..." );
 		helper.sendCapabilitiesRequest();
 	}
 

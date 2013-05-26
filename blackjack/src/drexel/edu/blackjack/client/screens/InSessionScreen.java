@@ -117,7 +117,7 @@ public class InSessionScreen extends AbstractScreen {
 					displayMenu();
 				} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_HIT ) ) {
 					// TODO
-					System.out.println( "Need to implement the response to a successful hit." );
+					updateStatus( "Need to implement the response to a successful hit." );
 					displayMenu();
 				} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_LEFT_SESSION_FORFEIT_BET) ) {
 					updateStatus( "You left the game mid-play, forfeiting $" + code.getFirstParameterAsString() + "." );
@@ -129,7 +129,7 @@ public class InSessionScreen extends AbstractScreen {
 					showPreviousScreen( true );	// Move to the previous screen
 				} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_STAND ) ) {
 					// TODO
-					System.out.println( "Need to implement the response to a successful stand." );
+					updateStatus( "Need to implement the response to a successful stand." );
 					displayMenu();
 				} else if( code.hasSameCode( ResponseCode.CODE.TIMEOUT_EXCEEDED_WHILE_BETTING ) ) {
 					updateStatus( "You did not place a bet in time." );
@@ -201,9 +201,9 @@ public class InSessionScreen extends AbstractScreen {
 		
 		if( code != null ) {
 			ClientSideGameStatus gameStatus = new ClientSideGameStatus(code);
-			System.out.println( gameStatus.getSummaryStatus() );
+			updateStatus( gameStatus.getSummaryStatus() );
 			for( String username : gameStatus.getUsernames() ) {
-				System.out.println( gameStatus.getStatusForUser(username) );
+				updateStatus( gameStatus.getStatusForUser(username) );
 			}
 		}
 	}
@@ -298,7 +298,7 @@ public class InSessionScreen extends AbstractScreen {
 	public void reset() {
 		if( this.isActive ) {
 			// For us, resetting the screen involves showing the menu again
-			System.out.println( "Whoops, the user interface got confused. Let's try this again." );
+			updateStatus( "Whoops, the user interface got confused. Let's try this again." );
 			state = WATCHING_GAME;
 			displayMenu();
 		}
@@ -338,7 +338,7 @@ public class InSessionScreen extends AbstractScreen {
 					// TODO: Yeah
 					reset();
 				} else {
-					System.out.println( "Unrecognized user input: " + str );
+					updateStatus( "Unrecognized user input: " + str );
 					displayMenu();
 				}
 			}
@@ -356,7 +356,7 @@ public class InSessionScreen extends AbstractScreen {
 	 * of the user to confirm, sucks to be them.
 	 */
 	private void sendLeaveGameRequest() {
-		System.out.println( "Exiting you from the game now..." );
+		updateStatus( "Exiting you from the game now..." );
 		helper.sendLeaveSessionRequest();
 	}
 
@@ -372,11 +372,11 @@ public class InSessionScreen extends AbstractScreen {
 			Integer bet = null;
 			try {
 				bet = Integer.parseInt(str.trim());
-				System.out.println( "One moment, submitting your bet to the dealer..." );
+				updateStatus( "One moment, submitting your bet to the dealer..." );
 				requestedBet = bet;
 				helper.sendBetRequest( bet );
 			} catch( NumberFormatException e ) {
-				System.out.println( "You need to enter a number for the bet amount." );
+				updateStatus( "You need to enter a number for the bet amount." );
 				displayMenu();
 			}
 		}
@@ -389,7 +389,7 @@ public class InSessionScreen extends AbstractScreen {
 	 * game, not ALL of them) and GAMESTATUS for this game
 	 */
 	private void sendGameStatusRequest() {
-		System.out.println( "Requesting current game status from the server..." );
+		updateStatus( "Requesting current game status from the server..." );
 		helper.sendListGamesRequest();
 		if( getSessionId() == null ) {
 			LOGGER.severe( "Cannot send a request for game status because the game ID wasn't recorded anywhere." );
