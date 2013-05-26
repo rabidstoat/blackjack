@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - ClientOutputToServerHelper.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This is the class which all client-side messages to the server go
+ * through. It provides a method for sending raw text, and also convenience
+ * methods for properly formatting the various commands that the server 
+ * recognizes. It implements the Observer pattern, allowing observers to
+ * register interest in outgoing message traffic.
+ ******************************************************************************/
 package drexel.edu.blackjack.client.out;
 
 import java.io.IOException;

@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - BlackjackCommand.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This is a base class which all classes that implement protocol
+ * command functionality must extend. There is a one-to-one correspondence
+ * between protocol commands, and classes that implement the functionality
+ * related to the command. It mostly defines the methods that need to be
+ * implemented by these command classes.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.commands;
 
 import java.util.Set;

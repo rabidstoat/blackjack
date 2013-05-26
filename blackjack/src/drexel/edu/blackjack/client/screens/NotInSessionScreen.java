@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - NotInSessionScreen.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This implements the 'screen' (set of command-line UI prompts) that
+ * is used when the user is not in a game. In hides the protocol from the user.
+ * For example, joining a game for the user looks like seeing a list of game
+ * information and selecting which number to join. In code, this involves the
+ * LISTGAMES and JOINSESSION protocol messages, and responses.
+ ******************************************************************************/
 package drexel.edu.blackjack.client.screens;
 
 import java.util.HashMap;

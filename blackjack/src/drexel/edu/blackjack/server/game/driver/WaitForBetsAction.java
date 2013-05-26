@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - WaitForBetsAction.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This class represents the game waiting for bets to be placed. It
+ * basically does a loop for however long is stipulated, checking every few
+ * seconds to see if all the active players have placed bets or not. If so, it
+ * returns immediately. If not, it repeats the sleeping-checking process, until
+ * it has exceeded the maximum time. At this point it returns, even though
+ * some player have not bet. Those players are dealt with in a different action.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.game.driver;
 
 import java.util.logging.Logger;

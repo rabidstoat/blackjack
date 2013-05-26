@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - GameManagerInterface.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This defines the interface that can be used to load and interact
+ * with a persistent store of metadata about games to be hosted on the server.
+ ******************************************************************************/
 package drexel.edu.blackjack.db.game;
 
 import java.util.List;

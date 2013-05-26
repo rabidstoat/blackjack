@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - GameStatusCommand.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This class handles the GAMESTATUS protocol message. It uses the 
+ * protocol state to determine the right game, and then calls a helper method
+ * on the Game object to actually format the response.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.commands;
 
 import java.util.ArrayList;

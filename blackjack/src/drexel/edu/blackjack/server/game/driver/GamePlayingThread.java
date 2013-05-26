@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - GamePlayingThread.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This thread is used to implement the functionality related to playing
+ * a game of blackjack. Every time a game is started, a thread gets started;
+ * when the game is over (all players left), it is destroyed. It is mostly a
+ * big loop that drives through the various commands that represent activity
+ * at different stages of the game (e.g., shuffling, dealing cards, taking
+ * bets) and figuring out when everyone has left, to exit.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.game.driver;
 
 import java.util.ArrayList;

@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - RemoveNonBettersAction.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This game action cycles through the list of active players in the
+ * game, presumably after the betting period is over, and removes users who
+ * have not placed their bets in time. Removing users is done by setting their
+ * protocol state to NOT_IN_SESSION, and sending their client a notice.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.game.driver;
 
 import java.util.logging.Logger;

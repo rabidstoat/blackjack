@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - BetCommand.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This class handles the BET protocol command. It has logic for
+ * checking to see if the bet is allowed, updating the protocol state as
+ * needed, and returning a proper response code.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.commands;
 
 import java.util.ArrayList;

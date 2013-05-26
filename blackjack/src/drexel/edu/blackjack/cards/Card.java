@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - Card.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: Object-oriented representation of a blackjack playing card
+ ******************************************************************************/
 package drexel.edu.blackjack.cards;
 
 /**

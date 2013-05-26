@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - MessagesFromServerListener.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This defines the interface that observers/listeners must implement,
+ * in order to register interest in messages received from the server.
+ ******************************************************************************/
 package drexel.edu.blackjack.client.in;
 
 import drexel.edu.blackjack.server.ResponseCode;

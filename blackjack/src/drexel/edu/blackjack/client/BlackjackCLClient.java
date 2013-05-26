@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - BlackjackCLClient.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This is the main class for the client, which runs the whole client-
+ * side application. The CL stands for 'Command Line', which it is. Currently
+ * this is where the TLS-encrypted socket is established, and has the thread
+ * from which user input is read from standard in. It starts another thread
+ * for reading input from the server.
+ ******************************************************************************/
 package drexel.edu.blackjack.client;
 
 import java.io.BufferedReader;

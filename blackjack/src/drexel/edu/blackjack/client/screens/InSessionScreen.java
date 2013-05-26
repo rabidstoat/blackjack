@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - InSessionScreen.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This implements the console-based 'screen' that is shown when the
+ * user is playing a game of blackjack. Primarily it alerts the user as to
+ * actions in the game, which are sent from the user as raw protocol responses
+ * and get translated here to more human-readable updates, and handles
+ * prompting for bets and game play (e.g., hit or stand) when needed. There's
+ * a simple menu for getting account information, or refreshing the view
+ * of the game status.
+ ******************************************************************************/
 package drexel.edu.blackjack.client.screens;
 
 import java.util.Map;

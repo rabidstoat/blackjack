@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - CapabilitiesCommand.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This class implements the CAPABILITIES command. It uses the protocol
+ * state, along with knowledge of what commands can be used in what states, to
+ * generate a state-specific list of capabilities.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.commands;
 
 import java.util.ArrayList;

@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - VersionCommand.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This implements the VERSION protocol command by creating a response
+ * code with the version information.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.commands;
 
 import java.util.Set;

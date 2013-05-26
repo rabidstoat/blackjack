@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - JoinSessionCommand.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Pupose: This cass implements the JOINSESSION protocol command. After it is
+ * determined whether the command request is valid, it sends an appropriate
+ * response and updates the protocol state.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.commands;
 
 import java.util.ArrayList;

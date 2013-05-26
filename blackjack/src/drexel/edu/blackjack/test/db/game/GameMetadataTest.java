@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - GameMetadataTest.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: Unit test of GameMetadata.java
+ ******************************************************************************/
 package drexel.edu.blackjack.test.db.game;
 
 import static org.junit.Assert.*;

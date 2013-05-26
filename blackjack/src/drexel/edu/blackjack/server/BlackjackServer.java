@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - BlackjackServer.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This is the main class of the blackjack server. It handles TLS
+ * negotiation, then sits in never-ending loop of accepting client connections
+ * and setting up their own thread for handling the connection.
+ ******************************************************************************/
 package drexel.edu.blackjack.server;
 
 import java.io.IOException;
@@ -19,7 +32,7 @@ import javax.net.ssl.TrustManagerFactory;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
- * Should probably have some comments.
+ * The main class for the blackjack server.
  */
 public class BlackjackServer {
 

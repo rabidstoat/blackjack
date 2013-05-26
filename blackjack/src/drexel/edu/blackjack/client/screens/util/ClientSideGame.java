@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - ClientSideGame.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This helper class is used to translate the raw protocol message
+ * that is a response to the LISTGAMES command into an object-oriented view
+ * of the games.
+ ******************************************************************************/
 package drexel.edu.blackjack.client.screens.util;
 
 import java.util.ArrayList;

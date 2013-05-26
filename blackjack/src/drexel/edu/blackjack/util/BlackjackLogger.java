@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - BlackjackLogger.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: Convenience method for creating a logger. Sets the custom format,
+ * and if a system variable is set, the logging level.
+ ******************************************************************************/
 package drexel.edu.blackjack.util;
 
 import java.util.logging.Level;

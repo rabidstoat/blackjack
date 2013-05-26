@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - AbstractScreen.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This is the abstract base clas for all client UI screens. It
+ * specifies what methods all screens must implement, such as responding to
+ * messages from the server and listening to input from the keyboard, as well
+ * as provides some common functionality shared by all UI screens that is
+ * related to sending and receiving messages with the server.
+ ******************************************************************************/
 package drexel.edu.blackjack.client.screens;
 
 import java.text.SimpleDateFormat;

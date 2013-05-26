@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - ListgamesCommand.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This class implements the LISTGAMES command. It uses a singleton
+ * instance of the ActiveGameCoordinator to get a list of games, and relies on
+ * a helper method in the Game object for what is, in essence, serializing 
+ * game information for the response.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.commands;
 
 import java.util.HashSet;

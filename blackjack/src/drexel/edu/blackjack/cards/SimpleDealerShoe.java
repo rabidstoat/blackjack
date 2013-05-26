@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - SimpleDealerShoe.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: Implement functionality related to a dealer's shoe of cards, such
+ * as shuffling and dealing cards from the top
+ ******************************************************************************/
 package drexel.edu.blackjack.cards;
 
 import java.util.ArrayList;

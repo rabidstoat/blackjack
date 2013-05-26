@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - HitCommand.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This class handles the HIT protocol method, by alerting the game-
+ * playing thread in the server about the action.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.commands;
 
 import java.util.HashSet;

@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - LoginInputScreen.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This is the 'screen' (really just command line UI prompts) used 
+ * when a user logs into the system. It prompts for username and password and
+ * uses the USERNAME and PASSWORD protocol commands.
+ ******************************************************************************/
 package drexel.edu.blackjack.client.screens;
 
 import drexel.edu.blackjack.client.BlackjackCLClient;

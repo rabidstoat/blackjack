@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - Game.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This class represents a game that is hosted by the server. There are
+ * two important variables in here: the GameMetadata and the GameState. The
+ * metadata is mostly general information like the number of decks and bet range.
+ * The GameState is mostly dynamic information like who the players are and
+ * what stage of the game its in. This class basically pulls those two types of
+ * information together.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.game;
 
 import java.util.logging.Logger;

@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - BlackjackLogFormatter.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: Defines a custom format for displaying logger messages
+ ******************************************************************************/
 package drexel.edu.blackjack.util;
 
 import java.text.DateFormat;

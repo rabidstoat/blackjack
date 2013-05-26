@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - ResponseCode.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This is an object-oriented view of a response sent from the server.
+ * It has methods for serializing and deserializing messages (so they can be
+ * sent over the socket), along with a bunch of convenience methods for getting
+ * information about the response, such as what type it is (e.g., informative,
+ * error, etc.), what its parameters are, and (if multiline) what the different
+ * lines of response are.
+ ******************************************************************************/
 package drexel.edu.blackjack.server;
 
 import java.util.ArrayList;

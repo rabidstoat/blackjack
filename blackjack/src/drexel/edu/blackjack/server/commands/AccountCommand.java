@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - AccountCommand.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This class handles the ACCOUNT protocol message. It has logic for
+ * looking up the user's account and returning the balance.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.commands;
 
 import java.util.HashSet;

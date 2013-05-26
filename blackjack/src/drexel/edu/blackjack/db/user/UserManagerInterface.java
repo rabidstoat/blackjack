@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - UserManagerInterface.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This defines the interface that can be used to load, store, and
+ * interact with the users who are defined for a game server. It also defines
+ * methods for logging users in and out of the system.
+ ******************************************************************************/
 package drexel.edu.blackjack.db.user;
 
 /**

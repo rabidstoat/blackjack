@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - UserMetadataTest.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ ******************************************************************************/
 package drexel.edu.blackjack.test.db.user;
 
 import static org.junit.Assert.*;

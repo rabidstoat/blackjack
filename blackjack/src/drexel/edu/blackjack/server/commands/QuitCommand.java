@@ -1,4 +1,16 @@
-
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - QuitCommand.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This implements the QUIT command. It is only responsible for sending
+ * a response to the client. The actual severing of the connection is done
+ * elsewhere.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.commands;
 
 import java.util.Set;

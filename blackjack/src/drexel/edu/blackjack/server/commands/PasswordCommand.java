@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - PasswordCommand.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Password: This implements the PASSWORD command. It obtains the previously 
+ * specified username from the protocol state, checks with the UserManager
+ * if the credentials are valid, and sends an appropriate response to the 
+ * client. If the login IS valid, it updates the protocol state with user
+ * information.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.commands;
 
 import java.util.ArrayList;

@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - User.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This is an object-oriented view of the user as logged into the
+ * server. It contains a reference to their metadata, but also references to
+ * more active data, like their current card hand (since a user can only be
+ * in one game at a time) and their connection to the user's client.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.game;
 
 import java.util.logging.Logger;

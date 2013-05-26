@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - FlatfileUserManager.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This implements an interface the server uses to load and save
+ * user information, by serializing objects and then saving and loading
+ * them from a file. It also implements checks for logging in and out of
+ * the server via username/password.
+ ******************************************************************************/
 package drexel.edu.blackjack.db.user;
 
 import java.io.FileInputStream;

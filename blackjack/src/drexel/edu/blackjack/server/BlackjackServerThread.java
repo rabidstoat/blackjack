@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - BlackjackServerThread.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: When a client establishes a connection with the server, one of these
+ * threads is created to handle its input and output. It reads both single-line
+ * and multi-line messages, and sends messages formatted elsewhere. Input from
+ * a client is sent to the associated protocol object for processing, this is
+ * mostly just concerned with the actual I/O.
+ ******************************************************************************/
 package drexel.edu.blackjack.server;
 
 import java.io.BufferedReader;

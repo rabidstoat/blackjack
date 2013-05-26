@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - GameMetadata.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This is an object-oriented representation of the static metadata
+ * associated with a game.
+ ******************************************************************************/
 package drexel.edu.blackjack.db.game;
 
 import java.io.Serializable;

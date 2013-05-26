@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - HandTest.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: Unit test of Hand.java.
+ ******************************************************************************/
 package drexel.edu.blackjack.test.cards;
 
 import static org.junit.Assert.*;

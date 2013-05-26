@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - TimeoutDefinition.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: Defines a timeout definition for the idle timeout daemon to use.
+ * It maps a state, to the appropriate timeout duration.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.timeouts;
 
 import drexel.edu.blackjack.server.BlackjackProtocol;

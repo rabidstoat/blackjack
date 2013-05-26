@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - GameHelper.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This implements a simple menu-driven UI that an administrator can
+ * use for creating, deleting, and viewing the static information about games
+ * that should be hosted in the server, and their metadata.
+ ******************************************************************************/
 package drexel.edu.blackjack.db.game;
 
 import java.io.BufferedReader;

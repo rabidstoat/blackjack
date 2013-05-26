@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - MessageFrame.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This frame shows all message traffic, and is used in the client. 
+ * It can be toggled on and off, and is for debugging and demo purposes only.
+ * It uses the Observer design pattern to register interest in both incoming
+ * and outgoing server messages, and the Singleton design pattern to ensure
+ * only one instance is instantiated.
+ ******************************************************************************/
 package drexel.edu.blackjack.client;
 
 import java.awt.BorderLayout;

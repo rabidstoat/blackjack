@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - IdleTimeoutDaemon.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This class implements a background thread that runs while a server
+ * is up. It contains a reference to all client connections. Every few seconds
+ * it checks and sees if they have 'timed out' -- that is, if their last
+ * activity is longer ago than the maximum idle time stipulated for the particular
+ * state. Not all states have idle timeouts, but those that do have it 
+ * handled here.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.timeouts;
 
 import java.util.Collections;

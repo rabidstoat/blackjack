@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - BlackjackProtocol.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purposes: This is the object that represents the protocol state of the
+ * server-client connection. One protocol object exists for every client
+ * connection. It holds stateful information such as which (DFA) state the
+ * protocol is in, as well as attributes associated with the state, such as
+ * which logged-in user is associated with it. Finally, it is the 'router'
+ * for input from the client, passing it off to the appropriate implemented
+ * command using the Command pattern.
+ ******************************************************************************/
 package drexel.edu.blackjack.server;
 
 import drexel.edu.blackjack.server.commands.BlackjackCommand;

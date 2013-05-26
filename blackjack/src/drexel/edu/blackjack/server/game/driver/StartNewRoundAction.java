@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - StartNewRoundAction.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This game action starts a new round by resetting state variables
+ * appropriately. Any players who were in the observer status (because they
+ * joined after the round started) are promoted to an active status. Also,
+ * it sends out the initial request for bets to the related game clients.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.game.driver;
 
 import java.util.logging.Logger;

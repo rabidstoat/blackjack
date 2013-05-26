@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - GameState.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: Most of the 'interesting stuff' that a game does is implemented in
+ * the dynamic GameState. It handles adding and removing players, and provides
+ * convenience methods for sending the 6xx response codes that alert clients
+ * as to changes in the game state.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.game;
 
 import java.util.ArrayList;

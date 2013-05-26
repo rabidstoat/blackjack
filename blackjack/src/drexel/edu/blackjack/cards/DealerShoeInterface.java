@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - DealerShoeInterface.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: Object-oriented interface defining functionality for a dealer
+ * shoe, which is a large deck comprised of multiple decks of cards
+ ******************************************************************************/
 package drexel.edu.blackjack.cards;
 
 /**

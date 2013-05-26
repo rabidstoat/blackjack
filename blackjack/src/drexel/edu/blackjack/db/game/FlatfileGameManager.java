@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - FlatfileGameManager.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This implements an interface the server uses to load and save
+ * static game information, by serializing objects and then saving and loading
+ * them from a file.
+ ******************************************************************************/
 package drexel.edu.blackjack.db.game;
 
 import java.io.FileInputStream;

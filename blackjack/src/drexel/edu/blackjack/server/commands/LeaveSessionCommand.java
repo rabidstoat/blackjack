@@ -1,4 +1,15 @@
-
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - LeaveSessionCommand.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This class implements the LEAVESESSION protocol command. It updates
+ * the protocol state as appropriate based on whether or not it succeeds.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.commands;
 
 import java.util.HashSet;

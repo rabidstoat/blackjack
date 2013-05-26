@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - UserHelper.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This implements a simple menu-driven UI that an administrator can
+ * use for creating system users by defining their metadata.
+ ******************************************************************************/
 package drexel.edu.blackjack.db.user;
 
 import java.io.BufferedReader;

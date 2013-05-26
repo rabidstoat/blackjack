@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - UserMetadata.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This is an object-oriented representation of the metadata
+ * associated with a user.
+ ******************************************************************************/
 package drexel.edu.blackjack.db.user;
 
 import java.io.Serializable;

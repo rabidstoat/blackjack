@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - GameAction.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: The GamePlayingThread keeps an ordered list of game actions, which
+ * are basically using the Command design pattern so that there is a 'do work'
+ * method, which receives the Game object as its parameter.
+ ******************************************************************************/
 package drexel.edu.blackjack.server.game.driver;
 
 import drexel.edu.blackjack.server.game.Game;

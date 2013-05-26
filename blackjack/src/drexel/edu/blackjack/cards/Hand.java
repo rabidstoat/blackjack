@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - Hand.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: Represents the cards in a player's (or the dealer's) hand, some of
+ * which may explicitly be facedown and not revealed to other players
+ ******************************************************************************/
 package drexel.edu.blackjack.cards;
 
 import java.util.ArrayList;

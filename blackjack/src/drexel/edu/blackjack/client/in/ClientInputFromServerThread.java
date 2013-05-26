@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * CS544 Computer Networks Spring 2013
+ * 5/26/2013 - ClientInputFromServerThread.java
+ * Group Members
+ * o Jennifer Lautenschlager
+ * o Constantine Lazarakis
+ * o Carol Greco
+ * o Duc Anh Nguyen
+ * 
+ * Purpose: This is the thread which the client uses to listen to the server.
+ * It handles single-line and multi-line message format. It also implements
+ * the Observer pattern, allowing listeners who register interest to be
+ * notified of messages from the server.
+ ******************************************************************************/
 package drexel.edu.blackjack.client.in;
 
 import java.io.BufferedReader;
