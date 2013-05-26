@@ -140,7 +140,17 @@
 	
 	<!-- Javadoc task here -->
     <target name="javadoc">
-        <javadoc access="protected" author="true" classpath="libs/junit-4.11.jar;libs/hamcrest-core-1.3.jar;libs/mockito-all-1.9.5.jar" destdir="doc" doctitle="Blackjack Client-Server" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" overview="C:\Users\Jennifer\git\blackjack\blackjack\src\overview.html" packagenames="drexel.edu.blackjack.db.game,drexel.edu.blackjack.client.out,drexel.edu.blackjack.server.game.driver,drexel.edu.blackjack.client,drexel.edu.blackjack.cards,drexel.edu.blackjack.server,drexel.edu.blackjack.db.user,drexel.edu.blackjack.test.cards,drexel.edu.blackjack.client.screens,drexel.edu.blackjack.test.server.commands,drexel.edu.blackjack.server.timeouts,drexel.edu.blackjack.test.db.game,drexel.edu.blackjack.server.commands,drexel.edu.blackjack.test.server.game,drexel.edu.blackjack.client.in,drexel.edu.blackjack.client.screens.util,drexel.edu.blackjack.util,drexel.edu.blackjack.test.db.user,drexel.edu.blackjack.server.game" source="1.7" sourcepath="src;config" splitindex="true" use="true" version="true"/>
+        <javadoc access="protected" author="true" 
+        	classpath="libs/junit-4.11.jar;libs/hamcrest-core-1.3.jar;libs/mockito-all-1.9.5.jar" 
+        	destdir="doc"  nodeprecated="false" nodeprecatedlist="false"
+        	noindex="false" nonavbar="false" notree="false" 
+        	overview="C:\Users\Jennifer\git\blackjack\blackjack\src\overview.html" 
+        	packagenames="drexel.edu.blackjack.db.game,drexel.edu.blackjack.client.out,drexel.edu.blackjack.server.game.driver,drexel.edu.blackjack.client,drexel.edu.blackjack.cards,drexel.edu.blackjack.server,drexel.edu.blackjack.db.user,drexel.edu.blackjack.test.cards,drexel.edu.blackjack.client.screens,drexel.edu.blackjack.test.server.commands,drexel.edu.blackjack.server.timeouts,drexel.edu.blackjack.test.db.game,drexel.edu.blackjack.server.commands,drexel.edu.blackjack.test.server.game,drexel.edu.blackjack.client.in,drexel.edu.blackjack.client.screens.util,drexel.edu.blackjack.util,drexel.edu.blackjack.test.db.user,drexel.edu.blackjack.server.game" 
+        	source="1.7" sourcepath="src" splitindex="true" use="true" version="true"
+        	linksource="yes">
+    		<doctitle><![CDATA[<h1>Blackjack Client-Server</h1>]]></doctitle>
+        	<header><![CDATA[CS544 Spring 2013 Team Project<p>Group 10 Blackjack Protocol Implementation]]></header>
+		</javadoc>
     </target>
 
 
