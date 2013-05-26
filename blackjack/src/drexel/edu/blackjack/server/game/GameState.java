@@ -421,7 +421,7 @@ public class GameState {
 	 * Returns the number of players, without regard to their
 	 * status as observer or active.
 	 * 
-	 * @param Total number of players in game
+	 * @return Total number of players in game
 	 */
 	synchronized public int getNumberOfPlayers() {
 		return (players == null ? 0 : players.size() );

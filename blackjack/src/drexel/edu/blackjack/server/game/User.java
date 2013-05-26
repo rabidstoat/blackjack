@@ -197,7 +197,7 @@ public class User {
 	 * A user has specified a bet if they have a non-null protocol
 	 * object somewhere, and there is a bet value set on it.
 	 * 
-	 * @retrn True if they have a specified bet, else false
+	 * @return True if they have a specified bet, else false
 	 */
 	public boolean hasSpecifiedBet() {
 		
