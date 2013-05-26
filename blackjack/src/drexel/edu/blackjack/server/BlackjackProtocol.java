@@ -490,8 +490,6 @@ public class BlackjackProtocol {
 	 * command has specified a username, but before the PASSWORD
 	 * command has specified the password so that the authentication
 	 * can be attempted.
-	 * 
-	 * @return the username
 	 */
 	public void setUsername(String username) {
 		this.username = username;
