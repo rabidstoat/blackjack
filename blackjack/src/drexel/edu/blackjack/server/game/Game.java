@@ -33,7 +33,7 @@ public class Game {
 	public static final String UNKNOWN_KEYWORD = "UNKNOWN";
 	public static final String BET_KEYWORD = "BET";
 	public static final String HAND_KEYWORD = "HAND";
-	public static final String ACTIVE_KEYWORD = "ACTIVE_PLAYER";
+	public static final String ACTIVE_PLAYER = "ACTIVE_PLAYER";
 	public static final String OBSERVER_KEYWORD = "OBSERVER";
 	public static final String UNKNOWN_USERNAME = "(unknown)";
 	
@@ -168,10 +168,14 @@ public class Game {
 	 */	
 	public String getGameStatus( User user ) {
 		
-		StringBuilder str = new StringBuilder( GAMESTAGE_KEYWORD );
+		// First line has the session (aka game) id
+		StringBuilder str = new StringBuilder( getId() );
+		str.append( BlackjackServer.EOL );
+		
+		// Next line is either GAMESTAGE STARTED or GAMESTAGE NOT_STARTED
+		str.append( GAMESTAGE_KEYWORD );
 		str.append( " " );
 		
-		// First line is either GAMESTAGE STARTED or GAMESTAGE NOT_STARTED
 		if( this.state != null && state.getGameStage() != null ) {
 			str.append( state.getGameStage() );
 		} else {
@@ -192,7 +196,7 @@ public class Game {
 			for( User player : players ) {
 				// They need to have active status 
 				if( player.getStatus() != null && player.getStatus().equals(GameState.STATUS.ACTIVE ) ) {
-					str.append( concatKeywordAndUsername(ACTIVE_KEYWORD, player) );
+					str.append( concatKeywordAndUsername(ACTIVE_PLAYER, player) );
 					str.append( BlackjackServer.EOL );
 				}
 			}
