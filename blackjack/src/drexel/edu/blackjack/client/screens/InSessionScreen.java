@@ -121,11 +121,9 @@ public class InSessionScreen extends AbstractScreen {
 					displayMenu();
 				} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_LEFT_SESSION_FORFEIT_BET) ) {
 					updateStatus( "You left the game mid-play, forfeiting $" + code.getFirstParameterAsString() + "." );
-					state = WATCHING_GAME;	// Reset the internal state just in case....
 					showPreviousScreen( true );	// Move to the previous screen
 				} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_LEFT_SESSION_NOT_MIDPLAY ) ) {
 					updateStatus( "You left the game between hands, and no money was lost." );
-					state = WATCHING_GAME;	// Reset the internal state just in case....
 					showPreviousScreen( true );	// Move to the previous screen
 				} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_STAND ) ) {
 					// TODO
@@ -134,13 +132,11 @@ public class InSessionScreen extends AbstractScreen {
 				} else if( code.hasSameCode( ResponseCode.CODE.TIMEOUT_EXCEEDED_WHILE_BETTING ) ) {
 					updateStatus( "You did not place a bet in time." );
 					updateStatus( "Removed from game but no money lost." );
-					state = WATCHING_GAME;	// Reset the internal state just in case....
 					showPreviousScreen( true );	// Move to the previous screen
 				} else if( code.hasSameCode( ResponseCode.CODE.TIMEOUT_EXCEEDED_WHILE_PLAYING ) ) {
 					// TODO: Something better here
 					updateStatus( "You did not choose your play in time" );
 					updateStatus( "Removed from game and bet was lost." );
-					state = WATCHING_GAME;	// Reset the internal state just in case....
 					showPreviousScreen( true );	// Move to the previous screen
 				} else if( code.hasSameCode( ResponseCode.CODE.USER_BUSTED ) ) {
 					updateStatus( "You BUSTED. That's over 21, and you have lost." );
@@ -420,4 +416,19 @@ public class InSessionScreen extends AbstractScreen {
 		return null;
 	}
 	
+	/**
+	 * Request that the user interface show the 'previous screen', which is
+	 * based on what the currentScreen is
+	 * 
+	 * @param displayMenu True if it should immediately show the menu
+	 */
+	public void showPreviousScreen( boolean displayMenu ) {
+		
+		// Do what we need to in order to 'reset' this UI screen
+		state = WATCHING_GAME;		// Reset the internal state just in case....
+		this.acceptedBet = null;	// No longer a bet accepted
+	
+		// Then move to the previous screen
+		super.showPreviousScreen( displayMenu );
+	}
 }
