@@ -80,6 +80,7 @@ public class GamePlayingThread extends Thread {
 	 ***********************************************************/
 	
 	/**
+	 * Get the game the thread is playing
 	 * @return Game the thread is playing
 	 */
 	public Game getGame() {
@@ -135,6 +136,9 @@ public class GamePlayingThread extends Thread {
 
 	/**
 	 * Right now, we keep playing as long as there are players
+	 * 
+	 * @return True if we should keep playing the game,
+	 * false if it should be ended.
 	 */
 	private boolean keepPlaying() {
 		if( game == null ) {
