@@ -38,12 +38,14 @@ import drexel.edu.blackjack.client.out.MessagesToServerListener;
 import drexel.edu.blackjack.server.ResponseCode;
 
 /**
- * <b>UI:</b> This is a GUI window that, for debug and development
+ * This is a GUI window that, for debug and development
  * purposes, displays all incoming and outgoing messages
  * related to the client. It registers interest in these
  * messages through listeners, and then uses a JTextPane to
  * display them, color-coded, on the screen. Pretty much 
- * everything in this class has to do with the UI.
+ * everything in this class has to do with the UI, but it's
+ * not an end user UI, it's a developer UI. <strong>The end user
+ * UI would never show these raw protocol messages.</strong>
  * 
  * @author Jennifer
  *

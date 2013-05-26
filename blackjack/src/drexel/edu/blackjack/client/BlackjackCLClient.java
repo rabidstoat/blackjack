@@ -51,7 +51,10 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * is done in this class.
  * 
  * <b>CLIENT:</b> Eventually the user will be able to specify
- * the host here. The port is hardcoded.
+ * the host here.
+ * 
+ * <b>SERVICE:</b> The port to connect to is hardcoded. See
+ * specific comments with this keyword in them in the source.
  */
 public class BlackjackCLClient {
 
@@ -83,7 +86,7 @@ public class BlackjackCLClient {
 	// This is the protocol we'll use for security
 	private static final String SECURITY_PROTOCOL		= "TLS";
 	
-	// CLIENT: Finally, the port that the server will run on
+	// SERVICE: Finally, the port that the server will run on
 	private static final int PORT						= 55555;
 	
 	// This system property is set true if we should show the message frame
@@ -163,6 +166,7 @@ public class BlackjackCLClient {
 
             // And finally for a socket
             SSLSocketFactory ssf = sc.getSocketFactory();
+            // SERVICE: Use the protocol's defined port
             socket = ssf.createSocket( "127.0.0.1", PORT );
             LOGGER.info( "Started a client connecting to localhost on port " + PORT );
             

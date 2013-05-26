@@ -5,10 +5,80 @@
   </HEAD>
   <BODY>
     This project contains a reference implementation for the Blackjack 1.0 protocol
-    proposed for a CS544 class project.
+    proposed for a CS544 class project. It includes both a basic server, and a simple
+    command-line client.
     <p>
-    Someone who is less lazy may write a larger overview here.
+    As per assignment requirements, we have marked code that implements one of the
+    five protocol requirements (STATEFUL, CONCURRENT, SERVICE, CLIENT, UI) in both
+    class and method javadoc-style comments, but also at places in inline comments
+    in the code. Comments are identified with the keyword in all caps. Classes
+    that are involved in each of the requirements are linked below:
     <p>
+    <OL>
+    <LI><b>STATEFUL:</b> Follow the state transitions as per the DFA,
+        checking and validating on client and server side as appropriate
+        <P>
+        <UL>
+        <LI>All concrete classes in the <a href="drexel/edu/blackjack/client/screens/package-summary.html">drexel.edu.blackjack.client.screens
+        </a> package
+        <LI>All classes in the <a href="drexel/edu/blackjack/client/screens/package-summary.html">drexel.edu.blackjack.client.screens
+        </a> package
+        <LI>All classes in the <a href="drexel/edu/blackjack/server/timeouts/package-summary.html">drexel.edu.blackjack.server.timeouts
+        </a> package
+        <LI>The <a href="drexel/edu/blackjack/server/BlackjackProtocol.html">drexel.edu.blackjack.server.BlackjackProtocol
+        </a> class
+        </UL>
+        <P>
+    <LI><b>CONCURRENT:</b> The server must be able to handle multiple clients
+        <P>
+        <UL>
+        <LI>The <a href="drexel/edu/blackjack/server/BlackjackProtocol.html">drexel.edu.blackjack.server.BlackjackProtocol
+        </a> class
+        <LI>The <a href="drexel/edu/blackjack/server/BlackjackServer.html">drexel.edu.blackjack.server.BlackjackServer
+        </a> class
+        <LI>The <a href="drexel/edu/blackjack/server/BlackjackServerThread.html">drexel.edu.blackjack.server.BlackjackServerThread
+        </a> class
+        </UL>
+        <P>
+    <LI><b>SERVICE:</b> The server must bind to a hard-coded port and the client defaults to this port number
+        <P>
+        <UL>
+        <LI>The <a href="drexel/edu/blackjack/server/BlackjackServer.html">drexel.edu.blackjack.server.BlackjackServer
+        </a> class
+        <LI>The <a href="drexel/edu/blackjack/client/BlackjackCLClient.html">drexel.edu.blackjack.client.BlackjackCLClient
+        </a> class
+        </UL>
+        <P>
+    <LI><b>CLIENT:</b> The client must be able to specify the hostname or IP address of the server. <font color="red">This
+           is not yet implemented, Duc will be working on it, but I am linking a class that's likely to be involved with
+           it for now.</font>
+        <P>
+        <UL>
+        <LI>The <a href="drexel/edu/blackjack/client/BlackjackCLClient.html">drexel.edu.blackjack.client.BlackjackCLClient
+        </a> class
+        </UL>
+        <P>
+    <LI><b>UI:</b> The protocol logic is in the client and not exposed to the user
+        <P>
+        <UL>
+        <LI>The <a href="drexel/edu/blackjack/client/BlackjackCLClient.html">drexel.edu.blackjack.client.BlackjackCLClient
+        </a> class
+        <LI>All classes in the <a href="drexel/edu/blackjack/client/screens/package-summary.html">drexel.edu.blackjack.client.screens
+        </a> package
+        <LI>The <a href="drexel/edu/blackjack/cards/Card.html">drexel.edu.blackjack.cards.Card</a> class
+        <LI>The <a href="drexel/edu/blackjack/cards/Hand.html">drexel.edu.blackjack.cards.Hand</a> class
+        <LI>The <a href="drexel/edu/blackjack/client/in/MessagesFromServerListener.html">drexel.edu.blackjack.client.in.MessagesFromServerListener
+        </a> interface
+        <LI>The <a href="drexel/edu/blackjack/client/out/MessagesToServerListener.html">drexel.edu.blackjack.client.out.MessagesToServerListener
+        </a> interface
+        </UL>
+        <P>
+    </OL>
+    <p>Note that though it is not obvious in the web pages, you can actually navigate directly from
+    the javadocs page to the source code itself. See the screenshot below for where you would click
+    to do so.
+    <p>
+    <img src="doc-files/ClickToSource.png">
 @author Jennifer Lautenschlager
 @author Constantine Lazarakis
 @author Carol Greco
