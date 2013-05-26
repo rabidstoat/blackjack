@@ -138,7 +138,7 @@ public class GameState {
 			StringBuilder str = new StringBuilder( getStringForGameAndUser( player ) );
 			str.append( " " );
 			str.append( bet );
-			ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_JOINED, getStringForGameAndUser(player) );
+			ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_BET, str.toString() );
 
 			// Then send it to all the players except the one who generated
 			success = notifyOtherPlayers( code, player );		
