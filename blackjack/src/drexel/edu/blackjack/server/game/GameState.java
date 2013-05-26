@@ -32,6 +32,10 @@ public class GameState {
 		OBSERVER	// The user is in the session, but as an observer
 	}
 	
+	// These are for the various gamestages
+	public static final String STARTED_KEYWORD		= "STARTED";
+	public static final String NOT_STARTED_KEYWORD	= "NOT_STARTED";
+	
 	// An ordered list of players involved in the game. Gameplay will
 	// occur in this order, amongst the ACTIVE users. 
 	private List<User> players 		= null;
@@ -500,7 +504,7 @@ public class GameState {
 	public String getGameStage() {
 		// TODO: Sort this out. Maybe it should be more 
 		// like "taking bets" or "playing hand" or something....
-		return "STARTED";
+		return STARTED_KEYWORD;
 	}
 
 
