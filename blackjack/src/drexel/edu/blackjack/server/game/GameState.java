@@ -30,37 +30,104 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * Used to pass game state information from
  * the server to client, to show what bets
  * are made, what cards are dealt, what users
- * are joining and leaving, etc.
+ * are joining and leaving, etc. Unlike
+ * {@link drexel.edu.blackjack.db.game.GameMetadata},
+ * the GameState is volatile and will change
+ * often as the game progresses.
  * 
  * See Section 2.15 of the protocol design
  * for details.
  * 
  * @author Jennifer
- *
  */
 public class GameState {
 
 	// And a logger for errors
 	private final static Logger LOGGER = BlackjackLogger.createLogger(GameState.class.getName()); 
 
+	/**
+	 * Used for the status of players in the currently represented
+	 * state of the game.
+	 */
 	protected enum STATUS {
-		ACTIVE,		// The user is an active participant
-		OBSERVER	// The user is in the session, but as an observer
+		/**
+		 * The user is an active participant. They have either
+		 * already made a bet, or else the server is expecting
+		 * them to make one currently.
+		 */
+		ACTIVE,
+		/**
+		 * The user is in the session, but as an observer.
+		 * Typically what happens is that, unless the user
+		 * is the first one into the game session, they are
+		 * joining when a game round is in progress. They
+		 * therefore must wait, as an observer of the game,
+		 * until bets are called for again.
+		 */
+		OBSERVER
 	}
-	
-	// These are for the various gamestages
+
+	/**
+	 * Used in the GAMESTAGE line of a GAMESTATUS response to indicate
+	 * that the game has started.
+	 */
 	public static final String STARTED_KEYWORD		= "STARTED";
+	/**
+	 * Used in the GAMESTAGE line of a GAMESTATUS response to indicate
+	 * that the game has not started.
+	 */
 	public static final String NOT_STARTED_KEYWORD	= "NOT_STARTED";
 	
-	// And for some 'special' users
+	/**
+	 * Used in the HAND line of a GAMESTATUS response to represent
+	 * the dealer's hand. Also used in certain game state messages,
+	 * such as the 
+	 * {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_ACTION} or
+	 * {@link drexel.edu.blackjack.server.ResponseCode.CODE#CARD_DEALT}
+	 * responses, to indicate that an action applies to the dealer.
+	 */
 	public static final String DEALER_USERNAME		= "dealer";
+	/**
+	 * Used in the BET or HAND lines of a GAMESTATUS response when
+	 * the username is for some reason (typically an error of some
+	 * sort) not known. Also used in the game state messages for
+	 * this purpose.
+	 */
 	public static final String UNKNOWN_USERNAME		= "(unknown)";
 	
-	// Some words for actions in the game
+	/**
+	 * Used in
+	 * {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_ACTION} 
+	 * responses to indicate that the cards were shuffled.
+	 */
 	public static final String SHUFFLED_KEYWORD		= "SHUFFLED";
+	/**
+	 * Used in
+	 * {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_ACTION} 
+	 * responses to indicate that the user specified chose to stand
+	 * on their turn.
+	 */
 	public static final String STAND_KEYWORD		= "STAND";
+	/**
+	 * Used in
+	 * {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_ACTION} 
+	 * responses to indicate that the user specified chose to hit
+	 * on their turn.
+	 */
 	public static final String HIT_KEYWORD			= "HIT";
+	/**
+	 * Used in
+	 * {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_ACTION} 
+	 * responses to indicate that the user specified went bust
+	 * on their turn.
+	 */
 	public static final String BUST_KEYWORD			= "BUST";
+	/**
+	 * Used in
+	 * {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_ACTION} 
+	 * responses to indicate that the user specified got a blackjack
+	 * on their turn.
+	 */
 	public static final String BLACKJACK_KEYWORD	= "BLACKJACK";
 	
 	
@@ -89,6 +156,8 @@ public class GameState {
 	 * 
 	 * @param gameId A game's unique identifier to be used in
 	 * constructed messages
+	 * @param numberOfDecks how many decks to initialize the
+	 * dealer shoe with
 	 */
 	public GameState( String gameId, int numberOfDecks ) {
 		this.gameId = gameId;
@@ -107,9 +176,9 @@ public class GameState {
 	 * Need to send out messages to all players and notify them about
 	 * the dealer shoe being shuffled.
 	 * 
-	 * This is a ResponseCode.CODE.PLAYER_ACTION code, specifying that
-	 * the performer of the action is the dealer and the action itself
-	 * is a SHUFFLE.
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_ACTION}
+	 * code, specifying that the performer of the action is the dealer 
+	 * and the action itself is a SHUFFLE.
 	 *
 	 * @return True if notifications were sent successfully, false
 	 * if there were problems
@@ -132,12 +201,11 @@ public class GameState {
 
 	
 	/**
-	 * Need to send out messages to the remaining players (those who are
-	 * not GONE status, or the player themselves) and notify them about
+	 * Need to send out messages to the remaining players and notify them about
 	 * a player leaving the game.
 	 * 
-	 * This is a ResponseCode.CODE.PLAYER_LEFT code, and the parameters
-	 * are the gameId followed by the userId 
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_LEFT}
+	 * code, and the parameters are the gameId followed by the username. 
 	 *
 	 * @param departedPlayer Who left
 	 * @return True if notifications were sent successfully, false
@@ -163,6 +231,9 @@ public class GameState {
 	 * Need to send out messages to the other players (if any) about
 	 * how some new player has joined the session.
 	 * 
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_JOINED}
+	 * code, and the parameters are the gameId followed by the username. 
+	 * 
 	 * @param newPlayer Who just joined
 	 * @return True if notifications were sent successfully, false
 	 * if there were problems
@@ -185,7 +256,11 @@ public class GameState {
 	
 	/**
 	 * Need to send out messages to the other players (if any) about
-	 * how a bet was placed
+	 * how a bet was placed.
+	 * 
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_BET}
+	 * code, and the parameters are the gameId followed by the username
+	 * followed by the bet amount. 
 	 * 
 	 * @param player Who placed the bet
 	 * @param bet The amount bet
@@ -279,11 +354,9 @@ public class GameState {
 	
 	/**
 	 * Adds a player to the tracking within the game state. Newly
-	 * added players are entered in the OBSERVER state, unless...
+	 * added players are entered in the OBSERVER state.
 	 * 
-	 * Note that it's a possible the player is already IN the list
-	 * of players, but in the GONE state. In this case, they should
-	 * be in the RETURNED state.
+	 * @param player Who to add
 	 */
 	synchronized public boolean addPlayer( User player ) {
 
@@ -314,6 +387,8 @@ public class GameState {
 	 * Removes a player to the tracking within the game state.
 	 * If they've placed a bet, it'll be automatically forfeited
 	 * as it was already deducted from their account
+	 * 
+	 * @param player Who to remove
 	 */
 	synchronized public boolean removePlayer( User player ) {
 		
@@ -330,7 +405,11 @@ public class GameState {
 	}
 	
 	/**
-	 * Return a pointer to the current player
+	 * Return a pointer to the current player, that is,
+	 * the player whose turn it is and whose protocol
+	 * is in the 
+	 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AND_YOUR_TURN}
+	 * state.
 	 * 
 	 * @return Who the current player is. May be null.
 	 */
@@ -340,7 +419,9 @@ public class GameState {
 
 	/** 
 	 * Returns the number of players, without regard to their
-	 * status as observer or active
+	 * status as observer or active.
+	 * 
+	 * @param Total number of players in game
 	 */
 	synchronized public int getNumberOfPlayers() {
 		return (players == null ? 0 : players.size() );
@@ -429,9 +510,10 @@ public class GameState {
 	}
 	
 	/**
-	 * return the dealer
+	 * Get the dealer shoe
+	 * return the dealer shoe
 	 */
-	public DealerShoeInterface getDealer() {
+	public DealerShoeInterface getDealerShoe() {
 		if (shoe == null) {
 			shoe = new SimpleDealerShoe( numberOfDecks );
 			shoe.shuffle();
@@ -616,8 +698,12 @@ public class GameState {
 	}
 
 	/**
-	 * A game is supposed to be STARTED or NOT_STARTED. Not sre
+	 * A game is supposed to be STARTED or NOT_STARTED. Not sure
 	 * what decides it. Maybe if its thread is running?
+	 * 
+	 * TODO: The game states probably don't make sense.
+	 * It should probably be BETTING or PLAYING or 
+	 * WAITING
 	 * 
 	 * @return Either "STARTED" or "NOT_STARTED"
 	 */

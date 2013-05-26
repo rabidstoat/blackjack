@@ -24,7 +24,8 @@ import drexel.edu.blackjack.util.BlackjackLogger;
 /**
  * The active game coordinator handles the threads that
  * are involved in playing games that are active on the
- * server.
+ * server. Only one instance of it exists at a time,
+ * via the Singleton pattern.
  * 
  * @author Jennifer
  *

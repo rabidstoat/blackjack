@@ -24,7 +24,14 @@ import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
- * Holds information about the blackjack game.
+ * Coordinates information about the blackjack game. Metadata
+ * that doesn't vary as the game runs (e.g., number of decks,
+ * minimum bet, house rules) is stored in a referenced
+ * {@link drexel.edu.blackjack.db.game.GameMetadata} class, while
+ * dynamic information that changes as the game progresses
+ * (e.g., involved players, the dealer shoe of cards) is stored
+ * in a referenced {@link GameState} class.
+ * 
  * @author Jennifer
  *
  */
@@ -74,7 +81,7 @@ public class Game {
 	/**
 	 * Constructs a new active game based on the gamemetadata passed in.
 	 * 
-	 * @param metadata
+	 * @param metadata Set game metadata
 	 */
 	public Game(GameMetadata metadata) {
 		this.metadata = metadata;
@@ -136,7 +143,11 @@ public class Game {
 	 * 
 	 *  If something went wrong and they can't be removed (like,
 	 *  if they weren't in there in the first place) just return
-	 *  null
+	 *  null.
+	 *  
+	 *  @return A response code corresponding to the proper
+	 *  response to the instigating client, or null if there
+	 *  was some sort of error that prevented it from working
 	 */
 	public ResponseCode removePlayer(User player) {
 		
@@ -323,8 +334,9 @@ public class Game {
 	}
 
 	/**
-	 * Lots of lines start off with a keyword followed by a username. This
-	 * creates that
+	 * Lots of lines for messages that need to get sent, for notification
+	 * about activity in the game, start off with a keyword followed by a 
+	 * username. This creates such a string.
 	 * @param keyword The keyword, to be followed by a space and the username
 	 * @param player The player whose username to use
 	 */

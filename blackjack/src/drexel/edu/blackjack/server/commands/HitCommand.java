@@ -48,7 +48,7 @@ public class HitCommand extends BlackjackCommand {
 		if (protocol.getState() != STATE.IN_SESSION_AND_YOUR_TURN) {
 			return new ResponseCode(ResponseCode.CODE.NOT_EXPECTING_HIT).toString();
 		}
-		DealtCard c = protocol.getUser().getGame().getGameState().getDealer().dealTopCard();
+		DealtCard c = protocol.getUser().getGame().getGameState().getDealerShoe().dealTopCard();
 		if (protocol.getUser().getHand().getFaceupCards().size() == 0) {
 			c.changeToFaceUp();
 		}

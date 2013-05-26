@@ -32,7 +32,6 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * when a user logs into the server.
  * 
  * @author Jennifer
- *
  */
 public class User {
   
@@ -63,10 +62,20 @@ public class User {
 	 * Constructors go here
 	 **************************************************************/
 	
-	
+
+	/**
+	 * Create a user with no associated metadata. 
+	 * Presumably it will be specified later.
+	 */
 	public User() {
 	}
 	
+	/**
+	 * Create a user with the specified metadata
+	 * referenced.
+	 * 
+	 * @param userMetadata The user's metadata
+	 */
 	public User( UserMetadata userMetadata ) {
 		this.userMetadata = userMetadata;
 	}
@@ -79,24 +88,32 @@ public class User {
 	
 	// Auto-generated getters and setters below
 	/**
-	 * @return the user
+	 * Get the user metadata
+	 * @return the user metadata
 	 */
 	public UserMetadata getUserMetadata() {
 		return userMetadata;
 	}
 	/**
-	 * @param user the user to set
+	 * Set the user metadata
+	 * @param user the user metadata to set
 	 */
 	public void setUserMetadata(UserMetadata user) {
 		this.userMetadata = user;
 	}
 	/**
-	 * @return the hand
+	 * Get the user's hand. Since our implementation allows the
+	 * player to be in one game at a time, we can store this on
+	 * their user object directly.
+	 * 
+	 * @return the hand of cards, or null if not currently
+	 * dealt cards
 	 */
 	public Hand getHand() {
 		return hand;
 	}
 	/**
+	 * Set the user's hand of cards.
 	 * @param hand the hand to set
 	 */
 	public void setHand(Hand hand) {
@@ -104,6 +121,10 @@ public class User {
 	}
 
 	/**
+	 * Get the game the user is in. Since our implementation
+	 * allows for only one game per user, we can keep it on
+	 * the user object.
+	 * 
 	 * @return the game
 	 */
 	public Game getGame() {
@@ -111,6 +132,8 @@ public class User {
 	}
 
 	/**
+	 * Set the game the user is in.
+	 * 
 	 * @param game the game to set
 	 */
 	public void setGame(Game game) {
@@ -131,6 +154,8 @@ public class User {
 	 * Used for other people to set the user's status. Typically the
 	 * game will set the status on the user as they move between
 	 * observer and active status
+	 * 
+	 * @param status The game status to set
 	 */
 	protected void setStatus( GameState.STATUS status ) {
 		this.status = status;
@@ -138,6 +163,8 @@ public class User {
 	
 	/**
 	 * Return the status in the game of this player
+	 * 
+	 * @return The game status
 	 */
 	protected GameState.STATUS getStatus() {
 		return status;
@@ -169,6 +196,8 @@ public class User {
 	/**
 	 * A user has specified a bet if they have a non-null protocol
 	 * object somewhere, and there is a bet value set on it.
+	 * 
+	 * @retrn True if they have a specified bet, else false
 	 */
 	public boolean hasSpecifiedBet() {
 		
@@ -183,6 +212,9 @@ public class User {
 	/**
 	 * A user has specified a bet if they have a non-null protocol
 	 * object somewhere, and there is a bet value set on it.
+	 * 
+	 * @return The bet amount, if a bet is currently made, or else
+	 * null.
 	 */
 	public Integer getBet() {
 		
@@ -214,7 +246,7 @@ public class User {
 	 * Sends a message to the presumably connected user by 
 	 * sending it through to their socket
 	 * 
-	 * @param code
+	 * @param code What response code to send
 	 */
 	public boolean sendMessage(ResponseCode code) {
 		
