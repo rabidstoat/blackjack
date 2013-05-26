@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 import drexel.edu.blackjack.client.BlackjackCLClient;
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
+import drexel.edu.blackjack.client.screens.util.ClientSideGame;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.server.game.Game;
 

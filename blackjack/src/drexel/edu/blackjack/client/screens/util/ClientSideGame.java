@@ -1,4 +1,4 @@
-package drexel.edu.blackjack.client.screens;
+package drexel.edu.blackjack.client.screens.util;
 
 import java.util.ArrayList;
 

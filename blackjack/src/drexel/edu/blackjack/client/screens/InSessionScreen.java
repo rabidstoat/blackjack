@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import drexel.edu.blackjack.client.BlackjackCLClient;
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
+import drexel.edu.blackjack.client.screens.util.ClientSideGameStatus;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
@@ -180,8 +181,14 @@ public class InSessionScreen extends AbstractScreen {
 	 * @param code The game status
 	 */
 	private void displayGameStatus(ResponseCode code) {
-		// TODO: Much prettier
-		System.out.println( code.getText() );
+		
+		if( code != null ) {
+			ClientSideGameStatus gameStatus = new ClientSideGameStatus(code);
+			System.out.println( gameStatus.getSummaryStatus() );
+			for( String username : gameStatus.getUsernames() ) {
+				System.out.println( gameStatus.getStatusForUser(username) );
+			}
+		}
 	}
 
 	/**********************************************************************

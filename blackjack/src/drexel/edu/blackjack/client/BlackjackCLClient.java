@@ -23,10 +23,10 @@ import javax.net.ssl.TrustManagerFactory;
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
 import drexel.edu.blackjack.client.screens.AbstractScreen;
-import drexel.edu.blackjack.client.screens.ClientSideGame;
 import drexel.edu.blackjack.client.screens.InSessionScreen;
 import drexel.edu.blackjack.client.screens.LoginInputScreen;
 import drexel.edu.blackjack.client.screens.NotInSessionScreen;
+import drexel.edu.blackjack.client.screens.util.ClientSideGame;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
