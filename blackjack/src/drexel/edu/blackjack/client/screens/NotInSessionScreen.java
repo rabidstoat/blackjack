@@ -1,16 +1,13 @@
 package drexel.edu.blackjack.client.screens;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import drexel.edu.blackjack.client.BlackjackCLClient;
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
 import drexel.edu.blackjack.client.screens.util.ClientSideGame;
 import drexel.edu.blackjack.server.ResponseCode;
-import drexel.edu.blackjack.server.game.Game;
 
 /**
  * This is the user interface that shows when the
@@ -317,80 +314,4 @@ public class NotInSessionScreen extends AbstractScreen {
 			}
 		}
 	}
-	
-
-	/**********************************************************************
-	 * These methods handle tracking the list of available games so that
-	 * they can be displayed to the user and, when the user picks one
-	 * to join, the proper request for joining it can be made.
-	 *********************************************************************/
-	
-	
-	/**
-	 * This helper function can read what's in a response code and,
-	 * from it, create a bunch of ClientSideGame records to track
-	 * 
-	 * @param code The response code
-	 * @return The map of the games' IDs to the games
-	 */
-	private Map<String, ClientSideGame> generateGameMap(ResponseCode code) {
-
-		// This is what we will return
-		Map<String, ClientSideGame> map = new HashMap<String,ClientSideGame>();
-		
-		// We keep queueing up game description lines until we
-		// have reached the end for the game, then interpret them
-		String numDecks = null;
-		String minBet = null;
-		String maxBet = null;
-		String gameId = null;
-		String gameDescription = null;
-		ArrayList<String> rules = new ArrayList<String>();
-		
-		if( code != null && code.isMultilineCode() ) {
-			for( int i = 1; i < code.getNumberOfLines(); i++ ) {
-				String currentLine = code.getMultiline(i);
-				if( currentLine != null ) {
-					if( currentLine.startsWith( Game.RECORD_START_KEYWORD ) ) {
-
-						// Initialize all values
-						numDecks = minBet = maxBet = null;
-						gameId = gameDescription = null;
-						rules.clear();
-						
-						// Figure out the ID and description
-						// Use a tokenizer just because
-						StringTokenizer strtok = new StringTokenizer(currentLine);
-						if( strtok.hasMoreTokens() ) {
-							// First token is the word 'GAME', which we don't care about
-							strtok.nextToken();
-							if( strtok.hasMoreTokens() ) {
-								// This token, however, is the ID
-								gameId = strtok.nextToken();
-							}
-						}
-						
-						// Try to figure out what the description should be
-						int index = currentLine.indexOf( gameId, Game.RECORD_START_KEYWORD.length() );
-						gameDescription = currentLine.substring( index + gameId.length() ).trim();
-					} else if( currentLine.startsWith( Game.MAX_BET_ATTRIBUTE ) ) {
-						maxBet = currentLine.substring( Game.MAX_BET_ATTRIBUTE.length() ).trim();
-					} else if( currentLine.startsWith( Game.MIN_BET_ATTRIBUTE ) ) {
-						minBet = currentLine.substring( Game.MIN_BET_ATTRIBUTE.length() ).trim();
-					} else if( currentLine.startsWith( Game.NUM_DECKS_ATTRIBUTE ) ) {
-						numDecks = currentLine.substring( Game.NUM_DECKS_ATTRIBUTE.length() ).trim();
-					} else if( currentLine.startsWith( Game.RULE_KEYWORD ) ) {
-						rules.add( currentLine.substring( Game.RULE_KEYWORD.length() ).trim() );
-					} else if( currentLine.startsWith( Game.RECORD_END_KEYWORD ) ) {
-						// We need to create, and cache, a ClientSideGame
-						ClientSideGame game = new ClientSideGame( gameId, numDecks,
-								rules, minBet, maxBet, gameDescription );
-						map.put( gameId, game );
-					}
-				}
-			}
-		}
-		
-		return map;
-	}	
 }
