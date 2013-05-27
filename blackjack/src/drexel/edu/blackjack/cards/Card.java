@@ -184,8 +184,11 @@ public class Card {
 		
 		StringBuilder str = new StringBuilder();
 
-		str.append(this.rank);
-		str.append(this.suit );
+		// This used to append this.rank and this.suit, but that was making
+		// strings like 'TWOSPADES'. By appending the getRank() and getSuit(),
+		// it now properly makes strings like 2S
+		str.append(this.rank.getRank());
+		str.append(this.suit.getSuit() );
 		
 		return str.toString();
 	}
