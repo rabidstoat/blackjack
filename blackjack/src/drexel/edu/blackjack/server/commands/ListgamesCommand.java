@@ -35,7 +35,7 @@ import drexel.edu.blackjack.server.game.Game;
  */
 public class ListgamesCommand extends BlackjackCommand {
 
-	private static final String COMMAND_WORD = "LISTGAMES";
+	public static final String COMMAND_WORD = "LISTGAMES";
 
 	// STATEFUL: Will hold valid states that this command operates in
 	private Set<STATE> validStates = null;

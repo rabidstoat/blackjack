@@ -34,7 +34,7 @@ public class VersionCommand extends BlackjackCommand {
 
 	double version = 1.0;
 	
-	private static final String COMMAND_WORD = "VERSION";
+	public static final String COMMAND_WORD = "VERSION";
 	
 	// STATEFUL: Will hold valid states that this command operates in
 	private Set<STATE> validStates = null;

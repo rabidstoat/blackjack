@@ -32,7 +32,7 @@ import drexel.edu.blackjack.server.game.User;
  */
 public class LeaveSessionCommand extends BlackjackCommand {
 
-	private static final String COMMAND_WORD = "LEAVESESSION";
+	public static final String COMMAND_WORD = "LEAVESESSION";
 
 	// STATEFUL: Will hold valid states that this command operates in
 	private Set<STATE> validStates = null;

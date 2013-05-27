@@ -22,7 +22,7 @@ import drexel.edu.blackjack.server.ResponseCode;
 
 public class StandCommand extends BlackjackCommand {
 
-	private static final String COMMAND_WORD = "STAND";
+	public static final String COMMAND_WORD = "STAND";
 
 	private Set<STATE> validStates = null;
 

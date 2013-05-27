@@ -32,7 +32,7 @@ import drexel.edu.blackjack.server.commands.CommandMetadata;
  */
 public class QuitCommand extends BlackjackCommand {
 
-	private static final String COMMAND_WORD = "QUIT";
+	public static final String COMMAND_WORD = "QUIT";
 	
 	// STATEFUL: Will hold valid states that this command operates in
 	private Set<STATE> validStates = null;

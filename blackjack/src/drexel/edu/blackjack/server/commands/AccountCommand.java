@@ -31,7 +31,7 @@ import drexel.edu.blackjack.server.ResponseCode;
  */
 public class AccountCommand extends BlackjackCommand {
 
-	private static final String COMMAND_WORD = "ACCOUNT";
+	public static final String COMMAND_WORD = "ACCOUNT";
 	
 	// STATEFUL: Will hold valid states that this command operates in
 	private Set<STATE> validStates = null;

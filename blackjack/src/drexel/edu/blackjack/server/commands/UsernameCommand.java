@@ -32,7 +32,7 @@ import drexel.edu.blackjack.server.ResponseCode;
 
 public class UsernameCommand extends BlackjackCommand {
 
-	private static final String COMMAND_WORD = "USERNAME";
+	public static final String COMMAND_WORD = "USERNAME";
 
 	// STATEFUL: Will hold valid states that this command operates in
 	Set<STATE> validUsernameStates = null;

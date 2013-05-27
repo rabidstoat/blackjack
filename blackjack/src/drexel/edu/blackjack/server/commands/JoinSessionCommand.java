@@ -38,7 +38,7 @@ import drexel.edu.blackjack.server.game.User;
  */
 public class JoinSessionCommand extends BlackjackCommand {
 
-	private static final String COMMAND_WORD = "JOINSESSION";
+	public static final String COMMAND_WORD = "JOINSESSION";
 
 	// STATEFUL: Will hold valid states that this command operates in
 	private Set<STATE> validStates = null;

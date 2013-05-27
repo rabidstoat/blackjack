@@ -32,7 +32,7 @@ import drexel.edu.blackjack.server.ResponseCode;
  */
 public class HitCommand extends BlackjackCommand {
 
-	private static final String COMMAND_WORD = "HIT";
+	public static final String COMMAND_WORD = "HIT";
 
 	// STATEFUL: Set of states in which th command is valid
 	private Set<STATE> validStates = null;

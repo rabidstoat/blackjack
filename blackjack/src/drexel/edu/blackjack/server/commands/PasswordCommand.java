@@ -43,7 +43,7 @@ public class PasswordCommand extends BlackjackCommand {
 	// They get 3 tries to login before they're booted
 	public static final int INCORRECT_LOGIN_LIMIT = 3;
 
-	private static final String COMMAND_WORD = "PASSWORD";
+	public static final String COMMAND_WORD = "PASSWORD";
 
 	// STATEFUL: Will hold valid states that this command operates in
 	private Set<STATE> validPasswordStates = null;
