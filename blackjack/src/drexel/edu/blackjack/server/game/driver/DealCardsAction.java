@@ -7,10 +7,9 @@
  * o Carol Greco
  * o Duc Anh Nguyen
  * 
- * Purpose: This game action determines if a shuffle is needed. Current rules are
- * that you shuffle at the beginning of a game, and if the game shoe has 50%
- * or more of its cards already dealt. If a shuffle is made, a game update is
- * sent to all client connections of all players in the game.
+ * Purpose: This game action deals cards to the players, sending out 
+ * notifications of all the hands (including the dealers) to all the players.
+ * Any shuffling needed gets notified as well.
  ******************************************************************************/
 package drexel.edu.blackjack.server.game.driver;
 

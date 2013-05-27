@@ -185,6 +185,34 @@ public class GameState {
 	}
 
 	/**
+	 * Gets the dealer hand silently.
+	 * 
+	 * @param hand Hand that the dealer has
+	 */
+	public Hand getDealerHand() {
+		return dealerHand;
+	}
+	
+	/**
+	 * Needs to notify all players in the game that the dealer hit a blackjack.
+	 * <P>
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_ACTION}
+	 * code, the first parameter is the session ID, the second is the dealer name,
+	 * and the action word is BLACKJACK
+	 * @return True if sent successfully, false otherwise
+	 */
+	public boolean notifyPlayersOfDealerBlackjack() {
+		// Create the response code: gameid DEALER_NAME BLACKJACK
+		StringBuilder str = new StringBuilder( getStringForGameAndUser( null ) );
+		str.append( " " );
+		str.append( BLACKJACK_KEYWORD );
+		ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_ACTION, str.toString() );
+		
+		// Then send it to all the players
+		return notifyOtherPlayers( code, null );		
+	}
+
+	/**
 	 * Needs to set on this object the dealer's had, and also send out a 
 	 * response code indicating that the dealer has been dealt new cards.
 	 * <P>
@@ -597,12 +625,11 @@ public class GameState {
 	
 	/**
 	 * Get the dealer shoe
-	 * return the dealer shoe
+	 * return the dealer shoe, guaranteed non-null
 	 */
 	public DealerShoeInterface getDealerShoe() {
 		if (shoe == null) {
 			shoe = new SimpleDealerShoe( numberOfDecks );
-			shoe.shuffle();
 		}
 		return shoe;
 	}
@@ -612,12 +639,7 @@ public class GameState {
 	 * the cards being shuffled.
 	 */
 	public void shuffle() {
-		
-		// If the shoe is empty, we better create it
-		if( shoe == null ) {
-			shoe = new SimpleDealerShoe( numberOfDecks );
-		}
-		
+		shoe = getDealerShoe();
 		shoe.shuffle();
 		notifyAllOfShuffle();
 	}

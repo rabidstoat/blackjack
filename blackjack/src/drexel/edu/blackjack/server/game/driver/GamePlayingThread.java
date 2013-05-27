@@ -71,6 +71,7 @@ public class GamePlayingThread extends Thread {
 		gameActions.add( new RemoveNonBettersAction() );
 		gameActions.add( new ShuffleIfNeededAction() );
 		gameActions.add( new DealCardsAction() );
+		gameActions.add( new CheckForDealerBlackjackAction() );
 		
 		// And note that we're at the first one
 		this.gameActionIndex = 0;
