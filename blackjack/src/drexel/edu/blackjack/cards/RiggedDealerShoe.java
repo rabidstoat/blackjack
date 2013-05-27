@@ -20,11 +20,11 @@ package drexel.edu.blackjack.cards;
 public class RiggedDealerShoe extends SimpleDealerShoe {
 
 	// This is the same as the SimpleDealerShoe
-	private static final int FAIR_AND_SQUARE = 0;
+	public static final int FAIR_AND_SQUARE = 0;
 	
 	// The first card is ALWAYS Ace of Diamonds. The
 	// next card is ALWAYS queen of hearts. Then it repeats.
-	private static final int ALWAYS_DEAL_BLACKJACK = 1;
+	public static final int ALWAYS_DEAL_BLACKJACK = 1;
 	
 	// Some variables for our ALWAYS_DEAL_BLACKJACK mode
 	private static final DealtCard ACE_DIAMONDS_CARD = new DealtCard( Card.RANK.ACE, Card.SUIT.DIAMONDS );
