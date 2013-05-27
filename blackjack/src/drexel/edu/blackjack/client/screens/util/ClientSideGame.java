@@ -71,7 +71,9 @@ public class ClientSideGame {
 		b.setMaxBet(maxBet);
 		b.setMinBet(minBet);
 		b.setNumDecks(numDecks);
-		b.setRules(rules);
+		if( rules != null && rules.size() > 0 ) {
+			b.setRules(rules);
+		}
 		gameMetadata = b.build();
 	}
 
@@ -178,9 +180,11 @@ public class ClientSideGame {
 		str.append( "]" );
 		
 		// Rules, if any, in a bullet list below
-		for( String rule : getRules() ) {
-			str.append( "\n    o " );
-			str.append( rule );
+		if(  getRules() != null ) {
+			for( String rule : getRules() ) {
+				str.append( "\n    o " );
+				str.append( rule );
+			}
 		}
 		
 		return str.toString();
