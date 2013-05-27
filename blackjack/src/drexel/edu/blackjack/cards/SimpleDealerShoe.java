@@ -48,6 +48,12 @@ public class SimpleDealerShoe implements DealerShoeInterface {
 
 	@Override
 	public void shuffle() {
+		// Was a bug: before you shuffle, you need to return all the dealt
+		// cards from the bin to the deck, THEN reshuffle ALL the cards
+		// Otherwise cards in the bin never get returned to the deck and
+		// you eventually run out
+		deck.addAll( bin );
+		bin.clear();
 		Collections.shuffle(deck);
 	}
 
@@ -76,7 +82,10 @@ public class SimpleDealerShoe implements DealerShoeInterface {
 
 	@Override
 	public float getPercentageOfDealtCards() {
-		return bin.size()/(bin.size() + deck.size());
+		// Fixed a bug where unless you cast, it does integer
+		// division and therefore only returns 0 or 1, nothing
+		// else in between ever.
+		return (float)bin.size()/(float)(bin.size() + deck.size());
 	}
 
 	@Override
