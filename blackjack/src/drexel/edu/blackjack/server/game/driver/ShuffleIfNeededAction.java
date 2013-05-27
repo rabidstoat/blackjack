@@ -43,10 +43,7 @@ public class ShuffleIfNeededAction extends GameAction {
 			if( state == null ) {
 				LOGGER.severe( "Trying to decide if we should shuffle, but there's no game state..." );
 			} else {
-				// We let the state handle it, mostly
-				if( state.needToShuffle() ) {
-					state.shuffle();
-				}
+				shuffleIfNecessary( state );
 				success = true;
 			}
 		}

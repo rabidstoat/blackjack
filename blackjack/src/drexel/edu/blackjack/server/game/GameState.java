@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import drexel.edu.blackjack.cards.DealerShoeInterface;
+import drexel.edu.blackjack.cards.Hand;
 import drexel.edu.blackjack.cards.SimpleDealerShoe;
 import drexel.edu.blackjack.db.user.UserMetadata;
 import drexel.edu.blackjack.server.BlackjackProtocol;
@@ -49,7 +50,7 @@ public class GameState {
 	 * Used for the status of players in the currently represented
 	 * state of the game.
 	 */
-	protected enum STATUS {
+	public enum STATUS {
 		/**
 		 * The user is an active participant. They have either
 		 * already made a bet, or else the server is expecting
@@ -138,6 +139,9 @@ public class GameState {
 	// The current player in terms of play
 	private User currentPlayer			= null;
 	
+	// The dealer's hand
+	private Hand dealerHand				= null;
+	
 	// Every game has an identifier
 	private String gameId				= null;
 	
@@ -171,7 +175,84 @@ public class GameState {
 	 * of some sort of player action.
 	 ********************************************************************/
 
+	/**
+	 * Sets the dealer hand silently. No notifications are given
+	 * 
+	 * @param hand Hand that the dealer has
+	 */
+	private void setDealerHand( Hand hand ) {
+		this.dealerHand = hand;
+	}
+
+	/**
+	 * Needs to set on this object the dealer's had, and also send out a 
+	 * response code indicating that the dealer has been dealt new cards.
+	 * <P>
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#CARD_DEALT}
+	 * code, the first parameter is the session ID, the second is the dealer name,
+	 * and remaining parameters are the new cards dealt. Facedown cards are not
+	 * presented in the message.
+	 * @param hand Hand that the dealer has
+	 * @return True if sent successfully, false otherwise
+	 */
+	public boolean setDealerHandAndNotify(Hand hand) {
+		
+		// First set the hand
+		setDealerHand(hand);
+		
+		// Create the response code: gameid username <hand as seen by other users>
+		StringBuilder str = new StringBuilder( getStringForGameAndUser( null ) );
+		str.append( " " );
+		str.append( dealerHand.toString(false) );	// False because players can't see dealer facedown cards
+		ResponseCode code = new ResponseCode( ResponseCode.CODE.CARD_DEALT, str.toString() );
+
+		// Then send it to all the players
+		return notifyOtherPlayers( code, null );		
+	}
 	
+	/**
+	 * Needs to send out a response code indicating that the user
+	 * in question has been dealt new cards.
+	 * <P>
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#CARD_DEALT}
+	 * code, the first parameter is the session ID, the second is the username,
+	 * and remaining parameters are the new cards dealt. When the message is
+	 * sent to the player whose hand it is, they can see facedown cards. Otherwise,
+	 * facedown cards are not revealed
+	 * @param user User whose hand information should be sent
+	 * @return True if sent successfully, false otherwise
+	 */
+	public boolean notifyAllOfNewCards(User user) {
+		
+		boolean success = false;
+		
+		if( user != null && user.getHand() != null ) {
+			
+			Hand hand = user.getHand();
+			
+			// Create the response code: gameid username <hand as seen by other users>
+			StringBuilder str = new StringBuilder( getStringForGameAndUser( user) );
+			str.append( " " );
+			str.append( hand.toString(false) );	// False because it's not for the playe whose hand it is
+			ResponseCode code = new ResponseCode( ResponseCode.CODE.CARD_DEALT, str.toString() );
+
+			// Then send it to all the players except this user
+			success = notifyOtherPlayers( code, user );		
+
+			// A new code is used to notify this user, as they get to
+			// see all the card values
+			str = new StringBuilder( getStringForGameAndUser( user ) );
+			str.append( " " );
+			str.append( hand.toString(true) );	// True because it's for the playe whose hand it is
+			code = new ResponseCode( ResponseCode.CODE.CARD_DEALT, str.toString() );
+			
+			// Then send it to the player in question
+			success = success && user.sendMessage( code );
+		}
+		
+		return success;
+	}
+
 	/**
 	 * Need to send out messages to all players and notify them about
 	 * the dealer shoe being shuffled.
@@ -193,7 +274,7 @@ public class GameState {
 		str.append( SHUFFLED_KEYWORD );
 		ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_ACTION, str.toString() );
 
-		// Then send it to all the players except the one who generated
+		// Then send it to all the players
 		success = notifyOtherPlayers( code, null );		
 
 		return success;
@@ -448,6 +529,11 @@ public class GameState {
 					if( !user.hasSpecifiedBet() ) {
 						// Force them to idle timeout
 						user.forceTimeoutWhileBetting();
+						// Remove them from the list of game players
+						removePlayer(user);
+						// Reset their bet and hand
+						user.clearBet();
+						user.setHand(null);
 					}
 				}
 			}
@@ -498,12 +584,12 @@ public class GameState {
 	 */
 	public boolean needToShuffle() {
 		
-		boolean needToReshuffle = true;
+		boolean needToReshuffle = false;
 		
-		if( shoe != null ) {
-			if( shoe.getPercentageOfDealtCards() > 50.0 ) {
-				needToReshuffle = true;
-			}
+		if( shoe == null ) {
+			needToReshuffle = true;
+		} else if( shoe.getPercentageOfDealtCards() > 0.5 ) {
+			needToReshuffle = true;
 		}
 		
 		return needToReshuffle;
@@ -561,9 +647,13 @@ public class GameState {
 			
 			// Sets up all players active
 			removeAllPlayerBets();
+			removeAllPlayerHands();
 			
 			// Reset the starting player
 			currentPlayer = null;
+			
+			// Reset the dealer's hand
+			setDealerHand( null );
 			
 			// Request bids from all players
 			for( User player : players ) {
@@ -635,6 +725,23 @@ public class GameState {
 		if( players != null ) {
 			for( User player : players ) {
 				player.clearBet();
+			}
+		}
+	}
+
+	/**
+	 * Walk through the players, find their protocol object,
+	 * and set the hand value stored on it to null. This signifies
+	 * starting a new round of play, where the hand no longer
+	 * needs to be stored.
+     * <P>
+	 * TODO: I'm worried about this method and synchronization
+	 */
+	private void removeAllPlayerHands() {
+
+		if( players != null ) {
+			for( User player : players ) {
+				player.setHand(null);
 			}
 		}
 	}
@@ -712,6 +819,4 @@ public class GameState {
 		// like "taking bets" or "playing hand" or something....
 		return STARTED_KEYWORD;
 	}
-
-
 }

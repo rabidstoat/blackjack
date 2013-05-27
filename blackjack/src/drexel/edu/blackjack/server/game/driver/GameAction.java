@@ -13,7 +13,9 @@
  ******************************************************************************/
 package drexel.edu.blackjack.server.game.driver;
 
+import drexel.edu.blackjack.cards.DealtCard;
 import drexel.edu.blackjack.server.game.Game;
+import drexel.edu.blackjack.server.game.GameState;
 
 /**
  * This interface represents the general concept
@@ -69,4 +71,46 @@ public abstract class GameAction {
 	 * all the players, so be cautious in returning false.
 	 */
 	public abstract boolean doAction( Game game );
+	
+	/** 
+	 * Given a state containing a dealer's shoe, check and see
+	 * if the shoe needs to be shuffled. If it does, do so,
+	 * notifying players involved in the game.
+	 * 
+	 * @param state Contains a shoe that might need reshuffling
+	 * @return True if it was reshuffled, false otherwise
+	 */
+	protected boolean shuffleIfNecessary(GameState state) {
+		boolean reshuffled = false;
+		
+		if( state != null && state.needToShuffle() ) {
+			state.shuffle();
+			reshuffled = true;
+		}
+		
+		return reshuffled;
+	}
+
+	/** 
+	 * Given a state containing a dealer's shoe, deal a card
+	 * from the top of the shoe. First, however, check and see
+	 * if the shoe needs to be reshuffled. If it does, do so,
+	 * and notify involved players, and THEN deal a card off
+	 * the top.
+	 * 
+	 * @param state Contains a shoe from which to deal a card,
+	 * possibly reshuffling first
+	 * @return The card dealt, in a facedown state, or null if 
+	 * there was a problem
+	 */
+	protected DealtCard shuffleIfNeededAndDealCard(GameState state) {
+		DealtCard card = null;
+		
+		shuffleIfNecessary( state );
+		if( state != null && state.getDealerShoe() != null ) {
+			card = state.getDealerShoe().dealTopCard();
+		}
+		
+		return card;
+	}
 }

@@ -70,6 +70,7 @@ public class GamePlayingThread extends Thread {
 		gameActions.add( new WaitForBetsAction() );
 		gameActions.add( new RemoveNonBettersAction() );
 		gameActions.add( new ShuffleIfNeededAction() );
+		gameActions.add( new DealCardsAction() );
 		
 		// And note that we're at the first one
 		this.gameActionIndex = 0;

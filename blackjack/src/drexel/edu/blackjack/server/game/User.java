@@ -166,7 +166,7 @@ public class User {
 	 * 
 	 * @return The game status
 	 */
-	protected GameState.STATUS getStatus() {
+	public GameState.STATUS getStatus() {
 		return status;
 	}
 
@@ -312,6 +312,24 @@ public class User {
 		}
 	}
 
+	/**
+	 * This method not only sets the other hand, it also
+	 * sends out notifications to others who are in the
+	 * same game session.
+	 * 
+	 * @param hand The hand to set
+	 */
+	public void setHandAndNotify(Hand hand) {
+		
+		// Set the hand
+		this.hand = hand;
+		
+		// ANd notify others
+		if( game !=null ) {
+			game.notifyOfPlayerNewCards( this );
+		}
+	}
+	
 	
 	/***************************************************************
 	 * Needed to implement the equals() method
@@ -366,5 +384,5 @@ public class User {
 		
 		return false;
 	}
-	
+
 }

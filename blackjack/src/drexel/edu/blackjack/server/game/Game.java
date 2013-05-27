@@ -251,6 +251,22 @@ public class Game {
 		return success;
 	}
 
+	/**
+	 * Requests that a message be sent out to notify others
+	 * in the game that a user has new cards. The message
+	 * is sent to everyone, including the player themselves.
+	 * The hand of cards is on the user object.
+	 * 
+	 * @param user Who has new cards
+	 */
+	public boolean notifyOfPlayerNewCards(User user ) {
+		boolean success = false;
+		if( state != null ) {
+			success = state.notifyAllOfNewCards( user );
+		}
+		return success;
+	}	
+
 	
 	/*******************************************************************************
 	 * Some getters/setters that aren't overly complex in logic
@@ -469,5 +485,6 @@ public class Game {
 		}
 		str.append( RECORD_END_KEYWORD + BlackjackServer.EOL );
 		return str.toString();
-	}	
+	}
+
 }

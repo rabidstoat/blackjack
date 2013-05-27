@@ -390,6 +390,8 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 					displayPlayerMovement( code );
 				} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_BET ) ) {
 					displayPlayerBet( code );
+				} else if( code.hasSameCode(ResponseCode.CODE.CARD_DEALT ) ) {
+					displayCardDealt( code );
 				} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_ACTION ) ) {
 					displayPlayerAction( code );
 				} else {
@@ -532,7 +534,39 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 			}
 			str.append( "." );
 			
-			// Display to the string
+			// Display to the screen
+			updateStatus( str.toString() );
+		}
+	}
+
+	/**
+	 * This handles codes about cards dealt to someone. The first 
+	 * parameter is the game ID. The second parameter is the username.
+	 * The rest are the cards. This is all as per
+	 * the protocol defintion.
+	 * 
+	 * @param code Hopefully of type ResponseCode.CODE.CARD_DEALT
+	 */
+	private void displayCardDealt(ResponseCode code) {
+		
+		if( code != null  ) {
+
+			// Our parameters
+			List<String> params = code.getParameters();
+
+			// All player update messages start the same
+			StringBuilder str = createStringBuilderForUserUpdate(params);
+			
+			// And now add the cards, one by one
+			str.append( " has the following cards:" );
+			if( params != null && params.size() >= 3 ) {
+				for( int i = 2; i < params.size(); i++ ) {
+					str.append( " " );
+					str.append( params.get(i) );
+				}
+			}
+			
+			// Display to the screen
 			updateStatus( str.toString() );
 		}
 	}
