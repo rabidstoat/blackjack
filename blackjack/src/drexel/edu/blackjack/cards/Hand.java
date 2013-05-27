@@ -65,6 +65,15 @@ public class Hand {
 	}
 	
 	/**
+	 * Get the number of cards in the hand
+	 * 
+	 * @return Number of cards in the hand
+	 */
+	public int getTotalNumberOfCards() {
+		return (cards == null ? 0 : cards.size() );
+	}
+	
+	/**
 	 * Get all possible point values that the hand could
 	 * have. There are multiple ones as some cards (like
 	 * Ace) have multiple point values.
