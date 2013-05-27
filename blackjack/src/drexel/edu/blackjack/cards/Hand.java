@@ -218,9 +218,9 @@ public class Hand {
 		for (Card c:this.getFacedownCards()) {
 			b.append(separator);
 			if (callingUser == user) 
-				b.append("X");
-			else
 				b.append(c.toString());
+			else
+				b.append("X");
 			separator = " ";
 		}
 		for (Card c:this.getFaceupCards()) {
@@ -247,9 +247,9 @@ public class Hand {
 		for (Card c:this.getFacedownCards()) {
 			b.append(separator);
 			if (isOwner) 
-				b.append("X");
-			else
 				b.append(c.toString());
+			else
+				b.append("X");
 			separator = " ";
 		}
 		for (Card c:this.getFaceupCards()) {
