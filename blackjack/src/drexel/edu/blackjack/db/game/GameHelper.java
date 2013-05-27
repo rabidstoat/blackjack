@@ -54,6 +54,11 @@ public class GameHelper {
 		try {
 			String s = r.readLine();
 			GameManagerInterface gm = FlatfileGameManager.getDefaultGameManager();
+			if( gm.remove(s.trim()) ) {
+				System.out.println( "Game removed." );
+			} else {
+				System.out.println( "No such game exists." );
+			}
 		} catch (IOException e) {
 			System.out.println("Input ERROR");
 		}
