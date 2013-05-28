@@ -442,8 +442,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 				} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_ACTION ) ) {
 					displayPlayerAction( code );
 				} else if( code.hasSameCode(ResponseCode.CODE.UPDATED_HAND ) ) {
-					// TODO: Need to write this
-					updateStatus( "Need to write the response to an updated hand." );
+					displayUpdatedHand( code );
 				} else {
 					// TODO: Handle other game state codes
 					LOGGER.warning( "Received unhandled game state code of '" + code.toString() + "'." );
@@ -609,6 +608,56 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 			
 			// And now add the cards, one by one
 			str.append( " has the following cards:" );
+			
+			// Try to line everything up at a string length of 40, at this point
+			while( str.length() < 40 ) {
+				str.append( " " );
+			}
+			
+			// Need to add the cards, one by one
+			if( params != null && params.size() >= 3 ) {
+				StringBuilder cardString = new StringBuilder();
+				for( int i = 2; i < params.size(); i++ ) {
+					cardString.append( " " );
+					cardString.append( params.get(i) );
+				}
+				str.append( cardString.toString() );
+				
+				// Also, if it's the current user, save their cards
+				// username comes in the second parameter
+				String userWithCards = params.get(1);
+				if( userWithCards != null && userWithCards.equals(username) ) {
+					cards = cardString.toString();
+				}
+			}
+			
+			// Display to the screen
+			updateStatus( str.toString() );
+		}
+	}
+
+
+	/**
+	 * This handles codes about cards being updated, which happens
+	 * when a facedown card is turned faceup. The first 
+	 * parameter is the game ID. The second parameter is the username.
+	 * The rest are the cards. This is all as per
+	 * the protocol defintion.
+	 * 
+	 * @param code Hopefully of type ResponseCode.CODE.UPDATED_HAND
+	 */
+	private void displayUpdatedHand(ResponseCode code) {
+		
+		if( code != null  ) {
+
+			// Our parameters
+			List<String> params = code.getParameters();
+
+			// All player update messages start the same
+			StringBuilder str = createStringBuilderForUserUpdate(params);
+			
+			// And now add the cards, one by one
+			str.append( "'s facedown card is revealed:" );
 			
 			// Try to line everything up at a string length of 40, at this point
 			while( str.length() < 40 ) {
