@@ -34,6 +34,8 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
@@ -131,6 +133,15 @@ public class BlackjackCLClient {
 	 * @param args No arguments expected
 	 */
 	public static void main(String[] args) {
+		// Maybe cross-platform will work on mac
+		try {
+			UIManager.setLookAndFeel(
+			        UIManager.getCrossPlatformLookAndFeelClassName());
+		} catch (ClassNotFoundException e) {
+		} catch (InstantiationException e) {
+		} catch (IllegalAccessException e) {
+		} catch (UnsupportedLookAndFeelException e) {
+		}
 		BlackjackCLClient client;
 		if (args.length > 0 && args[args.length - 1].equals("--debug")) 
 			client = new BlackjackCLClient(true);
