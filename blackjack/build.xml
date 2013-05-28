@@ -109,6 +109,18 @@
 
 	<!-- Runs the client against the local host  -->
 	<!-- with INFO and above log messages shown -->
+    <target depends="compile" name="run-client-local-debug">
+        <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
+    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
+			<permissions>
+				<grant class="java.security.AllPermission"/>
+			</permissions>            
+    	    <classpath refid="blackjack.classpath"/>
+    		<sysproperty key="loglevel" value="INFO"/>
+            <arg value="--debug"/>
+    	</java>
+    </target>
+
     <target depends="compile" name="run-client-local-info">
         <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
     	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">

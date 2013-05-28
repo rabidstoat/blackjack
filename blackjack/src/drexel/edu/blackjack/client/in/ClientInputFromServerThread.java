@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import drexel.edu.blackjack.client.BlackjackCLClient;
-import drexel.edu.blackjack.client.MessageFrame;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
@@ -85,7 +84,7 @@ public class ClientInputFromServerThread extends Thread {
 		// A listener for message traffic; need to create a synchronized set for our
 		// multithreaded environment
 		listeners = Collections.synchronizedSet(new HashSet<MessagesFromServerListener>());
-		addListener( MessageFrame.getDefaultMessageFrame() );
+		//addListener( MessageFrame.getDefaultMessageFrame() );
 		
 		// Create a reader for the socket
 		try {

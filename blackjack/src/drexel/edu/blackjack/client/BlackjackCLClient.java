@@ -90,7 +90,7 @@ public class BlackjackCLClient {
 	private static final int PORT						= 55555;
 	
 	// This system property is set true if we should show the message frame
-	private static final String SHOW_MESSAGES			= "ShowMessages";
+	private static final String SHOW_MESSAGES			= "showmessages";
 	
 	// Our logger
 	private final static Logger LOGGER = BlackjackLogger.createLogger(BlackjackCLClient.class .getName()); 
@@ -108,6 +108,8 @@ public class BlackjackCLClient {
 	private ClientOutputToServerHelper output = null;
 	private ClientInputFromServerThread input = null;
 	
+	private boolean debugMode = false;
+	
 	/************************************************************
 	 * Main method is here! And constructor!
 	 ***********************************************************/
@@ -119,14 +121,21 @@ public class BlackjackCLClient {
 		// Don't really do anything
 	}
 	
+	public BlackjackCLClient(boolean debugMode) {
+		this.debugMode = debugMode;
+	}
+	
 	/**
 	 * Again, with the no comments!
 	 * 
 	 * @param args No arguments expected
 	 */
 	public static void main(String[] args) {
-		
-		BlackjackCLClient client = new BlackjackCLClient();
+		BlackjackCLClient client;
+		if (args.length > 0 && args[args.length - 1].equals("--debug")) 
+			client = new BlackjackCLClient(true);
+		else
+			client = new BlackjackCLClient();
 		client.runClient();
 				
 	}
@@ -178,17 +187,26 @@ public class BlackjackCLClient {
             // Create the helper to handle output
             output = new ClientOutputToServerHelper( socket );
             
+            if (debugMode) {
+            	
+            	setScreen(new DebugClientScreen(this, input, output), true);
+            	
+                // Set up the messages frame
+            	/*
+                if( "true".equals(System.getProperty(SHOW_MESSAGES)) ) {
+                	MessageFrame.getDefaultMessageFrame().setLocationRelativeTo(null);
+                	MessageFrame.getDefaultMessageFrame().setVisible(true);
+                }
+                */
+            	
+            } else {
+	
+	            // Set the screen to the login input screen
+	            setScreen( LoginInputScreen.getDefaultScreen( this, input, output ), true );
+            }
+            
             // We read in input from the user from standard in, though
             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-
-            // Set the screen to the login input screen
-            setScreen( LoginInputScreen.getDefaultScreen( this, input, output ), true );
-            
-            // Set up the messages frame
-            if( "true".equals(System.getProperty(SHOW_MESSAGES)) ) {
-            	MessageFrame.getDefaultMessageFrame().setLocationRelativeTo(null);
-            	MessageFrame.getDefaultMessageFrame().setVisible(true);
-            }
 
             // Loop through as long as we have input
             String fromUser = stdIn.readLine();
