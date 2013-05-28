@@ -221,7 +221,7 @@ public class GameState {
 		
 		if( player != null ) {
 			// Create the response code: gameid username result bet
-			StringBuilder str = new StringBuilder( getStringForGameAndUser( null ) );
+			StringBuilder str = new StringBuilder( getStringForGameAndUser( player ) );
 			str.append( " " );
 			if( outcome == COMPARISON_RESULT.WIN ) {
 				str.append( WON_KEYWORD );
