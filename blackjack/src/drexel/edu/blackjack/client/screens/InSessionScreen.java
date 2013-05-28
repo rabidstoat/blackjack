@@ -227,8 +227,6 @@ public class InSessionScreen extends AbstractScreen {
 			if( requestedUsername != null && requestedUsername.equals(getUsername() ) ) {
 				str.append( " Hey, that's you!" );
 				switchMenus = true;
-			} else {
-				str.append( " Not you, because you are '" + getUsername() + " and they are " + requestedUsername + "." );
 			}
 			
 			// Display to the screen. Since this is a short 1-line message, treat it as
