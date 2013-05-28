@@ -28,6 +28,36 @@ import drexel.edu.blackjack.server.game.User;
 
 public class Hand {
 	
+	/**
+	 * Used to report the results of comparing this
+	 * hand to a dealer hand, which is passed in.
+	 * It'll either be a win, a lose, or a tie
+	 */
+	enum COMPARISON_RESULT {
+		
+		/**
+		 * Two ways to win:
+		 * <OL>
+		 * <LI>The dealer hand busted and this hand did not.
+		 * <LI>Neither hand busted, and this hand has more points.
+		 * </OL>
+		 */
+		WIN,
+		/**
+		 * Two ways to lose:
+		 * <OL>
+		 * <LI>This hand busted, and the dealer did not
+		 * <LI>Neither hand busted, and this hand has more points
+		 * </OL>
+		 */
+		LOSE,
+		/**
+		 * Only way to tie is if neither hand busted and they have
+		 * the same points.
+		 */
+		TIE
+	}
+	
 	private final ArrayList<DealtCard> cards = new ArrayList<DealtCard>();
 	private final HashSet<Integer> points = new HashSet<Integer>();
 	private final User user;
@@ -292,5 +322,71 @@ public class Hand {
 			}
 		}
 		return false;
+	}
+	
+	
+	/**
+	 * Take this hand, presumed to be a player hand, and
+	 * compare it to the dealer's hand. Report what the
+	 * result it. See the enum for the rules.
+	 * @param dealerHand Shouldn't be null
+	 * @return The result from this hand's perspective
+	 */
+	public COMPARISON_RESULT compareToDealerHand( Hand dealerHand ) {
+		
+		// This is just plain bad, but assume this hand wins I guess
+		if( dealerHand == null ) {
+			return COMPARISON_RESULT.WIN;
+		}
+		
+		// If you busted, you don't win, doesn't matter what the dealer has
+		if( getIsBusted() ) {
+			return COMPARISON_RESULT.LOSE;
+		}
+		
+		// If the player didn't bust and the dealer did, it's a win
+		if( dealerHand.getIsBusted() ) {
+			return COMPARISON_RESULT.WIN;
+		}
+		
+		// No one busted. Therefore, it comes down to point comparisons
+		// So what's the best possible value for this hand?
+		Integer thisHandValue = null;
+		if( getPossibleValues() != null ) {
+			for( Integer value : getPossibleValues() ) {
+				if( thisHandValue == null || (value > thisHandValue && value <= 21) ) {
+					thisHandValue = value;
+				}
+			}
+		}
+		
+		// And what about the dealer?
+		Integer dealerHandValue = null;
+		if( dealerHand.getPossibleValues() != null ) {
+			for( Integer value : dealerHand.getPossibleValues() ) {
+				if( dealerHandValue == null || (value > dealerHandValue && value <= 21 ) ) {
+					dealerHandValue = value;
+				}
+			}
+		}
+		
+		// Really, they should be null. And because they shouldn't be if they are? I'm going
+		// to give them a value of 1.
+		if( thisHandValue == null ) {
+			thisHandValue = 1;
+		}
+		if( dealerHandValue == null ) {
+			dealerHandValue = 1;
+		}
+		
+		// Otherwise we compare
+		if( thisHandValue > dealerHandValue ) {
+			return COMPARISON_RESULT.WIN;
+		} else if( thisHandValue < dealerHandValue ) {
+			return COMPARISON_RESULT.LOSE;
+		}
+		
+		// If we got here, must've tied
+		return COMPARISON_RESULT.TIE;
 	}
 }
