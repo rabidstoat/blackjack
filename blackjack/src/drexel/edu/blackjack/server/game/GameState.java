@@ -220,7 +220,7 @@ public class GameState {
 		boolean success = false;
 		
 		if( player != null ) {
-			// Create the response code: gameid username result
+			// Create the response code: gameid username result bet
 			StringBuilder str = new StringBuilder( getStringForGameAndUser( null ) );
 			str.append( " " );
 			if( outcome == COMPARISON_RESULT.WIN ) {
@@ -230,6 +230,8 @@ public class GameState {
 			} else {
 				str.append( TIED_KEYWORD );
 			}
+			str.append( " " );
+			str.append( player.getBet() );
 			ResponseCode code = new ResponseCode( ResponseCode.CODE.GAME_OUTCOME, str.toString() );
 			
 			// Then send it to all the players
