@@ -24,6 +24,7 @@ import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.BlackjackServerThread;
 import drexel.edu.blackjack.server.ResponseCode;
 import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
+import drexel.edu.blackjack.server.game.GameState.STATUS;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
@@ -44,6 +45,22 @@ public class User {
 	
 	// Hand they have in the current game
 	private Hand hand;
+
+	// This variable is very similar to the next one, so here is the distinction:
+	// this flag is whether or not they have ended their gameplay this round. It's
+	// not relevant if the player isn't active. But if they are, this should be true
+	// only after, in this round, one of the following things happened: a) they timed
+	// out and no longer are in the game; b) they chose to STAND; c) they chose to hit
+	// and busted.
+	private boolean hasFinishedGameplayThisRound = true;
+	
+	// This variable is very similar to the previous one, so here is the distinction:
+	// this flag is whether or not they have chosen to HIT or STAND, since the last
+	// request for them to do so has been made. They might still have more plays to
+	// make this round, so it's not necessary that the hasFinishedGameplayThisRound
+	// be true if this variable is true. Whenever someone does a HIT or STAND command,
+	// this variable should be set to false
+	private boolean needsToMakeAPlay = false;
 	
 	// Game they are playing
 	private Game game;
@@ -141,6 +158,46 @@ public class User {
 	}
 
 	/**
+	 * Set whether or not a user has finished their game
+	 * play for this round. 
+	 * 
+	 * @param state True if they have, else false
+	 */
+	public void setHasFinishedGamePlayThisRound(boolean state) {
+		this.hasFinishedGameplayThisRound = state;
+	}
+
+	/**
+	 * Get whether or not a user has finished their game
+	 * play for this round.
+	 * 
+	 * @return True if they have, else false
+	 */
+	public boolean getFinishedGamePlayThisRound() {
+		return this.hasFinishedGameplayThisRound;
+	}
+
+	/**
+	 * Set whether or not a user has satisfied the most
+	 * recent request for them to make a game play.
+	 * 
+	 * @param state True if they have, else false
+	 */
+	public void setNeedsToMakeAPlay(boolean state) {
+		this.needsToMakeAPlay = state;
+	}
+
+	/**
+	 * Get whether or not a user has satisfied the most
+	 * recent request for them to make a game play.
+	 * 
+	 * @return True if they have, else false
+	 */
+	public boolean getNeedsToMakeAPlay() {
+		return this.needsToMakeAPlay;
+	}
+
+	/**
 	 * If the user is connected (and they should be), keep a pointer
 	 * to their server thread around, so messages can get sent
 	 * 
@@ -168,6 +225,16 @@ public class User {
 	 */
 	public GameState.STATUS getStatus() {
 		return status;
+	}
+
+	/**
+	 * Return true if the user has a non-null status
+	 * that is set to ACTIVE, false otherwise
+	 * 
+	 * @return True if active, false otherwise
+	 */
+	public boolean isActive() {
+		return getStatus() != null && getStatus().equals(STATUS.ACTIVE);
 	}
 
 	
@@ -227,11 +294,15 @@ public class User {
 	}
 
 	/**
-	 * Remove any bets that are associated with this player
+	 * Remove any bets that are associated with this player,
+	 * clear out their current card hand, and reset their need
+	 * to make a game-playing move to 'true'
 	 */
-	public void clearBet() {
+	public void resetForNextRound() {
 		if( thread != null && thread.getProtocol() != null ) {
 			thread.getProtocol().setBet(null);
+			this.setHand(null);
+			this.setHasFinishedGamePlayThisRound( false );
 		}
 	}
 	
@@ -280,6 +351,24 @@ public class User {
 		ResponseCode code = new ResponseCode( ResponseCode.CODE.TIMEOUT_EXCEEDED_WHILE_BETTING );
 		this.sendMessage( code );
 	}
+	
+	/**
+	 * If a user is forced to timeout while playing, they
+	 * have their state changed to not being in a session,
+	 * and a response sent to them alerting them of this
+	 */
+	public void forceTimeoutWhilePlaying() {
+		// First change the state
+		if( thread != null && thread.getProtocol() != null ) {
+			thread.getProtocol().setState( STATE.NOT_IN_SESSION );
+		}
+		
+		// THen send the response code
+		ResponseCode code = new ResponseCode( ResponseCode.CODE.TIMEOUT_EXCEEDED_WHILE_PLAYING );
+		this.sendMessage( code );
+	}
+
+
 
 	/**
 	 * Placing a bet involves several things:
@@ -329,7 +418,20 @@ public class User {
 			game.notifyOfPlayerNewCards( this );
 		}
 	}
-	
+
+	/**
+	 * STATEFUL
+	 * When it's the player's turn, their protocol object
+	 * needs to be set to reflect this by changing state
+	 */
+	public void setIsPlayerTurn() {
+		if( thread != null && thread.getProtocol() != null ) {
+			thread.getProtocol().setState( STATE.IN_SESSION_AND_YOUR_TURN );
+		} else {
+			LOGGER.severe( "We were unable to move the user to the 'YOUR_TURN' state" );
+		}
+	}
+
 	
 	/***************************************************************
 	 * Needed to implement the equals() method

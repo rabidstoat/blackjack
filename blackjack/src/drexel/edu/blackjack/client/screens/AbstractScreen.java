@@ -166,6 +166,26 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 * only one screen should be active at a time.
 	 */
 	protected boolean isActive;
+
+	/**
+	 * Once a bet has been accepted by the server, and a response as to this
+	 * received, it becomes an accepted bet. Obviously this only matters
+	 * if the person is playing a game.
+	 */
+	protected Integer acceptedBet = null;		// Server has verified this is your bet
+	
+	/**
+	 * This means that the user has requested bet, but that the server has
+	 * not agreed to it yet. Obviously this only matters if the person is
+	 * playing a game.
+	 */
+	protected Integer requestedBet = null;	// This is what's being requested, but it might be denied
+
+	/**
+	 * This is the player's current hand of cards. Obviously it only matters
+	 * if the person is playing a game currently.
+	 */
+	protected String cards = "NONE";
 	
 	/**
 	 * Keep a pointer to the thread that is associated with
@@ -184,6 +204,12 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 * Reference to the main client
 	 */
 	protected BlackjackCLClient client;
+	
+	// The last username that was specified for logging in. If the user is authenticated,
+	// and the screen is something other than the LoginScreen, then this is the username
+	// of the currently logged in player. This is static so that all the screen's that
+	// subclass an abstract screen have access to the value.
+	private static String username = null;
 	
 	// Our logger
 	private final static Logger LOGGER = BlackjackLogger.createLogger(AbstractScreen.class .getName()); 
@@ -271,6 +297,27 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 		this.screenType = screenType;
 	}	
 
+	/**
+	 * Sets the username, who may or may not have authenticated
+	 * okay. If we're in the LoginScreen, we don't know. Otherwise,
+	 * they must have.
+	 * 
+	 * @param username username
+	 */
+	protected void setUsername( String username ) {
+		AbstractScreen.username = username;
+	}
+	
+	/**
+	 * Gets the username, who may or may not have authenticated
+	 * okay. If we're in the LoginScreen, we don't know. Otherwise,
+	 * they must have.
+	 * 
+	 * @return username
+	 */
+	protected String getUsername() {
+		return username;
+	}
 
 	/**
 	 * Notifies the screen that it is now the 'active' screen,
@@ -390,10 +437,13 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 					displayPlayerMovement( code );
 				} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_BET ) ) {
 					displayPlayerBet( code );
-				} else if( code.hasSameCode(ResponseCode.CODE.CARD_DEALT ) ) {
-					displayCardDealt( code );
+				} else if( code.hasSameCode(ResponseCode.CODE.CARDS_DEALT ) ) {
+					displayCardsDealt( code );
 				} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_ACTION ) ) {
 					displayPlayerAction( code );
+				} else if( code.hasSameCode(ResponseCode.CODE.UPDATED_HAND ) ) {
+					// TODO: Need to write this
+					updateStatus( "Need to write the response to an updated hand." );
 				} else {
 					// TODO: Handle other game state codes
 					LOGGER.warning( "Received unhandled game state code of '" + code.toString() + "'." );
@@ -545,9 +595,9 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 * The rest are the cards. This is all as per
 	 * the protocol defintion.
 	 * 
-	 * @param code Hopefully of type ResponseCode.CODE.CARD_DEALT
+	 * @param code Hopefully of type ResponseCode.CODE.CARDS_DEALT
 	 */
-	private void displayCardDealt(ResponseCode code) {
+	private void displayCardsDealt(ResponseCode code) {
 		
 		if( code != null  ) {
 
@@ -559,10 +609,26 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 			
 			// And now add the cards, one by one
 			str.append( " has the following cards:" );
+			
+			// Try to line everything up at a string length of 40, at this point
+			while( str.length() < 40 ) {
+				str.append( " " );
+			}
+			
+			// Need to add the cards, one by one
 			if( params != null && params.size() >= 3 ) {
+				StringBuilder cardString = new StringBuilder();
 				for( int i = 2; i < params.size(); i++ ) {
-					str.append( " " );
-					str.append( params.get(i) );
+					cardString.append( " " );
+					cardString.append( params.get(i) );
+				}
+				str.append( cardString.toString() );
+				
+				// Also, if it's the current user, save their cards
+				// username comes in the second parameter
+				String userWithCards = params.get(1);
+				if( userWithCards != null && userWithCards.equals(username) ) {
+					cards = cardString.toString();
 				}
 			}
 			
@@ -574,7 +640,7 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 
 	/**
 	 * Creates a string builder to be used for displaying messages about a
-	 * particular user, by starting it off with a line like: "The player <username>",
+	 * particular user, by starting it off with a line like: "<username>",
 	 * unless the username is the special DEALER_USERNAME, in which case it starts
 	 * off with "The dealer".
 	 * 
@@ -582,9 +648,9 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 	 * corresponds to the format of player update messages from the server
 	 * @return The stringbuilder, initialized to this lead-in phrase
 	 */
-	private StringBuilder createStringBuilderForUserUpdate(List<String> params) {
+	protected StringBuilder createStringBuilderForUserUpdate(List<String> params) {
 		// Start with their username
-		StringBuilder str = new StringBuilder( "The player " );
+		StringBuilder str = new StringBuilder();
 		if( params == null || params.size() < 2 ) {
 			str.append( GameState.UNKNOWN_USERNAME );
 		} else {

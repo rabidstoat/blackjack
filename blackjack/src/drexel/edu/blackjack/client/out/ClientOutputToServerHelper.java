@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import drexel.edu.blackjack.server.commands.HitCommand;
+import drexel.edu.blackjack.server.commands.StandCommand;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
@@ -127,6 +129,20 @@ public class ClientOutputToServerHelper extends Thread {
 		}
 		
 		return this.sendRawText( "USERNAME " + username );
+	}
+
+	/**
+	 * Sends a request to the server to HIT
+	 */
+	public boolean sendHitRequest() {
+		return sendRawText( HitCommand.COMMAND_WORD );
+	}
+
+	/**
+	 * Sends a request to the server to STAND
+	 */
+	public boolean sendStandRequest() {
+		return sendRawText( StandCommand.COMMAND_WORD );
 	}
 
 	/**

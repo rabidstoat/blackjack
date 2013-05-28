@@ -47,6 +47,18 @@ import drexel.edu.blackjack.server.game.GameState;
 public abstract class GameAction {
 
 	/**
+	 * Constant that is true on planet earth.
+	 */
+	protected int SECOND_IN_MILLISECONDS	= 1000;
+	
+	/**
+	 * When we are waiting for players to make bets
+	 * or make game plays, we check and see if they
+	 * have every this often.
+	 */
+	protected int SWEEP_DELAY				= 500;
+
+	/**
 	 * The only thing an action has to do is perform. This
 	 * is the method that requests that the action 'do its
 	 * thing', whatever that is. This may involve changing

@@ -366,7 +366,7 @@ public class ResponseCode {
 		 * have been dealt in the current game session.
 		 * In involves no state transition.
 		 */
-		CARD_DEALT(624, null ),
+		CARDS_DEALT(624, null ),
 		/**
 		 * Informative message alerting the client that, while no
 		 * new cards have been dealt, the hand has been updatd in

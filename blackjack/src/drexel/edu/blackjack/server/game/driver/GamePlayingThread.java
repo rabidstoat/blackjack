@@ -72,9 +72,10 @@ public class GamePlayingThread extends Thread {
 		gameActions.add( new ShuffleIfNeededAction() );
 		gameActions.add( new DealCardsAction() );
 		gameActions.add( new CheckForDealerBlackjackAction() );
+		gameActions.add( new GetPlayerActionsAction() );
 		
 		// And note that we're at the first one
-		this.gameActionIndex = 0;
+		this.gameActionIndex = 0;		
 	}
 
 	/************************************************************

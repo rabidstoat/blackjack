@@ -17,6 +17,7 @@
  ******************************************************************************/
 package drexel.edu.blackjack.client.screens;
 
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -69,16 +70,11 @@ public class InSessionScreen extends AbstractScreen {
 	// that are defined in the abstract superclass
 	private static String LEAVE_OPTION			= "L";
 	private static String INFO_OPTION			= "I";
+	private static String HIT_OPTION			= "H";
+	private static String STAND_OPTION			= "S";
 	
 	// Which of the states the screen is in
 	private Integer state;
-	
-	// Current bet information
-	private Integer acceptedBet = null;		// Server has verified this is your bet
-	private Integer requestedBet = null;	// This is what's being requested, but it might be denied
-	
-	// Current card hand 
-	private String cards = "NONE";
 	
 	// And keep a copy to itself for the singleton pattern
 	private static InSessionScreen inSessionScreen = null;
@@ -157,9 +153,8 @@ public class InSessionScreen extends AbstractScreen {
 					state = WATCHING_GAME;
 					displayMenu();
 				} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_HIT ) ) {
-					// TODO
-					updateStatus( "Need to implement the response to a successful hit." );
-					displayMenu();
+					// I think I just need to do nothing. Either they'll get a busted
+					// message that will print, OR they'll get a card updated message...
 				} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_LEFT_SESSION_FORFEIT_BET) ) {
 					updateStatus( "You left the game mid-play, forfeiting $" + code.getFirstParameterAsString() + "." );
 					showPreviousScreen( true );	// Move to the previous screen
@@ -167,9 +162,8 @@ public class InSessionScreen extends AbstractScreen {
 					updateStatus( "You left the game between hands, and no money was lost." );
 					showPreviousScreen( true );	// Move to the previous screen
 				} else if( code.hasSameCode( ResponseCode.CODE.SUCCESSFULLY_STAND ) ) {
-					// TODO
-					updateStatus( "Need to implement the response to a successful stand." );
-					displayMenu();
+					updateStatus( "Okay, you decide to stand with your current cards." );
+					state = WATCHING_GAME;
 				} else if( code.hasSameCode( ResponseCode.CODE.TIMEOUT_EXCEEDED_WHILE_BETTING ) ) {
 					updateStatus( "You did not place a bet in time." );
 					updateStatus( "Removed from game but no money lost." );
@@ -182,15 +176,17 @@ public class InSessionScreen extends AbstractScreen {
 				} else if( code.hasSameCode( ResponseCode.CODE.USER_BUSTED ) ) {
 					updateStatus( "You BUSTED. That's over 21, and you have lost." );
 					state = WATCHING_GAME;
-					displayMenu();
 				} else if( code.hasSameCode( ResponseCode.CODE.REQUEST_FOR_BET ) ) {
 					state = NEED_BET;
 					displayMenu();
 				} else if( code.hasSameCode( ResponseCode.CODE.REQUEST_FOR_GAME_ACTION ) ) {
-					state = NEED_PLAY;
-					displayMenu();
+					displayRequestForPlayerAction( code );
 				} else if( code.hasSameCode( ResponseCode.CODE.GAME_STATUS ) ) {
 					displayGameStatus( code );
+					displayMenu();
+				} else if( code.hasSameCode( ResponseCode.CODE.GAME_OUTCOME ) ) {
+					// TODO: Need to handle the game outcome reporting
+					updateStatus( "Need to write the handler for GAME_OUTCOME." );
 					displayMenu();
 				} else if( code.hasSameCode( ResponseCode.CODE.GAMES_FOLLOW ) ) {
 					displayGameMetadata( code );
@@ -201,6 +197,52 @@ public class InSessionScreen extends AbstractScreen {
 		}
 	}	
 	
+	/**
+	 * This handles requests for player actions. We always display
+	 * them to the user. If the request user happens to be THIS
+	 * user, we need to switch them over to the 'make a game play'
+	 * menu and display it.
+	 * 
+	 * @param code Hopefully of type ResponseCode.CODE.REQUEST_FOR_PLAYER_ACTION
+	 */
+	private void displayRequestForPlayerAction(ResponseCode code) {
+		
+		if( code != null  ) {
+
+			// Our parameters
+			List<String> params = code.getParameters();
+
+			// All player update messages that are presented to the user
+			// start the same, with the username involved in the action
+			StringBuilder str = createStringBuilderForUserUpdate(params);
+			str.append( "'s turn is now." );
+			
+			// Who was the action? It's in parameter two (hopefully)
+			String requestedUsername = null;
+			if( params != null && params.size() >= 2 ) {
+				requestedUsername = params.get(1);
+			}
+			
+			boolean switchMenus = false;	// Do we need to switch to the MAKE_A_PLAY menu?
+			if( requestedUsername != null && requestedUsername.equals(getUsername() ) ) {
+				str.append( " Hey, that's you!" );
+				switchMenus = true;
+			} else {
+				str.append( " Not you, because you are '" + getUsername() + " and they are " + requestedUsername + "." );
+			}
+			
+			// Display to the screen. Since this is a short 1-line message, treat it as
+			// a status update message
+			updateStatus( str.toString() );
+			
+			// And if we have to display a new menu, do so
+			if( switchMenus ) {
+				state = NEED_PLAY;
+				displayMenu();
+			}
+		}
+	}
+
 	/**
 	 * Received the LISTGAMES response, which has descriptions
 	 * of every single game. Need to find the one we're interested
@@ -273,8 +315,17 @@ public class InSessionScreen extends AbstractScreen {
 					System.out.println( str.toString() );
 					System.out.println( "***********************************************************" );
 				} else if( state == NEED_PLAY ) {
-					// TODO: Yeah
-					reset();
+					System.out.println( "***********************************************************" );
+					System.out.println( "                      YOUR TURN                           " );
+					System.out.println( "***********************************************************" );
+					System.out.println( "What would you like to do? Your cards: " + cards );
+					StringBuilder str = new StringBuilder( "Choose '" );
+					str.append( HIT_OPTION );
+					str.append( "' to hit, or '" );
+					str.append( STAND_OPTION );
+					str.append( "' to stand." );
+					System.out.println( str.toString() );
+					System.out.println( "***********************************************************" );
 				} else {
 					System.out.println( "***********************************************************" );
 					System.out.println( "                 Playing Blackjack Screen                  " );
@@ -372,8 +423,7 @@ public class InSessionScreen extends AbstractScreen {
 				} else if( state == NEED_BET ) {
 					interpretUserBet( str );
 				} else if( state == NEED_PLAY ) {
-					// TODO: Yeah
-					reset();
+					interpretGamePlay( str );
 				} else {
 					updateStatus( "Unrecognized user input: " + str );
 					displayMenu();
@@ -416,6 +466,24 @@ public class InSessionScreen extends AbstractScreen {
 				updateStatus( "You need to enter a number for the bet amount." );
 				displayMenu();
 			}
+		}
+	}
+
+	/**
+	 * Upon being requested to choose to hit or stand, the
+	 * user entered something, hopefully one of those two options
+	 */
+	private void interpretGamePlay( String str ) {
+		
+		if( str == null ) {
+			reset();
+		} else if (str.trim().equalsIgnoreCase(HIT_OPTION) ) {
+			helper.sendHitRequest();
+		} else if( str.trim().equalsIgnoreCase(STAND_OPTION) ) {
+			helper.sendStandRequest();
+		} else {
+			updateStatus( "That choice was not recognized." );
+			displayMenu();
 		}
 	}
 
@@ -468,6 +536,7 @@ public class InSessionScreen extends AbstractScreen {
 		// Do what we need to in order to 'reset' this UI screen
 		state = WATCHING_GAME;		// Reset the internal state just in case....
 		this.acceptedBet = null;	// No longer a bet accepted
+		this.cards = null;			// No longer valid cards
 	
 		// Then move to the previous screen
 		super.showPreviousScreen( displayMenu );

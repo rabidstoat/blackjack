@@ -98,8 +98,9 @@ public class BetCommand extends BlackjackCommand {
 					" Bet is over maximum bet allowed").toString();	
 		}
 					
-		// STATEFUL: 5.4 Success! Need to store the amount on the protocol
+		// STATEFUL: 5.4 Success! Need to store the amount on the protocol and update the tsate
 		protocol.setBet( desiredBet );
+		protocol.setState( STATE.IN_SESSION_BEFORE_YOUR_TURN );
 		
 		// Success! Now handle all the odds and ends that have to be done when a bet is placed
 		protocol.getUser().handlePlacedBet( desiredBet );

@@ -32,15 +32,9 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  */
 public class WaitForBetsAction extends GameAction {
 
-	// Constant
-	private int SECOND_IN_MILLISECONDS	= 1000;
-	
 	// We give people up to this long to place their bets
 	private int BETTING_WAIT_TIME		= 60 * SECOND_IN_MILLISECONDS;
 	
-	// We check every this many ms to see if everyone has bet yet
-	private int SWEEP_DELAY				= 500;
-
 	// And of course our logger
 	private final static Logger LOGGER = BlackjackLogger.createLogger(WaitForBetsAction.class.getName());
 

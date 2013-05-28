@@ -17,8 +17,10 @@ import java.util.List;
 import java.util.Set;
 
 import drexel.edu.blackjack.server.BlackjackProtocol;
-import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
 import drexel.edu.blackjack.server.ResponseCode;
+import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
+import drexel.edu.blackjack.server.game.GameState;
+import drexel.edu.blackjack.server.game.User;
 
 public class StandCommand extends BlackjackCommand {
 
@@ -27,16 +29,49 @@ public class StandCommand extends BlackjackCommand {
 	private Set<STATE> validStates = null;
 
 	public String processCommand(BlackjackProtocol protocol, CommandMetadata cm) {
-		if (protocol == null || cm == null) { 
-			return new ResponseCode(ResponseCode.CODE.INTERNAL_ERROR).toString();
+		// Step 0: If either object is null, it's an internal error
+		if( protocol == null || cm == null ) {
+			return new ResponseCode( ResponseCode.CODE.INTERNAL_ERROR, 
+					"AccountCommand.processCommand() received null arguments" ).toString();
 		}
-		if (cm.getParameters() == null || cm.getParameters().size() != 0) {
-			return new ResponseCode(ResponseCode.CODE.SYNTAX_ERROR).toString();
+		
+		// STATEFUL: Steps 1-2: Return an error in not in a valid state
+		if( !getValidStates().contains( protocol.getState()) ) {
+			return new ResponseCode( ResponseCode.CODE.NOT_EXPECTING_STAND ).toString();
 		}
-		if (protocol.getState() != STATE.IN_SESSION_AND_YOUR_TURN) {
-			return new ResponseCode(ResponseCode.CODE.NOT_EXPECTING_STAND).toString();
+		
+		// Step 3-4: Check syntax; irrelevant as no parameters
+		// Step 5: Do work that needs doing
+
+		// We better have a user object
+		User user = protocol.getUser();
+		if( user == null ) {
+			return new ResponseCode( ResponseCode.CODE.INTERNAL_ERROR,
+					"StandCommand.processCommand() had a problem getting the user object").toString();
 		}
-		return new ResponseCode(ResponseCode.CODE.SUCCESSFULLY_STAND).toString();
+		
+		// Note on the user object that they made their gameplay, and that they are done for the round
+		user.setNeedsToMakeAPlay( false );
+		user.setHasFinishedGamePlayThisRound( true );
+		
+		// Better have a game state
+		GameState state = (user.getGame() == null ? null : user.getGame().getGameState());
+		if( state == null ) {
+			return new ResponseCode( ResponseCode.CODE.INTERNAL_ERROR,
+					"StandCommand.processCommand() had a problem getting the game state object").toString();
+		}
+		
+		// Because we need to notify others that the player chose to stand
+		state.notifyOthersOfGameAction(user, GameState.STAND_KEYWORD );
+		
+		// Step 6: Save out state variables? There are none
+		// Step 7: Update any change in state?
+		// STATEFUL: It's now after their turn
+		protocol.setState( STATE.IN_SESSION_AFTER_YOUR_TURN );
+		
+		// Step 8: Format the user response code
+		ResponseCode code = new ResponseCode( ResponseCode.CODE.SUCCESSFULLY_STAND );
+		return code.toString();
 	}
 
 	@Override

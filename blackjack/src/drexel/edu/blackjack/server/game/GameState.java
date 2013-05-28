@@ -17,7 +17,6 @@ package drexel.edu.blackjack.server.game;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 import drexel.edu.blackjack.cards.DealerShoeInterface;
 import drexel.edu.blackjack.cards.Hand;
@@ -25,7 +24,6 @@ import drexel.edu.blackjack.cards.SimpleDealerShoe;
 import drexel.edu.blackjack.db.user.UserMetadata;
 import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.ResponseCode;
-import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
  * Used to pass game state information from
@@ -44,7 +42,7 @@ import drexel.edu.blackjack.util.BlackjackLogger;
 public class GameState {
 
 	// And a logger for errors
-	private final static Logger LOGGER = BlackjackLogger.createLogger(GameState.class.getName()); 
+	//private final static Logger LOGGER = BlackjackLogger.createLogger(GameState.class.getName()); 
 
 	/**
 	 * Used for the status of players in the currently represented
@@ -84,7 +82,7 @@ public class GameState {
 	 * the dealer's hand. Also used in certain game state messages,
 	 * such as the 
 	 * {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_ACTION} or
-	 * {@link drexel.edu.blackjack.server.ResponseCode.CODE#CARD_DEALT}
+	 * {@link drexel.edu.blackjack.server.ResponseCode.CODE#CARDS_DEALT}
 	 * responses, to indicate that an action applies to the dealer.
 	 */
 	public static final String DEALER_USERNAME		= "dealer";
@@ -135,9 +133,6 @@ public class GameState {
 	// An ordered list of players involved in the game. Gameplay will
 	// occur in this order, amongst the ACTIVE users. 
 	private List<User> players 			= null;
-	
-	// The current player in terms of play
-	private User currentPlayer			= null;
 	
 	// The dealer's hand
 	private Hand dealerHand				= null;
@@ -194,6 +189,35 @@ public class GameState {
 	}
 	
 	/**
+	 * Needs to notify all players in the game that the indicated player has been
+	 * requested to make a gameplay. Also marks the player from this was requested
+	 * of that fact.
+	 * <P>
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#REQUEST_FOR_GAME_ACTION}
+	 * code, the first parameter is the session ID, the second is the username
+	 * @return True if sent successfully, false otherwise
+	 */
+	public boolean notifyAllOfGameplayNeeded(User player) {
+		
+		boolean success = false;
+		
+		if( player != null ) {
+			// Create the response code: gameid username
+			StringBuilder str = new StringBuilder( getStringForGameAndUser( player ) );
+			ResponseCode code = new ResponseCode( ResponseCode.CODE.REQUEST_FOR_GAME_ACTION, str.toString() );
+			
+			// Mark in the player who it's being requested of that they are expected to make a gameplay
+			player.setNeedsToMakeAPlay( true );
+			
+			// Then send it to all the players
+			success = notifyOtherPlayers( code, null );		
+		}
+		
+		return success;
+	}
+
+
+	/**
 	 * Needs to notify all players in the game that the dealer hit a blackjack.
 	 * <P>
 	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_ACTION}
@@ -202,6 +226,12 @@ public class GameState {
 	 * @return True if sent successfully, false otherwise
 	 */
 	public boolean notifyPlayersOfDealerBlackjack() {
+		
+		return this.notifyOthersOfGameAction(null, BLACKJACK_KEYWORD);
+		
+		/**
+		// This code used to work, hopefully new code does too! I tested with the
+		// RiggedDealerShoe() set to deal blackjacks.
 		// Create the response code: gameid DEALER_NAME BLACKJACK
 		StringBuilder str = new StringBuilder( getStringForGameAndUser( null ) );
 		str.append( " " );
@@ -209,14 +239,15 @@ public class GameState {
 		ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_ACTION, str.toString() );
 		
 		// Then send it to all the players
-		return notifyOtherPlayers( code, null );		
+		return notifyOtherPlayers( code, null );
+		**/		
 	}
 
 	/**
 	 * Needs to set on this object the dealer's had, and also send out a 
 	 * response code indicating that the dealer has been dealt new cards.
 	 * <P>
-	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#CARD_DEALT}
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#CARDS_DEALT}
 	 * code, the first parameter is the session ID, the second is the dealer name,
 	 * and remaining parameters are the new cards dealt. Facedown cards are not
 	 * presented in the message.
@@ -232,7 +263,7 @@ public class GameState {
 		StringBuilder str = new StringBuilder( getStringForGameAndUser( null ) );
 		str.append( " " );
 		str.append( dealerHand.toString(false) );	// False because players can't see dealer facedown cards
-		ResponseCode code = new ResponseCode( ResponseCode.CODE.CARD_DEALT, str.toString() );
+		ResponseCode code = new ResponseCode( ResponseCode.CODE.CARDS_DEALT, str.toString() );
 
 		// Then send it to all the players
 		return notifyOtherPlayers( code, null );		
@@ -242,7 +273,7 @@ public class GameState {
 	 * Needs to send out a response code indicating that the user
 	 * in question has been dealt new cards.
 	 * <P>
-	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#CARD_DEALT}
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#CARDS_DEALT}
 	 * code, the first parameter is the session ID, the second is the username,
 	 * and remaining parameters are the new cards dealt. When the message is
 	 * sent to the player whose hand it is, they can see facedown cards. Otherwise,
@@ -261,8 +292,8 @@ public class GameState {
 			// Create the response code: gameid username <hand as seen by other users>
 			StringBuilder str = new StringBuilder( getStringForGameAndUser( user) );
 			str.append( " " );
-			str.append( hand.toString(false) );	// False because it's not for the playe whose hand it is
-			ResponseCode code = new ResponseCode( ResponseCode.CODE.CARD_DEALT, str.toString() );
+			str.append( hand.toString(false) );	// False because it's not for the player whose hand it is
+			ResponseCode code = new ResponseCode( ResponseCode.CODE.CARDS_DEALT, str.toString() );
 
 			// Then send it to all the players except this user
 			success = notifyOtherPlayers( code, user );		
@@ -272,7 +303,7 @@ public class GameState {
 			str = new StringBuilder( getStringForGameAndUser( user ) );
 			str.append( " " );
 			str.append( hand.toString(true) );	// True because it's for the playe whose hand it is
-			code = new ResponseCode( ResponseCode.CODE.CARD_DEALT, str.toString() );
+			code = new ResponseCode( ResponseCode.CODE.CARDS_DEALT, str.toString() );
 			
 			// Then send it to the player in question
 			success = success && user.sendMessage( code );
@@ -373,6 +404,7 @@ public class GameState {
 	 * 
 	 * @param player Who placed the bet
 	 * @param bet The amount bet
+	 * @return True if it was successfully broadcast, else false
 	 */
 	public boolean notifyOthersOfBetPlaced( User player, int bet ) {
 		
@@ -391,6 +423,30 @@ public class GameState {
 		}
 
 		return success;
+	}	
+
+	/**
+	 * Need to send out messages to the other players (if any) about
+	 * how a game action was made on the part of a player
+     * <P>
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_ACTION}
+	 * code, and the parameters are the gameId followed by the username
+	 * followed by the action taken
+	 * 
+	 * @param player Who performed the action (or null if it's the dealer)
+	 * @param action What the action was
+	 * @return True if it was successfully broadcast, else false
+	 */
+	public boolean notifyOthersOfGameAction( User player, String action ) {
+		
+		// Create the response code: gameid username action
+		StringBuilder str = new StringBuilder( getStringForGameAndUser( player ) );
+		str.append( " " );
+		str.append( action );
+		ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_ACTION, str.toString() );
+
+		// Then send it to all the players except the one who generated
+		return notifyOtherPlayers( code, player );		
 	}	
 
 	/**
@@ -463,7 +519,8 @@ public class GameState {
 	
 	/**
 	 * Adds a player to the tracking within the game state. Newly
-	 * added players are entered in the OBSERVER state.
+	 * added players are entered in the OBSERVER state, and their
+	 * bets and hands and need for gameplay are all reset
 	 * 
 	 * @param player Who to add
 	 */
@@ -480,6 +537,7 @@ public class GameState {
 			if( status ) {
 				// Set the user's status to OBSERVER
 				player.setStatus( STATUS.OBSERVER );
+				player.resetForNextRound();
 				
 				// If they're the first person in the game, though, it needs to be started
 				if( players.size() == 1 ) {
@@ -495,7 +553,8 @@ public class GameState {
 	/**
 	 * Removes a player to the tracking within the game state.
 	 * If they've placed a bet, it'll be automatically forfeited
-	 * as it was already deducted from their account
+	 * as it was already deducted from their account. Also need
+	 * to reset some variables on them, for when they play again
 	 * 
 	 * @param player Who to remove
 	 */
@@ -507,25 +566,15 @@ public class GameState {
 		if( player != null ) {		
 			// Remove them from the list of players
 			status = players.remove( player );
+			if( status ) {
+				player.resetForNextRound();
+			}
 		}
 		
 		// Return the status
 		return status;
 	}
 	
-	/**
-	 * Return a pointer to the current player, that is,
-	 * the player whose turn it is and whose protocol
-	 * is in the 
-	 * {@link drexel.edu.blackjack.server.BlackjackProtocol.STATE#IN_SESSION_AND_YOUR_TURN}
-	 * state.
-	 * 
-	 * @return Who the current player is. May be null.
-	 */
-	synchronized public User getCurrentPlayer() {
-		return currentPlayer;
-	}
-
 	/** 
 	 * Returns the number of players, without regard to their
 	 * status as observer or active.
@@ -559,9 +608,6 @@ public class GameState {
 						user.forceTimeoutWhileBetting();
 						// Remove them from the list of game players
 						removePlayer(user);
-						// Reset their bet and hand
-						user.clearBet();
-						user.setHand(null);
 					}
 				}
 			}
@@ -594,6 +640,33 @@ public class GameState {
 		return false;
 	}
 	
+
+	/**
+	 * Looks through the list of active players in the session
+	 * for one who needs to play their hand still. Return a
+	 * reference to them. If there are none that match that
+	 * criteria, return null
+	 * 
+	 * @return Either a player who still needs to hit/stand,
+	 * or else null if none that match that criteria are left
+	 */
+	public User getNextPlayerToPlay() {
+		
+		User nextPlayer = null;
+		
+		// Look for any who are active and need to pla
+		User[] players = this.getCopyOfPlayers();
+		for( User player : players ) {
+			if( player.getStatus() != null && player.getStatus().equals(STATUS.ACTIVE) ) {
+				// Okay, they're active. But do they need to make their game play?
+				if( !player.getFinishedGamePlayThisRound() ) {
+					nextPlayer = player;
+				}
+			}
+		}
+		
+		return nextPlayer;
+	}
 
 	
 	/*********************************************************************
@@ -656,7 +729,7 @@ public class GameState {
      * <P>
 	 * <ol>
 	 * <li>All players are set to ACTIVE status
-	 * <li>The currentPlayer is set to null
+	 * <li>Bets and hands are cleared out
 	 * <li>Requests for bids are made of all players
 	 * </ol>
 	 */
@@ -668,11 +741,7 @@ public class GameState {
 			makeAllPlayersActive();
 			
 			// Sets up all players active
-			removeAllPlayerBets();
-			removeAllPlayerHands();
-			
-			// Reset the starting player
-			currentPlayer = null;
+			resetAllPlayersForNewRound();
 			
 			// Reset the dealer's hand
 			setDealerHand( null );
@@ -686,34 +755,6 @@ public class GameState {
 		}
 	}
 
-	/**
-	 * Advances the currentPlayer pointer to the next player
-	 * in the list with ACTIVE status. If there was no 
-	 * currentPlayer, it is the first User in the list
-	 * with active status. If there are no more subsequent
-	 * players with an ACTIVE status, it is set to null.
-	 */
-	synchronized public void advanceCurrentPlayer() {
-		
-		if( players == null ) {
-			// If there aren't players, the current player is null
-			currentPlayer = null;
-		} else if( currentPlayer == null ) {
-			// Otherwise we try to find the first active player (may be null!)
-			currentPlayer = getFirstActivePlayerFrom( 0 );
-		} else {
-			// Or else we find the current player's index
-			int index = players.indexOf( currentPlayer );
-			
-			// And look for someone active beyond them (may be null!)
-			if( index == -1 ) {
-				LOGGER.severe( "Could not advance current player as we could not find them in the list." );
-			} else {
-				currentPlayer = getFirstActivePlayerFrom( index+1 );
-			}
-		}
-	}
-	
 	
 	/*********************************************************************
 	 * Private methods go here
@@ -742,70 +783,15 @@ public class GameState {
      * <P>
 	 * TODO: I'm worried about this method and synchronization
 	 */
-	private void removeAllPlayerBets() {
+	private void resetAllPlayersForNewRound() {
 
 		if( players != null ) {
 			for( User player : players ) {
-				player.clearBet();
+				player.resetForNextRound();
 			}
 		}
 	}
 
-	/**
-	 * Walk through the players, find their protocol object,
-	 * and set the hand value stored on it to null. This signifies
-	 * starting a new round of play, where the hand no longer
-	 * needs to be stored.
-     * <P>
-	 * TODO: I'm worried about this method and synchronization
-	 */
-	private void removeAllPlayerHands() {
-
-		if( players != null ) {
-			for( User player : players ) {
-				player.setHand(null);
-			}
-		}
-	}
-
-	/**
-	 * Given a starting index, look through the statuses list for
-	 * the first status on or after that value that is ACTIVE,
-	 * and then return the corresponding USER. If there are no
-	 * more ACTIVE statuses in the list at or after that index,
-	 * then return null
-     * <P>
-	 * TODO: I'm worried about this method and synchronization
-	 * 
-	 * @param startingIndex The index from which to start looking for
-	 * ACTIVE status players
-	 * @return The first encountered player with an ACTIVE
-	 * status, or null if none are found
-	 */
-	private User getFirstActivePlayerFrom(int startingIndex ) {
-		
-		// Can't start at a negative index
-		if( startingIndex < 0 ) {
-			startingIndex = 0;
-		}
-		
-		// No players? Must be a null active one
-		if( players == null ) {
-			return null;
-		}
-		
-		// Cycle through
-		for( User player : players ) {
-			STATUS status = player.getStatus();
-			if( status != null && status.equals(STATUS.ACTIVE ) ) {
-				return player;
-			}
-		}
-		
-		// If we got here, we found nothing and need to return null
-		return null;
-	}
-	
 	/**
 	 * Get a copy of all the players, in an array list, while
 	 * synchronized. That way we can add and remove players to
@@ -841,4 +827,5 @@ public class GameState {
 		// like "taking bets" or "playing hand" or something....
 		return STARTED_KEYWORD;
 	}
+
 }

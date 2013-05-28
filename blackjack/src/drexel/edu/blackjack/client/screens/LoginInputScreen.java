@@ -175,6 +175,7 @@ public class LoginInputScreen extends AbstractScreen {
 				displayMenu();
 			} else if( loginScreenState == ENTER_USERNAME ) {
 				helper.sendUsername( str.trim() );
+				setUsername( str.trim() );
 			} else if( loginScreenState == ENTER_PASSWORD ) {
 				helper.sendPassword( str.trim() );
 			} else {
