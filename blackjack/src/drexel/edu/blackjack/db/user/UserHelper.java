@@ -13,12 +13,41 @@
 package drexel.edu.blackjack.db.user;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
+import drexel.edu.blackjack.db.game.GameHelper;
+import drexel.edu.blackjack.db.user.UserManagerInterface.UserNotFoundException;
+
 public class UserHelper {
-	public static int main(String[] args) {
+	
+	private void remove() {
+		System.out.println("Username: ");
+		BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
 		UserManagerInterface um = FlatfileUserManager.getDefaultUserManager();
-		um.load();
+		try {
+			String s = r.readLine();
+			if( um.remove(s.trim()) ) {
+				System.out.println( "User removed." );
+			} else {
+				System.out.println( "Cannot remove user. Please try again" );
+			}
+		} catch (IOException e) {
+			System.out.println("Input ERROR");
+		} catch (UserNotFoundException e) {
+			System.out.println( "User not found" );
+		}
+	}
+	
+	private void list() {
+		UserManagerInterface um = FlatfileUserManager.getDefaultUserManager();
+		for (UserMetadata g: um.getUsers()) {
+			System.out.println(g.toString());
+		}
+	}
+	
+	private void add() {
+		UserManagerInterface um = FlatfileUserManager.getDefaultUserManager();
 		UserMetadata.Builder b = new UserMetadata.Builder();
 		System.out.println("Add one more user");
 		BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
@@ -32,12 +61,58 @@ public class UserHelper {
 			s = r.readLine(); b.setFullname(s);
 			System.out.println("balance:");
 			s = r.readLine(); b.setBalance(Integer.parseInt(s));
-			um.add(b.build());
-			um.save();
+			if (um.add(b.build())) {
+				System.out.println("Added successfully");
+			}
 		} catch (Exception e) {
 			throw new IllegalArgumentException();
 		}
 		
-		return 0;
+	}
+	
+	private void changePassword() {
+		System.out.println("Username: ");
+		BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+		UserManagerInterface um = FlatfileUserManager.getDefaultUserManager();
+		try {
+			String username = r.readLine();
+			System.out.println("New password: ");
+			String newPassword = r.readLine(); 
+			um.changePassword(username, newPassword);
+		} catch (IOException e) {
+			System.out.println("Input ERROR");
+		} catch (UserNotFoundException e) {
+			System.out.println( "User not found" );
+		}
+	}
+	
+	public static int main(String[] args) {
+		UserHelper uh = new UserHelper();
+		BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+		
+		while (true) {
+			System.out.println("1. List all users");
+			System.out.println("2. Add user");
+			System.out.println("3. Remove a user");
+			System.out.println("4. Change password a user");
+			System.out.println("0. Exit");
+			try {
+				int i = Integer.parseInt(r.readLine());
+				switch (i) {
+				case 1:
+					uh.list(); break;
+				case 2:
+					uh.add(); break;
+				case 3:
+					uh.remove(); break;
+				case 4:
+					uh.changePassword(); break;
+				default:
+					return 0;	
+				}
+			} catch (Exception e) {
+				
+			}
+		}
 	}
 }

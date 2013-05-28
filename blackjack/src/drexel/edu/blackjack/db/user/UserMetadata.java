@@ -174,5 +174,13 @@ public class UserMetadata implements Serializable {
 		return true;
 	}
 
-	
+	/**
+	 * return a nicely formatted presentation of UserMetadata
+	 */
+	public String toString() {
+		StringBuilder b=  new StringBuilder();
+		b.append(username).append(": password=").append(password).append(" name=");
+		b.append(fullname).append(" balance=").append(balance);
+		return b.toString();
+	}
 }

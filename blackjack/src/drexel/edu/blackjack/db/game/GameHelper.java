@@ -20,8 +20,6 @@ import java.util.ArrayList;
 
 public class GameHelper {
 	public static int main(String[] args) {
-		GameManagerInterface gm = FlatfileGameManager.getDefaultGameManager();
-		gm.load();
 		GameHelper gh = new GameHelper();
 		BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
 		

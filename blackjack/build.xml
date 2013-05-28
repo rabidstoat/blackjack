@@ -132,7 +132,7 @@
     	</java>
     </target>
 
-    <target depends="compile" name="add-user">
+    <target depends="compile" name="user-manager">
         <echo message="Add user to server"/>
         <java classname="drexel.edu.blackjack.db.user.UserHelper">
             <classpath refid="blackjack.classpath"/>

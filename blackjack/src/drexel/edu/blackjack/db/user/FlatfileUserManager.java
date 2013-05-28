@@ -19,8 +19,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -79,7 +81,10 @@ public class FlatfileUserManager implements UserManagerInterface {
 			return false;
 		}
 		users.put(user.getUsername(), user);
-		return true;
+		if (save())
+			return true;
+		else
+			return false;
 	}
 
 	@Override
@@ -144,6 +149,41 @@ public class FlatfileUserManager implements UserManagerInterface {
 		}
 		
 		return tuserManager;
+	}
+
+
+	@Override
+	public List<UserMetadata> getUsers() {
+		return new ArrayList<UserMetadata>(users.values());
+	}
+
+
+	@Override
+	public boolean remove(String username) throws UserNotFoundException {
+		if (users.containsKey(username)) {
+			users.remove(username);
+			if (save())
+				return true;
+			else
+				return false;
+		} else {
+			throw new UserNotFoundException();
+		}
+	}
+
+
+	@Override
+	public boolean changePassword(String username, String newPassword)
+			throws UserNotFoundException {
+		if (users.containsKey(username)) {
+			users.get(username).setPassword(newPassword);
+			if (save())
+				return true;
+			else
+				return false;
+		} else {
+			throw new UserNotFoundException();
+		}
 	}
 
 }

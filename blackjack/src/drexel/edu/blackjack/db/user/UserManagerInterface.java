@@ -13,6 +13,8 @@
  ******************************************************************************/
 package drexel.edu.blackjack.db.user;
 
+import java.util.List;
+
 /**
  * Interface that any persistent store for users has to implement.
  * <P>
@@ -25,6 +27,10 @@ package drexel.edu.blackjack.db.user;
  * @author Jennifer
  */
 public interface UserManagerInterface {
+	
+	public static class UserNotFoundException extends Exception {
+		private static final long serialVersionUID = 2145337834380938724L;
+	}
 
 	/**
 	 * This loads the data from the persistent storage (e.g.,
@@ -105,4 +111,33 @@ public interface UserManagerInterface {
 	 * in some way
 	 */
 	public boolean logoutUser( String username );
+
+	
+	/**
+	 * This returns a list of the UserMetadata objects
+	 * that were loaaded with the load() method. Though
+	 * you can call this before you've loaded the users,
+	 * it'll just return null.
+	 * 
+	 * @return If the load() command has been used, this
+	 * should return a valid list of user, though perhaps
+	 * of size zero if no games were loaded. If the load()
+	 * command was not called, or if it failed, it should
+	 * return null.
+	 */
+	public List<UserMetadata> getUsers();
+	
+	/**
+	 * Remove user from user list
+	 * @param username of user
+	 * @return true if removed successfully, otherwise false
+	 */
+	public boolean remove(String username) throws UserNotFoundException;
+	
+	/**
+	 * Edit one specific user's password from user list
+	 * @param username of user
+	 * @return true if edited successfully, otherwise false
+	 */
+	public boolean changePassword(String username, String newPassword) throws UserNotFoundException;
 }
