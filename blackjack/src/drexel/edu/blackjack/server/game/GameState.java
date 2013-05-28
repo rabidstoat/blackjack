@@ -268,7 +268,37 @@ public class GameState {
 		// Then send it to all the players
 		return notifyOtherPlayers( code, null );		
 	}
-	
+
+	/**
+	 * Used when a hand is updated by flipping some facedown card
+	 * to a faceup card. Need to send out a response code with the
+	 * latest hand.
+	 * <P>
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#UPDATED_HAND}
+	 * code, the first parameter is the session ID, the second is the username,
+	 * and remaining parameters are the updated cards. 
+	 * 
+	 * @param user
+	 * @param hand
+	 */
+	public boolean notifyOthersOfUpdatedHand(User user, Hand hand) {
+		boolean success = false;
+		
+		if( hand != null ) {
+			
+			// Create the response code: gameid username <hand as seen by other users>
+			StringBuilder str = new StringBuilder( getStringForGameAndUser( user) );
+			str.append( " " );
+			str.append( hand.toString(false) );	// False because it's not for the player whose hand it is
+			ResponseCode code = new ResponseCode( ResponseCode.CODE.UPDATED_HAND, str.toString() );
+
+			// Then send it to all the players except this user
+			success = notifyOtherPlayers( code, user );		
+		}
+		
+		return success;
+	}
+
 	/**
 	 * Needs to send out a response code indicating that the user
 	 * in question has been dealt new cards.
