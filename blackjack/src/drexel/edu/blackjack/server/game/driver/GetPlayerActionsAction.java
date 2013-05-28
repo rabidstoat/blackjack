@@ -14,6 +14,8 @@ package drexel.edu.blackjack.server.game.driver;
 
 import java.util.logging.Logger;
 
+import drexel.edu.blackjack.cards.DealtCard;
+import drexel.edu.blackjack.cards.Hand;
 import drexel.edu.blackjack.server.game.Game;
 import drexel.edu.blackjack.server.game.GameState;
 import drexel.edu.blackjack.server.game.User;
@@ -72,35 +74,52 @@ public class GetPlayerActionsAction extends GameAction {
 		// STATEFUL: Need to set them into the 'IN_SESSION_AND_YOUR_TURN' state
 		player.setIsPlayerTurn();
 		
-		while( !player.getFinishedGamePlayThisRound() ) {
+		// First has to turn over their facedown cards
+		Hand hand = player.getHand();
+		if( hand == null ) {
+			LOGGER.severe( "A user was prompted for gameplay with a null hand!" );
+			return;
+		}
+		for( DealtCard card : hand.getFacedownCards() ) {
+			card.changeToFaceUp();
+		}
+		state.notifyOthersOfUpdatedHand( player, hand );
 
-			// This is when we started this whole process
-			long start = System.currentTimeMillis();
-			
-			// This is how long we've been waiting up until now
-			long delta = System.currentTimeMillis() - start;
+		// If it's a blackjack, they don't have to play
+		if( hand.getIsBlackJack() ) {
+			state.notifyOthersOfGameAction( player, GameState.BLACKJACK_KEYWORD );
+		} else {
+			// Otherwise they'll need to play
+			while( !player.getFinishedGamePlayThisRound() ) {
 
-			state.notifyAllOfGameplayNeeded( player );
-			while( player.getNeedsToMakeAPlay() && delta < PLAY_WAIT_TIME ) {
+				// This is when we started this whole process
+				long start = System.currentTimeMillis();
 				
-				// Sleep a while to give them time to check
-				try {
-					Thread.sleep( SWEEP_DELAY );
-				} catch( InterruptedException e ) {
-					// It's just waking us up
+				// This is how long we've been waiting up until now
+				long delta = System.currentTimeMillis() - start;
+
+				state.notifyAllOfGameplayNeeded( player );
+				while( player.getNeedsToMakeAPlay() && delta < PLAY_WAIT_TIME ) {
+					
+					// Sleep a while to give them time to check
+					try {
+						Thread.sleep( SWEEP_DELAY );
+					} catch( InterruptedException e ) {
+						// It's just waking us up
+					}
+					
+					// Recalculate delta before checking again
+					delta = System.currentTimeMillis() - start;
 				}
 				
-				// Recalculate delta before checking again
-				delta = System.currentTimeMillis() - start;
-			}
-			
-			// If they exceeded the limit without making a play, well, too bad for them
-			// If this is true, they'll be marked as still needing to make a play
-			if( player.getNeedsToMakeAPlay() ) {
-				// Force them to idle timeout
-				player.forceTimeoutWhilePlaying();
-				// Remove them from the list of game players
-				state.removePlayer(player);
+				// If they exceeded the limit without making a play, well, too bad for them
+				// If this is true, they'll be marked as still needing to make a play
+				if( player.getNeedsToMakeAPlay() ) {
+					// Force them to idle timeout
+					player.forceTimeoutWhilePlaying();
+					// Remove them from the list of game players
+					state.removePlayer(player);
+				}
 			}
 		}
 	}
