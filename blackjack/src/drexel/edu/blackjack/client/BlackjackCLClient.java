@@ -127,6 +127,7 @@ public class BlackjackCLClient {
 	 */
 	public BlackjackCLClient(String host, boolean debugMode) {
 		this.host = host;
+		this.debugMode = debugMode;
 	}
 	
 	/**
