@@ -16,6 +16,7 @@ package drexel.edu.blackjack.server.game.driver;
 
 import java.util.logging.Logger;
 
+import drexel.edu.blackjack.cards.DealtCard;
 import drexel.edu.blackjack.cards.Hand;
 import drexel.edu.blackjack.server.game.Game;
 import drexel.edu.blackjack.server.game.GameState;
@@ -47,6 +48,12 @@ public class CheckForDealerBlackjackAction extends GameAction {
 				Hand hand = state.getDealerHand();
 				if( hand.getIsBlackJack() ) {
 					state.notifyPlayersOfDealerBlackjack();
+					// Flip over the card to reveal it
+					for( DealtCard card : hand.getFacedownCards() ) {
+						card.changeToFaceUp();
+					}
+					// And notify players about the change so they see too
+					state.notifyOthersOfUpdatedHand( null, hand );
 				}
 				success = true;
 			}
