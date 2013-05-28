@@ -19,6 +19,7 @@ import drexel.edu.blackjack.cards.DealtCard;
 import drexel.edu.blackjack.cards.Hand;
 import drexel.edu.blackjack.server.game.Game;
 import drexel.edu.blackjack.server.game.GameState;
+import drexel.edu.blackjack.server.game.User;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
@@ -76,9 +77,13 @@ public class PlayDealerHandAction extends GameAction {
 		
 		// And notify players about the change
 		state.notifyOthersOfUpdatedHand( null, hand );
+		 
+		// Figure out if the dealer even needs to play. If everyone
+		// else busted (or left), the dealer doesn't need to
+		boolean dealerNeedsToPlay = doesDealerNeedToPlay( state );
 
 		// Keep hitting until we should hit no more
-		while( hand.getDealerShouldHit(null) ) {
+		while( dealerNeedsToPlay && hand.getDealerShouldHit(null) ) {
 			
 			// This just pauses a tiny bit, otherwise the dealer makes his
 			// play in like 2 ms, and that's just too fast, it looks silly
@@ -103,5 +108,35 @@ public class PlayDealerHandAction extends GameAction {
 		} else {
 			state.notifyOthersOfGameAction( null, GameState.STAND_KEYWORD );
 		}
+	}
+
+	/**
+	 * Dealer doesn't need to play if everyone else has
+	 * busted or left.
+	 * 
+	 * @param state Guaranteed non-null
+	 * @return True if the dealer needs to play, false
+	 * otherwise
+	 */
+	private boolean doesDealerNeedToPlay(GameState state) {
+		
+		// Start off assuming he doesn't
+		boolean needToPlay = false;
+		
+		User[] players = state.getCopyOfPlayers();
+		if( players != null ) {
+			for( User player : players ) {
+				Hand hand = player.getHand();
+				if( hand != null ) {
+					// If at least one player is not busted, dealer
+					// has to play.
+					if( !hand.getIsBusted() ) {
+						needToPlay = true;
+					}
+				}
+			}
+		}
+		
+		return needToPlay;
 	}
 }
