@@ -964,7 +964,8 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 						// Initialize all values
 						numDecks = minBet = maxBet = null;
 						gameId = gameDescription = null;
-						rules.clear();
+						// Create a new instance, otherwise created ClientSideGames will use the same instance
+						rules = new ArrayList<String>();
 						
 						// Figure out the ID and description
 						// Use a tokenizer just because
