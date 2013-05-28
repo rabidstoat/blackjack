@@ -14,6 +14,7 @@ package drexel.edu.blackjack.test.cards;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -40,6 +41,25 @@ public class HandTest {
 		assertEquals(8+10+6, (int) vs.get(0));
 		assertEquals(true, hand.getIsBusted());
 		assertEquals(false, hand.getIsBlackJack());
+	}
+	
+	@Test
+	public void testTwoCardsOneAce() {
+		User user = mock(User.class);
+		Hand hand = new Hand(user);
+		DealtCard c1 = new DealtCard(new Card(Card.RANK.ACE, Card.SUIT.CLUBS), true);
+		DealtCard c2 = new DealtCard(new Card(Card.RANK.FIVE, Card.SUIT.CLUBS), true);
+		hand.receiveCard(c1);
+		hand.receiveCard(c2);
+		List<Integer> vs = hand.getPossibleValues(); //6, 16
+		assertEquals(2, vs.size());
+		assertEquals(6*16, (int) vs.get(0)*vs.get(1));
+		assertEquals(false, hand.getIsBusted());
+		assertEquals(false, hand.getIsBlackJack());
+		assertFalse(hand.getDealerShouldHit(null));
+		ArrayList<String> rules = new ArrayList<String>();
+		rules.add("Dealer must reach soft 16 to stand");
+		assertTrue(hand.getDealerShouldHit(rules));
 	}
 	
 	@Test

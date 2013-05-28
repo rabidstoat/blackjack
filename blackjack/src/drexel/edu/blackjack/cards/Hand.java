@@ -15,6 +15,8 @@ package drexel.edu.blackjack.cards;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import drexel.edu.blackjack.server.game.User;
 
@@ -258,5 +260,37 @@ public class Hand {
 			separator = " ";
 		}
 		return b.toString();
+	}
+	
+	/**
+	 * <b>UI:</b> Based on the game's rule, find out if dealer's hand should
+	 * hit or stand next
+	 * @param rules: rules of the game to parse. If there is one rule that has the form:
+	 * Dealer must hit soft 16 to stand
+	 * than 16 will be the point for dealer to stand.
+	 * Otherwise, just pass <b>null</b>, default stand point is 17.
+	 */
+	public boolean getDealerShouldHit(ArrayList<String> rules) {
+		int pointsToStand = 17;
+		Pattern pattern = Pattern.compile(".*soft\\s(\\d{2})\\sto\\sstand.*");
+		if (rules != null) {
+			for (String s:rules) {
+				Matcher matcher = pattern.matcher(s);
+				if (matcher.find()) {
+					try {
+						pointsToStand = Integer.parseInt(matcher.group(1));
+						break; // found the rule
+					} catch (Exception e) {
+						// doing nothing, let 17 be the point to stand
+					}
+				}
+			}
+		}
+		for (int p:this.getPossibleValues()) {
+			if (p >= pointsToStand) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
