@@ -102,10 +102,11 @@ public class PlayDealerHandAction extends GameAction {
 		}
 		
 		// Now here, the dealer either decided to stand, or busted
-		// Need to send a message to that effect
+		// Need to send a message to that effect -- unless all the other
+		// places busted, then we don't have to tell anything
 		if( hand.getIsBusted() ) {
 			state.notifyOthersOfGameAction( null, GameState.BUST_KEYWORD);
-		} else {
+		} else if( dealerNeedsToPlay ) {
 			state.notifyOthersOfGameAction( null, GameState.STAND_KEYWORD );
 		}
 	}
