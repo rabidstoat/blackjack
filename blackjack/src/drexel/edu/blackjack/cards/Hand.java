@@ -89,8 +89,8 @@ public class Hand {
 	 * Get a list of the faceup cards in the hand
 	 * @return List of faceup cards
 	 */
-	public List<Card> getFaceupCards() {
-		ArrayList<Card> temp = new ArrayList<Card>();
+	public List<DealtCard> getFaceupCards() {
+		ArrayList<DealtCard> temp = new ArrayList<DealtCard>();
 		for (DealtCard c:cards) {
 			if (c.isFaceUp()) {
 				temp.add(c);
@@ -103,8 +103,8 @@ public class Hand {
 	 * Get a list of facedown cards in the deck
 	 * @return List of facedown cards
 	 */
-	public List<Card> getFacedownCards() {
-		ArrayList<Card> temp = new ArrayList<Card>();
+	public List<DealtCard> getFacedownCards() {
+		ArrayList<DealtCard> temp = new ArrayList<DealtCard>();
 		for (DealtCard c:cards) {
 			if (!c.isFaceUp()) {
 				temp.add(c);
