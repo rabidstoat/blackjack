@@ -12,8 +12,6 @@
  ******************************************************************************/
 package drexel.edu.blackjack.server.game.driver;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 import drexel.edu.blackjack.cards.DealerShoeInterface;
@@ -21,7 +19,6 @@ import drexel.edu.blackjack.cards.DealtCard;
 import drexel.edu.blackjack.cards.Hand;
 import drexel.edu.blackjack.server.game.Game;
 import drexel.edu.blackjack.server.game.GameState;
-import drexel.edu.blackjack.server.game.User;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
@@ -71,9 +68,17 @@ public class PlayDealerHandAction extends GameAction {
 		
 		// Just loop around hitting, so long as the dealer should hit on the hand
 		DealerShoeInterface shoe = state.getDealerShoe();
+		
+		// First has to turn over their facedown cards
+		for( DealtCard card : hand.getFacedownCards() ) {
+			card.changeToFaceUp();
+		}
+		
+		// And notify players about the change
+		state.notifyOthersOfUpdatedHand( null, hand );
 
-		// TODO: A real method for determining hit or stand needs to go here
-		while( hand.getTotalNumberOfCards() < 3 ) {
+		// Keep hitting until we should hit no more
+		while( hand.getDealerShouldHit(null) ) {
 			
 			// This just pauses a tiny bit, otherwise the dealer makes his
 			// play in like 2 ms, and that's just too fast, it looks silly
