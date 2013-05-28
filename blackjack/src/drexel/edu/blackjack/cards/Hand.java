@@ -33,7 +33,7 @@ public class Hand {
 	 * hand to a dealer hand, which is passed in.
 	 * It'll either be a win, a lose, or a tie
 	 */
-	enum COMPARISON_RESULT {
+	public enum COMPARISON_RESULT {
 		
 		/**
 		 * Two ways to win:
