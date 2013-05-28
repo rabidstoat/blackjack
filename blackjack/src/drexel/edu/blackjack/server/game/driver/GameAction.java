@@ -13,6 +13,8 @@
  ******************************************************************************/
 package drexel.edu.blackjack.server.game.driver;
 
+import java.util.Random;
+
 import drexel.edu.blackjack.cards.DealtCard;
 import drexel.edu.blackjack.server.game.Game;
 import drexel.edu.blackjack.server.game.GameState;
@@ -57,6 +59,13 @@ public abstract class GameAction {
 	 * have every this often.
 	 */
 	protected int SWEEP_DELAY				= 500;
+
+	// When we force a pause in the action, for the sake of realism,
+	// it's going to be of at least this amount of milliseconds
+	private int BASE_SLEEP_TIME				= 500;
+	
+	// And then it will add up to another delta number of milliseconds
+	private int SLEEP_DELTA					= 750;
 
 	/**
 	 * The only thing an action has to do is perform. This
@@ -125,4 +134,17 @@ public abstract class GameAction {
 		
 		return card;
 	}
+	
+	/**
+	 * Introduces a slight pause so that things
+	 * don't come so blazingly fast.
+	 */
+	protected void pauseAMoment() {
+		Random random = new Random();
+		try {
+			Thread.sleep( BASE_SLEEP_TIME + random.nextInt(SLEEP_DELTA) );
+		} catch (InterruptedException e) {
+		}
+	}
+
 }
