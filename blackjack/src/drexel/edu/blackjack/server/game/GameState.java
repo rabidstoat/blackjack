@@ -20,6 +20,7 @@ import java.util.List;
 
 import drexel.edu.blackjack.cards.DealerShoeInterface;
 import drexel.edu.blackjack.cards.Hand;
+import drexel.edu.blackjack.cards.Hand.COMPARISON_RESULT;
 import drexel.edu.blackjack.cards.SimpleDealerShoe;
 import drexel.edu.blackjack.db.user.UserMetadata;
 import drexel.edu.blackjack.server.BlackjackProtocol;
@@ -128,6 +129,24 @@ public class GameState {
 	 * on their turn.
 	 */
 	public static final String BLACKJACK_KEYWORD	= "BLACKJACK";
+	/**
+	 * Used in
+	 * {@link drexel.edu.blackjack.server.ResponseCode.CODE#GAME_OUTCOME}
+	 * responses to indicate that he player won. 
+	 */
+	public static final String WON_KEYWORD			= "WON";
+	/**
+	 * Used in
+	 * {@link drexel.edu.blackjack.server.ResponseCode.CODE#GAME_OUTCOME}
+	 * responses to indicate that he player lost. 
+	 */
+	public static final String LOST_KEYWORD			= "LOST";
+	/**
+	 * Used in
+	 * {@link drexel.edu.blackjack.server.ResponseCode.CODE#GAME_OUTCOME}
+	 * responses to indicate that he player tied. 
+	 */
+	public static final String TIED_KEYWORD			= "TIED";
 	
 	
 	// An ordered list of players involved in the game. Gameplay will
@@ -189,6 +208,38 @@ public class GameState {
 	}
 	
 	/**
+	 * Needs to notify all players in the game of the result of the 
+	 * game outcome for a particular player.
+	 * <P>
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#GAME_OUTCOME}
+	 * code, the first parameter is the session ID, the second is the username,
+	 * and the third is one of WON, LOST, or TIED
+	 * @return True if sent successfully, false otherwise
+	 */
+	public boolean notifyAllOfGameOutcome(User player, COMPARISON_RESULT outcome) {
+		boolean success = false;
+		
+		if( player != null ) {
+			// Create the response code: gameid username result
+			StringBuilder str = new StringBuilder( getStringForGameAndUser( null ) );
+			str.append( " " );
+			if( outcome == COMPARISON_RESULT.WIN ) {
+				str.append( WON_KEYWORD );
+			} else if (outcome == COMPARISON_RESULT.LOSE ) {
+				str.append( LOST_KEYWORD );
+			} else {
+				str.append( TIED_KEYWORD );
+			}
+			ResponseCode code = new ResponseCode( ResponseCode.CODE.GAME_OUTCOME, str.toString() );
+			
+			// Then send it to all the players
+			success = notifyOtherPlayers( code, null );		
+		}
+		
+		return success;
+	}
+	
+	/**
 	 * Needs to notify all players in the game that the indicated player has been
 	 * requested to make a gameplay. Also marks the player from this was requested
 	 * of that fact.
@@ -225,22 +276,8 @@ public class GameState {
 	 * and the action word is BLACKJACK
 	 * @return True if sent successfully, false otherwise
 	 */
-	public boolean notifyPlayersOfDealerBlackjack() {
-		
+	public boolean notifyPlayersOfDealerBlackjack() {		
 		return this.notifyOthersOfGameAction(null, BLACKJACK_KEYWORD);
-		
-		/**
-		// This code used to work, hopefully new code does too! I tested with the
-		// RiggedDealerShoe() set to deal blackjacks.
-		// Create the response code: gameid DEALER_NAME BLACKJACK
-		StringBuilder str = new StringBuilder( getStringForGameAndUser( null ) );
-		str.append( " " );
-		str.append( BLACKJACK_KEYWORD );
-		ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_ACTION, str.toString() );
-		
-		// Then send it to all the players
-		return notifyOtherPlayers( code, null );
-		**/		
 	}
 
 	/**
