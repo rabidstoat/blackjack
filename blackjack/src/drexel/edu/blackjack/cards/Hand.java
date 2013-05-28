@@ -321,7 +321,7 @@ public class Hand {
 				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	
