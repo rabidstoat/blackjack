@@ -189,7 +189,7 @@ public class BlackjackCLClient {
             
             if (debugMode) {
             	
-            	setScreen(new DebugClientScreen(this, input, output), true);
+            	//setScreen(new DebugClientScreen(this, input, output), true);
             	
                 // Set up the messages frame
             	/*
