@@ -189,20 +189,18 @@ public class BlackjackCLClient {
             
             if (debugMode) {
             	
-            	//setScreen(new DebugClientScreen(this, input, output), true);
-            	
-                // Set up the messages frame
-            	/*
-                if( "true".equals(System.getProperty(SHOW_MESSAGES)) ) {
-                	MessageFrame.getDefaultMessageFrame().setLocationRelativeTo(null);
-                	MessageFrame.getDefaultMessageFrame().setVisible(true);
-                }
-                */
+            	setScreen(new DebugClientScreen(this, input, output), true);
             	
             } else {
 	
 	            // Set the screen to the login input screen
 	            setScreen( LoginInputScreen.getDefaultScreen( this, input, output ), true );
+            	
+                // Set up the messages frame
+                if( "true".equals(System.getProperty(SHOW_MESSAGES)) ) {
+                	MessageFrame.getDefaultMessageFrame().setLocationRelativeTo(null);
+                	MessageFrame.getDefaultMessageFrame().setVisible(true);
+                }
             }
             
             // We read in input from the user from standard in, though

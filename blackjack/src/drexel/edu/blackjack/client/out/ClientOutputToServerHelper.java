@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import drexel.edu.blackjack.client.MessageFrame;
 import drexel.edu.blackjack.server.commands.HitCommand;
 import drexel.edu.blackjack.server.commands.StandCommand;
 import drexel.edu.blackjack.util.BlackjackLogger;
@@ -61,7 +62,7 @@ public class ClientOutputToServerHelper extends Thread {
 		
 		// UI: Add the message frame as a listener; needs to be explicitly made synchronized
 		listeners = Collections.synchronizedSet(new HashSet<MessagesToServerListener>());
-		//addListener( MessageFrame.getDefaultMessageFrame() );
+		addListener( MessageFrame.getDefaultMessageFrame() );
 		
 		try {
 			writer = new PrintWriter(socket.getOutputStream(), true);
