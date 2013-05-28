@@ -40,7 +40,7 @@ public class Card {
 	 */
 	public enum RANK {
 		  
-		ACE ("1"),   
+		ACE ("A"),   
 		TWO("2"),		
 		THREE("3"),	
 		FOUR("4"),	
