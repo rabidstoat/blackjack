@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -94,8 +95,13 @@ public class BlackjackCLClient {
 	// This system property is set true if we should show the message frame
 	private static final String SHOW_MESSAGES			= "showmessages";
 	
+	// IP of Localhost
+	private static final String LOCALHOST				= "127.0.0.1";
 	// Our logger
 	private final static Logger LOGGER = BlackjackLogger.createLogger(BlackjackCLClient.class .getName()); 
+	
+	// Host to connect to, local if not set in arguments
+	private String host;
 	
 	// And keep track of the 'screen' that is 'up' on the clint
 	private AbstractScreen currentScreen = null;
@@ -117,20 +123,17 @@ public class BlackjackCLClient {
 	 ***********************************************************/
 	
 	/**
-	 * Constructor needs a comment
+	 * Set up host ip in constructor, default to Localhost
 	 */
-	public BlackjackCLClient() {
-		// Don't really do anything
-	}
-	
-	public BlackjackCLClient(boolean debugMode) {
-		this.debugMode = debugMode;
+	public BlackjackCLClient(String host, boolean debugMode) {
+		this.host = host;
 	}
 	
 	/**
 	 * Again, with the no comments!
 	 * 
-	 * @param args No arguments expected
+	 * @param args remote's host ip and "--debug" if debug mode is desired, both are optional
+	 * e.g. "144.118.34.12 --debug"
 	 */
 	public static void main(String[] args) {
 		// Maybe cross-platform will work on mac
@@ -143,10 +146,13 @@ public class BlackjackCLClient {
 		} catch (UnsupportedLookAndFeelException e) {
 		}
 		BlackjackCLClient client;
+		boolean debugMode = false;
+		String hostIP = LOCALHOST;
 		if (args.length > 0 && args[args.length - 1].equals("--debug")) 
-			client = new BlackjackCLClient(true);
-		else
-			client = new BlackjackCLClient();
+			debugMode = true;
+		if (args.length > 0 && !args[0].equals("--debug"))
+			hostIP = args[0];
+		client = new BlackjackCLClient(hostIP, debugMode);
 		client.runClient();
 				
 	}
@@ -187,7 +193,8 @@ public class BlackjackCLClient {
             // And finally for a socket
             SSLSocketFactory ssf = sc.getSocketFactory();
             // SERVICE: Use the protocol's defined port
-            socket = ssf.createSocket( "127.0.0.1", PORT );
+            System.out.println("Connecting to server..");
+            socket = ssf.createSocket( host, PORT );
             LOGGER.info( "Started a client connecting to localhost on port " + PORT );
             
             // Create the thread to handle input and start it up
@@ -256,7 +263,7 @@ public class BlackjackCLClient {
             System.err.println("Unrecoverable key exception." );
             e.printStackTrace();
             System.exit(1);
-        } finally {
+		} finally {
         	// Always nice to clean up
         	if( socket != null ) {
         		try {
