@@ -44,6 +44,19 @@ public class HandTest {
 	}
 	
 	@Test
+	public void testFourCards() {
+		User user = mock(User.class);
+		Hand hand = new Hand(user);
+		DealtCard c1 = new DealtCard(new Card(Card.RANK.SEVEN, Card.SUIT.HEARTS), true);
+		DealtCard c2 = new DealtCard(new Card(Card.RANK.JACK, Card.SUIT.CLUBS), true);
+		DealtCard c3 = new DealtCard(new Card(Card.RANK.TWO, Card.SUIT.CLUBS), true);
+		hand.receiveCard(c1);
+		hand.receiveCard(c2);
+		hand.receiveCard(c3);
+		assertFalse(hand.getDealerShouldHit(null));
+	}
+	
+	@Test
 	public void testTwoCardsOneAce() {
 		User user = mock(User.class);
 		Hand hand = new Hand(user);
@@ -56,10 +69,10 @@ public class HandTest {
 		assertEquals(6*16, (int) vs.get(0)*vs.get(1));
 		assertEquals(false, hand.getIsBusted());
 		assertEquals(false, hand.getIsBlackJack());
-		assertFalse(hand.getDealerShouldHit(null));
+		assertTrue(hand.getDealerShouldHit(null));
 		ArrayList<String> rules = new ArrayList<String>();
 		rules.add("Dealer must reach soft 16 to stand");
-		assertTrue(hand.getDealerShouldHit(rules));
+		assertFalse(hand.getDealerShouldHit(rules));
 	}
 	
 	@Test

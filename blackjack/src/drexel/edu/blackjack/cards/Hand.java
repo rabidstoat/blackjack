@@ -288,7 +288,7 @@ public class Hand {
 		}
 		for (int p:this.getPossibleValues()) {
 			if (p >= pointsToStand) {
-				return true;
+				return false;
 			}
 		}
 		return false;
