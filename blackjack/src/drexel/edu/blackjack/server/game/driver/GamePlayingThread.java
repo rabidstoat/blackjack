@@ -74,7 +74,7 @@ public class GamePlayingThread extends Thread {
 		gameActions.add( new CheckForDealerBlackjackAction() );
 		gameActions.add( new GetPlayerActionsAction() );
 		gameActions.add( new PlayDealerHandAction() );
-		//gameActions.add( new FigureOutResultsAction() );
+		gameActions.add( new FigureOutResultsAction() );
 		
 		// And note that we're at the first one
 		this.gameActionIndex = 0;		
