@@ -184,10 +184,6 @@ public class InSessionScreen extends AbstractScreen {
 				} else if( code.hasSameCode( ResponseCode.CODE.GAME_STATUS ) ) {
 					displayGameStatus( code );
 					displayMenu();
-				} else if( code.hasSameCode( ResponseCode.CODE.GAME_OUTCOME ) ) {
-					// TODO: Need to handle the game outcome reporting
-					updateStatus( "Need to write the handler for GAME_OUTCOME." );
-					displayMenu();
 				} else if( code.hasSameCode( ResponseCode.CODE.GAMES_FOLLOW ) ) {
 					displayGameMetadata( code );
 				} else {

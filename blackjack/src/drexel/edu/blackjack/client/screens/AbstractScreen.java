@@ -441,6 +441,8 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 					displayCardsDealt( code );
 				} else if( code.hasSameCode(ResponseCode.CODE.PLAYER_ACTION ) ) {
 					displayPlayerAction( code );
+				} else if( code.hasSameCode( ResponseCode.CODE.GAME_OUTCOME ) ) {
+					displayGameOutcome( code );
 				} else if( code.hasSameCode(ResponseCode.CODE.UPDATED_HAND ) ) {
 					displayUpdatedHand( code );
 				} else {
@@ -512,6 +514,69 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 
 			// Grammar is important!
 			str.append( "." );
+			
+			// Display to the screen. Since this is a short 1-line message, treat it as
+			// a status update message
+			updateStatus( str.toString() );
+		}
+	}
+
+
+	/**
+	 * This handles codes about players, and whether they won or lost
+	 * the game, and if so by how much. In the blackjack protocol, the 
+	 * first parameter of the response code is always the game ID. The second 
+	 * parameter is the username. The third parameter is the action,
+	 * one of several predefined types in the protocol. This is all
+	 * as per the protocol definition.
+	 * 
+	 * @param code Hopefully of type ResponseCode.CODE.PLAYER_ACTION
+	 */
+	private void displayGameOutcome(ResponseCode code) {
+		
+		if( code != null  ) {
+
+			// Our parameters
+			List<String> params = code.getParameters();
+
+			// All player update messages that are presented to the user
+			// start the same, with the username involved in the action
+			StringBuilder str = createStringBuilderForUserUpdate(params);
+			str.append( " " );
+			
+			// Win, lose, tie?? It's in parameter two (hopefully)
+			String result = null;
+			if( params != null && params.size() >= 3 ) {
+				result = params.get(2);
+			}
+			
+			// Decide what to display based on the result
+			if( result == null ) {
+				str.append( "maybe won, maybe lost");
+			} else if( result.equalsIgnoreCase( GameState.WON_KEYWORD ) ) {
+				str.append( "won" );
+			} else if( result.equalsIgnoreCase( GameState.LOST_KEYWORD ) ) {
+				str.append( "lost" );
+			} else {
+				str.append( "tied and gets to keep" );
+			}
+			
+			// Bet amount is in parameter three (hopefully)
+			String bet = null;
+			if( params != null && params.size() >= 4 ) {
+				bet = params.get(3);
+			}
+
+			str.append( " their " );
+			if( bet == null ) {
+				str.append( "original" );
+			} else {
+				str.append( "$" );
+				str.append( bet );
+			}
+			
+			// Finish it off
+			str.append( " bet." );
 			
 			// Display to the screen. Since this is a short 1-line message, treat it as
 			// a status update message
