@@ -46,7 +46,7 @@ public class GetPlayerActionsAction extends GameAction {
 		if( game != null ) {
 			GameState state = game.getGameState();
 			if( state == null || state.getDealerHand() == null ) {
-				LOGGER.severe( "Trying to handle player actions, but there's no game state (or els eno dealer hand)..." );
+				LOGGER.severe( "Trying to handle player actions, but there's no game state (or else no dealer hand)..." );
 			} else if( state.getDealerHand().getIsBlackJack() ) {
 				LOGGER.info( "Skipping player actions as the dealer has blackjack." );
 				success = true;
@@ -88,6 +88,8 @@ public class GetPlayerActionsAction extends GameAction {
 		// If it's a blackjack, they don't have to play
 		if( hand.getIsBlackJack() ) {
 			state.notifyOthersOfGameAction( player, GameState.BLACKJACK_KEYWORD );
+			player.setNeedsToMakeAPlay( false );
+			player.setHasFinishedGamePlayThisRound(true);
 		} else {
 			// Otherwise they'll need to play
 			boolean idledOut = false;
