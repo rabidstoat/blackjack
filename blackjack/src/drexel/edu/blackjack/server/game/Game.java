@@ -401,6 +401,14 @@ public class Game {
 					str.append( BlackjackServer.EOL );
 				}
 			}
+			
+			// And the dealer's hand
+			if( state != null && state.getDealerHand() != null ) {
+				str.append( concatKeywordAndUsername(HAND_KEYWORD, null) );
+				str.append( " " );
+				str.append( state.getDealerHand().toString(user) );
+				str.append( BlackjackServer.EOL );
+			}
 		}
 		
 		return str.toString();
@@ -417,8 +425,11 @@ public class Game {
 		
 		StringBuilder str = new StringBuilder( keyword );
 		str.append( " " );
-		// And they should have a non-null username
-		if( player.getUserMetadata() != null && player.getUserMetadata().getUsername() != null ) {
+		// It's either the dealer if the player if null
+		if( player == null ) {
+			str.append( GameState.DEALER_USERNAME );
+		} else if( player.getUserMetadata() != null && player.getUserMetadata().getUsername() != null ) {
+			// Or they need a username
 			str.append( player.getUserMetadata().getUsername() );
 		} else {
 			LOGGER.warning( "Could not find a non-null username for a player in game " + getId() );

@@ -137,9 +137,9 @@ public class ClientSideGameStatus {
 							}
 						} else if( keyword.equalsIgnoreCase( Game.HAND_KEYWORD) ) {
 							// Need to figure out their hand
-							int index = lines[i].indexOf( Game.HAND_KEYWORD );
+							int index = lines[i].indexOf( username );
 							if( index != -1 ) {
-								String hand = lines[i].substring( Game.HAND_KEYWORD.length() + index + 1);
+								String hand = lines[i].substring( username.length() + index + 1);
 								if( hand != null && hand.length() > 0 ) {
 									propertyMap.put( keyword, hand );
 									parsed = true;
@@ -193,37 +193,47 @@ public class ClientSideGameStatus {
 		
 		if( propertyMap != null ) {
 			
-			// Start with their name
-			response = new StringBuilder( username );
-			response.append( " is " );
-			
-			// Actively playing or waiting to play or unknown?
-			String status = propertyMap.get(PLAYER_STATUS);
-			if( status == null ) {
-				LOGGER.warning( "Could not find PLAYER_STATUS of " + username + " to report." );
-				response.append( "in" );
-			} else if( status.equals( Game.ACTIVE_PLAYER ) ) {
-				response.append( "playing" );
-			} else if( status.equals( Game.OBSERVER_KEYWORD ) ) {
-				response.append( "watching" );
+			response = new StringBuilder();
+			if( username.equals( GameState.DEALER_USERNAME ) ) {
+				// If it's the dealer, start with this string
+				String hand = propertyMap.get( Game.HAND_KEYWORD );
+				if( hand != null ) {
+					response.append( "The dealer holds: " );
+					response.append( hand );
+				}
 			} else {
-				response.append( "at" );
-			}
-			response.append( " the game." );
-			
-			// Have they bet?
-			String bet = propertyMap.get( Game.BET_KEYWORD );
-			if( bet != null ) {
-				response.append( " Their bet is $" );
-				response.append( bet );
-				response.append( "." );
-			}
-			
-			// Do they have a hand?
-			String hand = propertyMap.get( Game.HAND_KEYWORD );
-			if( hand != null ) {
-				response.append( " Their hand is: " );
-				response.append( hand );
+				// For players, though, start with their name
+				response.append( username );
+				response.append( " is " );
+				
+				// Actively playing or waiting to play or unknown?
+				String status = propertyMap.get(PLAYER_STATUS);
+				if( status == null ) {
+					LOGGER.warning( "Could not find PLAYER_STATUS of " + username + " to report." );
+					response.append( "in" );
+				} else if( status.equals( Game.ACTIVE_PLAYER ) ) {
+					response.append( "playing" );
+				} else if( status.equals( Game.OBSERVER_KEYWORD ) ) {
+					response.append( "watching" );
+				} else {
+					response.append( "at" );
+				}
+				response.append( " the game." );
+
+				// Have they bet?
+				String bet = propertyMap.get( Game.BET_KEYWORD );
+				if( bet != null ) {
+					response.append( " Their bet is $" );
+					response.append( bet );
+					response.append( "." );
+				}
+				
+				// Do they have a hand?
+				String hand = propertyMap.get( Game.HAND_KEYWORD );
+				if( hand != null ) {
+					response.append( " Their hand is: " );
+					response.append( hand );
+				}
 			}
 		}
 		
