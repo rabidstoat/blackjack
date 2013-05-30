@@ -20,6 +20,8 @@ import java.util.logging.Logger;
 import drexel.edu.blackjack.cards.DealerShoeInterface;
 import drexel.edu.blackjack.cards.DealtCard;
 import drexel.edu.blackjack.cards.Hand;
+import drexel.edu.blackjack.cards.Card.RANK;
+import drexel.edu.blackjack.cards.Card.SUIT;
 import drexel.edu.blackjack.server.game.Game;
 import drexel.edu.blackjack.server.game.GameState;
 import drexel.edu.blackjack.server.game.User;
@@ -95,7 +97,14 @@ public class DealCardsAction extends GameAction {
 			
 			// Deal to each of the players
 			for( User user : activeUsers ) {
-				Hand hand = dealHand( user, state );
+				Hand hand = null;
+				// TEST: If you comment this out, and create a player with a username of
+				// user1, they will always get dealt a blackjack.
+				//if( user.getUserMetadata().getUsername().equals("user1" ) ) {
+				//	hand = dealBlackjack( user );
+				//} else {
+					hand = dealHand( user, state );
+				//}
 				if( hand == null ) {
 					success = false;
 				} else {
@@ -150,5 +159,14 @@ public class DealCardsAction extends GameAction {
 		return hand;
 	}
 
+	/**
+	 * For testing only
+	 */
+	private Hand dealBlackjack( User player ) {
+		Hand hand = new Hand(player);
+		hand.receiveCard( new DealtCard( RANK.ACE, SUIT.DIAMONDS) );
+		hand.receiveCard( new DealtCard( RANK.QUEEN, SUIT.HEARTS) );
+		return hand;
+	}
 
 }
