@@ -519,6 +519,30 @@ public class GameState {
 	}	
 
 	/**
+	 * Need to send out messages to the all players about
+	 * how a game action was made on the part of a player
+     * <P>
+	 * This is a {@link drexel.edu.blackjack.server.ResponseCode.CODE#PLAYER_ACTION}
+	 * code, and the parameters are the gameId followed by the username
+	 * followed by the action taken
+	 * 
+	 * @param player Who performed the action (or null if it's the dealer)
+	 * @param action What the action was
+	 * @return True if it was successfully broadcast, else false
+	 */
+	public boolean notifyAllOfGameAction( User player, String action ) {
+		
+		// Create the response code: gameid username action
+		StringBuilder str = new StringBuilder( getStringForGameAndUser( player ) );
+		str.append( " " );
+		str.append( action );
+		ResponseCode code = new ResponseCode( ResponseCode.CODE.PLAYER_ACTION, str.toString() );
+
+		// Then send it to all the players except the one who generated
+		return notifyOtherPlayers( code, null );		
+	}	
+
+	/**
 	 * Send a response code update to all other players except for
 	 * the one passed in (who might be null)
 	 * 

@@ -87,7 +87,7 @@ public class GetPlayerActionsAction extends GameAction {
 
 		// If it's a blackjack, they don't have to play
 		if( hand.getIsBlackJack() ) {
-			state.notifyOthersOfGameAction( player, GameState.BLACKJACK_KEYWORD );
+			state.notifyAllOfGameAction( player, GameState.BLACKJACK_KEYWORD );
 			player.setNeedsToMakeAPlay( false );
 			player.setHasFinishedGamePlayThisRound(true);
 		} else {
