@@ -19,12 +19,24 @@ package drexel.edu.blackjack.cards;
  */
 public class RiggedDealerShoe extends SimpleDealerShoe {
 
-	// This is the same as the SimpleDealerShoe
+	/**
+	 * This is the same as the SimpleDealerShoe, in theory
+	 */
 	public static final int FAIR_AND_SQUARE = 0;
 	
-	// The first card is ALWAYS Ace of Diamonds. The
-	// next card is ALWAYS queen of hearts. Then it repeats.
+	/**
+	 *The first card is ALWAYS Ace of Diamonds. The
+	 * next card is ALWAYS queen of hearts. Then it repeats.
+	 */
 	public static final int ALWAYS_DEAL_BLACKJACK = 1;
+	
+	/**
+	 * There's a method {@link #setWhatITellYou(Card)} to tell 
+	 * it what to deal next, and it uses that if set. If not, 
+	 * it deals randomly.
+	 */
+	public static final int DEAL_WHAT_I_TELL_YOU = 2;
+	private Card whatITellYou;
 	
 	// Some variables for our ALWAYS_DEAL_BLACKJACK mode
 	private static final DealtCard ACE_DIAMONDS_CARD = new DealtCard( Card.RANK.ACE, Card.SUIT.DIAMONDS );
@@ -46,15 +58,45 @@ public class RiggedDealerShoe extends SimpleDealerShoe {
 
 	@Override
 	public DealtCard dealTopCard() {
+		
+		DealtCard cardToReturn = null;
+		
 		if( mode == ALWAYS_DEAL_BLACKJACK ) {
 			blackjackDealAce = !blackjackDealAce;
 			if( blackjackDealAce ) {
-				return ACE_DIAMONDS_CARD;
+				cardToReturn = ACE_DIAMONDS_CARD;
 			} else {
-				return QUEEN_HEARTS_CARD;
+				cardToReturn = QUEEN_HEARTS_CARD;
 			}
-		} else {
-			return super.dealTopCard();
+		} else if( mode == DEAL_WHAT_I_TELL_YOU && whatITellYou != null ) {
+			cardToReturn = new DealtCard(whatITellYou);
+			whatITellYou = null;
 		}
+		
+		if( cardToReturn == null ) {
+			cardToReturn = super.dealTopCard();
+		}
+		
+		return cardToReturn;
+	}
+
+	/**
+	 * If mode is set to {@link #DEAL_WHAT_I_TELL_YOU}, it will
+	 * deal this card.
+	 * 
+	 * @return the whatITellYou
+	 */
+	public Card getWhatITellYou() {
+		return whatITellYou;
+	}
+
+	/**
+	 * If mode is set to {@link #DEAL_WHAT_I_TELL_YOU}, it will
+	 * deal this card.
+	 * 
+	 * @param whatITellYou the whatITellYou to set
+	 */
+	public void setWhatITellYou(Card whatITellYou) {
+		this.whatITellYou = whatITellYou;
 	}
 }
