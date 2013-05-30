@@ -90,7 +90,8 @@ public class GetPlayerActionsAction extends GameAction {
 			state.notifyOthersOfGameAction( player, GameState.BLACKJACK_KEYWORD );
 		} else {
 			// Otherwise they'll need to play
-			while( !player.getFinishedGamePlayThisRound() ) {
+			boolean idledOut = false;
+			while( !player.getFinishedGamePlayThisRound() && !idledOut ) {
 
 				// This is when we started this whole process
 				long start = System.currentTimeMillis();
@@ -119,6 +120,7 @@ public class GetPlayerActionsAction extends GameAction {
 					player.forceTimeoutWhilePlaying();
 					// Remove them from the list of game players
 					state.removePlayer(player);
+					idledOut = true;
 				}
 			}
 		}
