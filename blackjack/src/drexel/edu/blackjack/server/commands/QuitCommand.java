@@ -71,13 +71,7 @@ public class QuitCommand extends BlackjackCommand {
 			validStates = new HashSet<STATE>();
 			
 			//quit command works in any connected states
-			validStates.add( STATE.WAITING_FOR_USERNAME );
-			validStates.add( STATE.WAITING_FOR_PASSWORD );
 			validStates.add( STATE.NOT_IN_SESSION );
-			validStates.add( STATE.IN_SESSION_AS_OBSERVER );
-			validStates.add( STATE.IN_SESSION_AWAITING_BETS );
-			validStates.add( STATE.IN_SESSION_BEFORE_YOUR_TURN );
-			validStates.add( STATE.IN_SESSION_AND_YOUR_TURN );
 			
 		}
 		return validStates;
