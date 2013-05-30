@@ -88,8 +88,6 @@ public class VersionCommand extends BlackjackCommand {
 			validStates.add( STATE.IN_SESSION_AWAITING_BETS );
 			validStates.add( STATE.IN_SESSION_BEFORE_YOUR_TURN );
 			validStates.add( STATE.IN_SESSION_AND_YOUR_TURN );
-			validStates.add( STATE.IN_SESSION_DEALER_BLACKJACK );
-			validStates.add( STATE.IN_SESSION_SERVER_PROCESSING );
 			
 		}
 		return validStates;

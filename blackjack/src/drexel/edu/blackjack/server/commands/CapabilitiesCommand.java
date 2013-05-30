@@ -106,13 +106,11 @@ public class CapabilitiesCommand extends BlackjackCommand {
 		validStates.add(STATE.WAITING_FOR_USERNAME);
 		validStates.add(STATE.WAITING_FOR_PASSWORD);
 		validStates.add(STATE.NOT_IN_SESSION);
-		validStates.add(STATE.IN_SESSION_SERVER_PROCESSING);
 		validStates.add(STATE.IN_SESSION_BEFORE_YOUR_TURN);
 		validStates.add(STATE.IN_SESSION_AND_YOUR_TURN);
 		validStates.add(STATE.IN_SESSION_AWAITING_BETS);
 		validStates.add(STATE.IN_SESSION_AFTER_YOUR_TURN);
 		validStates.add(STATE.IN_SESSION_AS_OBSERVER);
-		validStates.add(STATE.IN_SESSION_DEALER_BLACKJACK);
 
 		return validStates;
 	}

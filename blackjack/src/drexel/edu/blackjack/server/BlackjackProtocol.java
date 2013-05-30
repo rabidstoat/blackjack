@@ -128,14 +128,6 @@ public class BlackjackProtocol {
 		IN_SESSION_AND_YOUR_TURN,
 		
 		/**
-		 * In this case, the dealer has a blackjack. Too bad for the
-		 * client! The thread has to do some bookkeeping and is not
-		 * expecting client input. The bet value should be set to 
-		 * what the client bet.
-		 */
-		IN_SESSION_DEALER_BLACKJACK,
-		
-		/**
 		 * The dealer didn't have blackjack, and the client already 
 		 * played out their hand. It's just waiting for others to 
 		 * finish playing now. The bet value should be set to what
@@ -143,12 +135,6 @@ public class BlackjackProtocol {
 		 */
 		IN_SESSION_AFTER_YOUR_TURN,
 		
-		/**
-		 * Now everyone is done playing and the server is processing
-		 * the results. The bet value should be set to what the client bet.
-		 */
-		IN_SESSION_SERVER_PROCESSING,
-				
 		/**
 		 * This is, like it says, the state of being disconnected. Not much
 		 * exciting happens in this state.

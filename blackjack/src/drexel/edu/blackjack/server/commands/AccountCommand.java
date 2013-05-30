@@ -87,8 +87,6 @@ public class AccountCommand extends BlackjackCommand {
 			validStates.add( STATE.IN_SESSION_AS_OBSERVER );
 			validStates.add( STATE.IN_SESSION_AWAITING_BETS );
 			validStates.add( STATE.IN_SESSION_BEFORE_YOUR_TURN );
-			validStates.add( STATE.IN_SESSION_DEALER_BLACKJACK );
-			validStates.add( STATE.IN_SESSION_SERVER_PROCESSING );
 			
 			// And also the one other state
 			validStates.add( STATE.NOT_IN_SESSION );
