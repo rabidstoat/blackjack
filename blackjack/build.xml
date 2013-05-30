@@ -81,13 +81,14 @@
     	</java>
     </target>
 
-	<!-- Runs the client against the local host  -->
+	<!-- Runs the client against a potentially remote host  -->
 	<!-- with only SEVERE log messages shown -->
+	<!-- CLIENT: This is the ant task for the client, specifying a hostname in the property -->
     <condition property="destination.ip.set">
         <isset property="est"/>
     </condition>
     <target depends="compile" name="run-client">
-        <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
+        <echo message="Run-client ${ant.project.name}: ${ant.file}"/>
         <fail unless="destination.ip.set">
             Must set argument -Dest=xxx.xxx.xxx.xxx
         </fail>

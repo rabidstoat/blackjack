@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.ConnectException;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -53,8 +52,7 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * <b>UI:</b> The work involved in setting up the user interface
  * is done in this class.
  * <P>
- * <b>CLIENT:</b> Eventually the user will be able to specify
- * the host here.
+ * <b>CLIENT:</b> The specification of the hostname happens here.
  * <P>
  * <b>SERVICE:</b> The port to connect to is hardcoded. See
  * specific comments with this keyword in them in the source.
@@ -126,12 +124,14 @@ public class BlackjackCLClient {
 	 * Set up host ip in constructor, default to Localhost
 	 */
 	public BlackjackCLClient(String host, boolean debugMode) {
+		// CLIENT: This is where we set the host as a local class variable
 		this.host = host;
 		this.debugMode = debugMode;
 	}
 	
 	/**
-	 * Again, with the no comments!
+	 * The main class, mostly just handles the command-line arguments (if any)
+	 * before creating an instance of this class to run things.
 	 * 
 	 * @param args remote's host ip and "--debug" if debug mode is desired, both are optional
 	 * e.g. "144.118.34.12 --debug"
@@ -148,11 +148,19 @@ public class BlackjackCLClient {
 		}
 		BlackjackCLClient client;
 		boolean debugMode = false;
+		
+		// CLIENT: If no IP address is specified, the default is the localhost 
+		// (because we use this a lot for testing locally)
 		String hostIP = LOCALHOST;
 		if (args.length > 0 && args[args.length - 1].equals("--debug")) 
 			debugMode = true;
+		
+		// CLIENT: But here is where it is possible to specify a host (IP
+		// or by name) on the command line, if desired
 		if (args.length > 0 && !args[0].equals("--debug"))
 			hostIP = args[0];
+		
+		// CLIENT: That we pass into the constructor
 		client = new BlackjackCLClient(hostIP, debugMode);
 		client.runClient();
 				
@@ -193,14 +201,14 @@ public class BlackjackCLClient {
 
             // And finally for a socket
             SSLSocketFactory ssf = sc.getSocketFactory();
+            System.out.println("Connecting to server at " + host + "...");
             // SERVICE: Use the protocol's defined port
-            System.out.println("Connecting to server..");
+            // CLIENT: Use the host that we passed into the constructor
             socket = ssf.createSocket( host, PORT );
-            LOGGER.info( "Started a client connecting to localhost on port " + PORT );
+            LOGGER.info( "Started a client connecting to " + host + " on port " + PORT );
             
             // Create the thread to handle input and start it up
-            input = new ClientInputFromServerThread( 
-            		this, socket );
+            input = new ClientInputFromServerThread( this, socket );
             input.start();
             
             // Create the helper to handle output
@@ -241,19 +249,18 @@ public class BlackjackCLClient {
             }
             
         } catch (IOException e) {
-            System.err.println("Could not listen on port: " + PORT + ".");
-            e.printStackTrace();
+        	System.err.println( "Unable to open a connection to the blackjack server at " + host + "." );
             System.exit(1);
         } catch( KeyStoreException e ) {
-            System.err.println("Keystore exception, uh oh.");
+            System.err.println("Keystore exception, uh oh, something is wrong with the security.");
             e.printStackTrace();
             System.exit(1);
         } catch( NoSuchAlgorithmException e ) {
-            System.err.println("No such algorithm exception, uh oh.");
+            System.err.println("No such security algorithm exception, uh oh, this has never happened before!");
             e.printStackTrace();
             System.exit(1);
         } catch( CertificateException e ) {
-            System.err.println("Certificate exception." );
+            System.err.println("Certificate exception. This is probably really bad." );
             e.printStackTrace();
             System.exit(1);
         } catch( KeyManagementException e ) {
