@@ -15,9 +15,8 @@
  ******************************************************************************/
 package drexel.edu.blackjack.client.out;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,7 +43,7 @@ public class ClientOutputToServerHelper extends Thread {
 	private Set<MessagesToServerListener> listeners = null;
 	
 	// Need to keep track of what we're writing output to
-	private BufferedWriter writer = null;
+	private PrintWriter writer = null;
 
 	// And a logger for errors
 	private final static Logger LOGGER = BlackjackLogger.createLogger(ClientOutputToServerHelper.class.getName()); 
@@ -66,7 +65,7 @@ public class ClientOutputToServerHelper extends Thread {
 		addListener( MessageFrame.getDefaultMessageFrame() );
 		
 		try {
-			writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF-8"));
+			writer = new PrintWriter(socket.getOutputStream(), true);
 		} catch (IOException e) {
 			LOGGER.severe( "Had an error trying to open a writer to our established socket." );
 			e.printStackTrace();
@@ -106,7 +105,7 @@ public class ClientOutputToServerHelper extends Thread {
 		
 		// Otherwise, try to do what we can do
 		try {
-			writer.write(text);
+			writer.println( text );
 			writer.flush();
 		} catch( Exception e ) {
 			LOGGER.severe( "Had a problem writing to the socket." );

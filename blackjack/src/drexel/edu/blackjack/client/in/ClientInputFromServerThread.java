@@ -89,7 +89,7 @@ public class ClientInputFromServerThread extends Thread {
 		
 		// Create a reader for the socket
 		try {
-			reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "URF-8"));
+			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		} catch (IOException e) {
 			LOGGER.severe( "Had an error trying to open a reader from our established socket." );
 			e.printStackTrace();

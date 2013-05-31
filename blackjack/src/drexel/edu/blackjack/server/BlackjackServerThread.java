@@ -16,10 +16,9 @@
 package drexel.edu.blackjack.server;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.logging.Logger;
 
@@ -48,7 +47,7 @@ public class BlackjackServerThread extends Thread {
 	private Socket socket 		= null;
 	
 	// Input and output
-	private BufferedWriter out		= null;
+	private PrintWriter out		= null;
 	private BufferedReader in	= null;
 	
 	// There's a protocol state that goes with it
@@ -106,10 +105,10 @@ public class BlackjackServerThread extends Thread {
 		
 		try {
 			// This is used to write responses to the client
-			out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
+			out = new PrintWriter(socket.getOutputStream(), true);
 			
 			// And this is how responses are read from the client
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	
 			// Keep reading single-line commands as long as we can
 			LOGGER.finer( "Inside a blackjack server thread, about to block for the first read" );
@@ -122,7 +121,7 @@ public class BlackjackServerThread extends Thread {
 				
 				// They give us the response to send back
 				LOGGER.finer( "Inside a blackjack server thread, about to write some output" );
-				out.write(outputLine);
+				out.println(outputLine);
 				out.flush();
 				
 				// Was it a code that requires us to disconnect them?
@@ -215,12 +214,8 @@ public class BlackjackServerThread extends Thread {
 		if( out == null ) {
 			LOGGER.severe( "Wanted to send a message to some user but the out writer was null." );
 		} else {
-			try {
-				out.write( code.toString() );
-				out.flush();
-			} catch (IOException e) {
-				LOGGER.severe( "Couldn't send message to output stream. Message not sent." );
-			}
+			out.println( code.toString() );
+			out.flush();
 		}
 	}
 	
