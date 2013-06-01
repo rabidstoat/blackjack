@@ -36,7 +36,8 @@ import drexel.edu.blackjack.server.game.User;
  * state.
  * <P>
  * <b>SECURITY:</b> Authentication requests of the user manager
- * are made here.
+ * are made here. Also, clients are disconnected after three invalid
+ * attempts, preventing them from tying up system resources.
  * 
  * @author Constantine
  * @author Jennifer

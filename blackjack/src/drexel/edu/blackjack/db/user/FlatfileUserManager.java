@@ -34,7 +34,8 @@ import java.util.Set;
  * which requires writing permission, to write serialized file to disk
  * <p>
  * <b>SECURITY:</b> There is a method here to handle username/password
- * authentication.
+ * authentication. Also, a user is prevented from logging in multiple times
+ * which could tie up system resources and affect system availability.
  * 
  * @author DAN
  */
