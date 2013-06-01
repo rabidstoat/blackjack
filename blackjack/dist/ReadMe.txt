@@ -1,0 +1,62 @@
+BLACKJACK PROTOCOL DISTRIBUTION (PRE-COMPILED)
+==============================================
+
+CS544 Computer Networks Spring 2013
+Group 10 Members
+o Jennifer Lautenschlager
+o Constantine Lazarakis
+o Carol Greco
+o Duc Anh Nguyen
+
+This file is where the 'ant jar' task compiles the jar file. It also
+contains some starter databases of users and blackjack games, as well
+as script files for Unix and Windows to run the system.
+
+1. run-server.bat or run-server.sh
+   Windows or Unix commands for starting the server on the local
+   machine. It requires no parameters. By default, it will show 
+   Java logging messages of the INFO level and above.
+   
+2. run-client.bat or run-client.sh
+   Windows or Unix commands for starting the command-line client. If
+   no parameters are given, it will try to connect to 127.0.0.1. An
+   optional single parameter can be used to specify the host (e.g.,
+   tux64-12.cs.drexel.edu, 192.168.224.142).
+   
+3. setup-users.bat or setup-users.sh
+   Windows or Unix commands for starting a simple command-line utility
+   for adding, removing, and viewing users in the local flatfile
+   database used by the server. A default configuration is provided
+   with the following accounts defined:
+   
+   o Username: user1
+     Password: password
+     Balance: $1000
+   o Username: user2
+     Password: password
+     Balance: $2000
+   o Username: user3
+     Password: password
+     Balance: $3000
+   o Username: user4
+     Password: password
+     Balance: $4000
+     
+   As clients play, their balance will be adjusted according to the
+   bets they place, and whether they win or lose.
+   
+4. setup-games.bat or setup-games.sh
+   Windows or Unix commands for starting a simple command-line utility
+   for adding, removing, and viewing hosted games in the local flatfile
+   database used by the userver. A default configuration is provided
+   with the following games defined:
+   
+   game1) Blackjack [Bets from $100 - $500, 1-4 players, with 2 decks used]
+    o House rule #1
+    o House rule #2
+   game2) Blackjack [Bets from $0 - $0, 1 player, with 3 decks used]
+    o Practice game only
+   gmae3) Blackjack [Bets from $10 - $250, 1-6 players, with 4 decks used]
+    o Example rule number one: text would go here
+   game4) Blackjack [Bets from $100 - $1000, 1-8 players, with 10 decks used]
+     
