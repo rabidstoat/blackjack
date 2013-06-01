@@ -97,7 +97,7 @@ public class PasswordCommandTest {
 						
 				//With unexpected parameter
 				nonauthorizedStateProtocol = new BlackjackProtocol( null );
-				nonauthorizedStateProtocol.setState( STATE.IN_SESSION_DEALER_BLACKJACK );
+				nonauthorizedStateProtocol.setState( STATE.IN_SESSION_AFTER_YOUR_TURN );
 				
 				//With not-in-session parameter
 				notInSessionStateProtocol = new BlackjackProtocol( null );
