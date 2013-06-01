@@ -29,8 +29,9 @@ connections over port 55555 are allowed.
 3. setup-users.bat or setup-users.sh
    Windows or Unix commands for starting a simple command-line utility
    for adding, removing, and viewing users in the local flatfile
-   database used by the server. A default configuration is provided
-   with the following accounts defined:
+   database used by the server. RESTARTING THE SERVER IS REQUIRED FOR
+   CHANGES TO TAKE EFFECT. A default configuration is provided with the 
+   following accounts defined:
    
    o Username: user1
      Password: password
@@ -51,8 +52,9 @@ connections over port 55555 are allowed.
 4. setup-games.bat or setup-games.sh
    Windows or Unix commands for starting a simple command-line utility
    for adding, removing, and viewing hosted games in the local flatfile
-   database used by the userver. A default configuration is provided
-   with the following games defined:
+   database used by the server. RESTARING THE SERVER IS REQUIRED FOR CHANGES
+   TO TAKE EFFECT. A default configuration is provided with the following 
+   games defined:
    
    game1) Blackjack [Bets from $100 - $500, 1-4 players, with 2 decks used]
     o House rule #1
