@@ -24,6 +24,11 @@ import drexel.edu.blackjack.server.game.User;
  * <b>UI:</b> There are methods for defining a textual representation
  * for a player hand, suitable for displaying in an end-user interface
  * <p>
+ * <b>SECURITY:</b> The toString() methods take into consideration if
+ * the hand is held by the player requesting the information, or not.
+ * This affects what is returned, as only the dealer whose hand it is
+ * can see facedown cards.
+ * <P>
  * A user's hand with all cards dealt from dealer
  * @author DAN
  *
@@ -215,10 +220,10 @@ public class Hand {
 	 * with one important distinction: instead of showing the
 	 * card.toString() values of facedown cards, an "X" should
 	 * be used.
-	 * 
+	 * <P> 
 	 * <b>UI:</b> Continuing the example of the previous method, calling
 	 * this method on the same hand would return:
-	 * 
+	 * <P>
 	 * <b>UI:</b> X 3S 5D
 	 * 
 	 * @return
@@ -240,7 +245,11 @@ public class Hand {
 	}
 	
 	/**
-	 * <b>UI:</b> String representation of card
+	 * <b>UI:</b> String representation of hand of cards
+	 * <p>
+	 * <b>SECURITY:</b> Whether or not facedown cards have their
+	 * value revealed is dependent on which user is requesting
+	 * this information.
 	 * @param callingUser Who the representation is being 
 	 * constructed for
 	 * @return A string representation of cards in the hand

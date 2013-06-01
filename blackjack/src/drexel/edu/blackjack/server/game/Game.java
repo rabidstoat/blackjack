@@ -31,6 +31,12 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * dynamic information that changes as the game progresses
  * (e.g., involved players, the dealer shoe of cards) is stored
  * in a referenced {@link GameState} class.
+ * <p>
+ * <b>SECURITY:</b> When displaying information about the hands
+ * of different players in the game, it makes use of a method on
+ * the Hand class that requires the requesting user be passed in.
+ * In this way, it only reveals facedown cards for the user who
+ * holds them.
  * 
  * @author Jennifer
  *
@@ -396,6 +402,7 @@ public class Game {
 					// And then the hand
 					str.append( " " );
 					if( user != null ) {
+						// SECURITY: Get the representaion of the hand specific to this user
 						str.append( player.getHand().toString(user) );
 					}
 					str.append( BlackjackServer.EOL );
@@ -406,6 +413,7 @@ public class Game {
 			if( state != null && state.getDealerHand() != null ) {
 				str.append( concatKeywordAndUsername(HAND_KEYWORD, null) );
 				str.append( " " );
+				// SECURITY: Get the representaion of the hand specific to this user
 				str.append( state.getDealerHand().toString(user) );
 				str.append( BlackjackServer.EOL );
 			}

@@ -26,6 +26,11 @@ import drexel.edu.blackjack.server.ResponseCode;
  * it uses the protocol state to determine if it's in a valid
  * state. It also checks the protocol stateful variable to see
  * what associated user is making the account request.
+ * <p>
+ * <b>SECURITY:</b> For access control, the account command only
+ * permits users to see their own account balance. There is no
+ * parameter for specifying a user whose balance to see, it just
+ * goes off the authenticated user.
  * 
  * @author Jennifer
  */
@@ -59,6 +64,7 @@ public class AccountCommand extends BlackjackCommand {
 			return new ResponseCode( ResponseCode.CODE.INTERNAL_ERROR,
 					"AccountCommand.processCommand() had a problem with the protocol object").toString();
 		}
+		// SECURITY: Can only get balance of the user authenticated to the protocol
 		int balance = protocol.getUser().getUserMetadata().getBalance();
 		// Step 6: Save out state variables? There are none
 		// Step 7: Update any change in state? There is none
