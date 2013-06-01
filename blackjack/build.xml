@@ -27,7 +27,7 @@
 	<!-- Deletes all the classfiles  -->
     <target name="clean">
         <delete dir="bin"/>
-        <delete dir="dist"/>
+        <delete file="dist/blackjack.jar"/>
         <delete dir="doc"/>
     </target>
     
