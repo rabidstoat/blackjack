@@ -295,7 +295,7 @@ public class Hand {
 	/**
 	 * <b>UI:</b> Based on the game's rule, find out if dealer's hand should
 	 * hit or stand next
-	 * @param rules: rules of the game to parse. If there is one rule that has the form:
+	 * @param rules rules of the game to parse. If there is one rule that has the form:
 	 * Dealer must hit soft 16 to stand
 	 * than 16 will be the point for dealer to stand.
 	 * Otherwise, just pass <b>null</b>, default stand point is 17.

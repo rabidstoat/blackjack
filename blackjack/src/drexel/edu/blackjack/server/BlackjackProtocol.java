@@ -488,10 +488,8 @@ public class BlackjackProtocol {
 	 * user wins they can have the appropriate amount
 	 * credited to their account. It should be set
 	 * in the {@link STATE#IN_SESSION_BEFORE_YOUR_TURN},
-	 * {@link STATE#IN_SESSION_AFTER_YOUR_TURN},
-	 * {@link STATE#IN_SESSION_AND_YOUR_TURN},
-	 * {@link STATE#IN_SESSION_DEALER_BLACKJACK},
-	 * and {@link STATE#IN_SESSION_SERVER_PROCESSING}
+	 * {@link STATE#IN_SESSION_AFTER_YOUR_TURN}, and
+	 * {@link STATE#IN_SESSION_AND_YOUR_TURN}
 	 * states.
 	 * 
 	 * @return the bet

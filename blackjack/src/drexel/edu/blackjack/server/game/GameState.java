@@ -201,7 +201,7 @@ public class GameState {
 	/**
 	 * Gets the dealer hand silently.
 	 * 
-	 * @param hand Hand that the dealer has
+	 * @return Hand that the dealer has
 	 */
 	public Hand getDealerHand() {
 		return dealerHand;
