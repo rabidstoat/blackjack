@@ -23,6 +23,9 @@ import java.util.List;
  * to be stored. There might be 0 users in the user manager, or
  * one, or 100. This could be implemented as a database, a flat
  * file, an interface to a LDAP server, or whatever.
+ * <p>
+ * <b>SECURITY:</b> There is a method here to handle username/password
+ * authentication.
  * 
  * @author Jennifer
  */
@@ -88,6 +91,8 @@ public interface UserManagerInterface {
 	 * username is logged in for a second time (with a correct
 	 * password) an exception about them being already logged
 	 * in must be thrown.
+	 * <p>
+	 * <b>SECURITY:</b> This is the method that handle authentication.
 	 * 
 	 * @param username Corresponds to username on the UserMetadata
 	 * object

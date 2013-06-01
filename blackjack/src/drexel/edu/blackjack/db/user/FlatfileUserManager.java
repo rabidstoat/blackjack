@@ -32,6 +32,9 @@ import java.util.Set;
  * The user list is only a hash map, mapping from username to user's metadata
  * To keep the user list persistent, this class uses serialization.
  * which requires writing permission, to write serialized file to disk
+ * <p>
+ * <b>SECURITY:</b> There is a method here to handle username/password
+ * authentication.
  * 
  * @author DAN
  */

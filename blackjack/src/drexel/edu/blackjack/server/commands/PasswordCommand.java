@@ -34,6 +34,9 @@ import drexel.edu.blackjack.server.game.User;
  * the PASSWORD command from a client. Like all command classes,
  * it uses the protocol state to determine if it's in a valid
  * state.
+ * <P>
+ * <b>SECURITY:</b> Authentication requests of the user manager
+ * are made here.
  * 
  * @author Constantine
  * @author Jennifer
@@ -96,6 +99,7 @@ public class PasswordCommand extends BlackjackCommand {
 		// Try to log the user in
 		UserMetadata userMetadata = null;
 		try {
+			// SECURITY: Checks fo the username/password credentials
 			userMetadata = userManager.loginUser(username, password);
 			// Null metadata means they were unsuccessful
 			if( userMetadata == null) {
@@ -103,13 +107,13 @@ public class PasswordCommand extends BlackjackCommand {
 				// We keep track of how many times they've failed
 				protocol.incrementIncorrectLogins();
 				
-				
 				// Make sure they didn't hit a threshold
 				if( protocol.getIncorrectLogins() >= INCORRECT_LOGIN_LIMIT ) {
 					code = new ResponseCode( ResponseCode.CODE.LOGIN_ATTEMPTS_EXCEEDED );
 				} else {
 					// Here, we let them try again
 					protocol.setState(STATE.WAITING_FOR_USERNAME);
+					// SECURITY: We don't verify if the username exists, just says the credentials are wrong
 					code = new ResponseCode( ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS, 
 							"PasswordCommand.loginCredentialsCommand() received invalid login credentials; try logging in again.");
 				}

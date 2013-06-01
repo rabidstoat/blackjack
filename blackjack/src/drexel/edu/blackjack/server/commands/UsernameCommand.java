@@ -18,6 +18,10 @@ package drexel.edu.blackjack.server.commands;
  * the USERNAME command from a client. Like all command classes,
  * it uses the protocol state to determine if it's in a valid
  * state. 
+ * <p>
+ * <b>SECURITY:</b> We don't verify if the username exists here,
+ * so an intruder can't use that to find an account to try to
+ * crack.
  * 
  * @author Constantine
  */
@@ -78,7 +82,7 @@ public class UsernameCommand extends BlackjackCommand {
 			
 			String username = cm.getParameters().get(0);
 			
-				protocol.setUsername( username );
+			protocol.setUsername( username );
 			
 			/**Step 7: STATEFUL: Update to next state. The client connected and has given a username, 
 			 * but needs to give a password */
