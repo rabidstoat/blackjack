@@ -86,7 +86,7 @@ public class UserHelper {
 		}
 	}
 	
-	public static int main(String[] args) {
+	public static void main(String[] args) {
 		UserHelper uh = new UserHelper();
 		BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
 		
@@ -108,7 +108,7 @@ public class UserHelper {
 				case 4:
 					uh.changePassword(); break;
 				default:
-					return 0;	
+					System.exit(1);	
 				}
 			} catch (Exception e) {
 				
