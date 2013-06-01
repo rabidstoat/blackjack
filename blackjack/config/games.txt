@@ -1,6 +1,0 @@
-# This file will hold the configuration details for Blackjack games
-# to be hosted on the server. Comments begin with a # sign. The
-# file is formatted as.... 
-# <developer needs to fill in details, or you can not have comment
-# lines in the file but then have something documenting the format
-# somewhere.>
