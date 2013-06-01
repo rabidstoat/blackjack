@@ -12,6 +12,9 @@
 package drexel.edu.blackjack.cards;
 
 /**
+ * <b>UI:</b> There are methods for defining a textual representation
+ * for a playing card, suitable for displaying in an end-user interface
+ * <p>
  * A playing card.
  * 
  * @author CLaz

@@ -21,6 +21,9 @@ import java.util.regex.Pattern;
 import drexel.edu.blackjack.server.game.User;
 
 /**
+ * <b>UI:</b> There are methods for defining a textual representation
+ * for a player hand, suitable for displaying in an end-user interface
+ * <p>
  * A user's hand with all cards dealt from dealer
  * @author DAN
  *
