@@ -56,6 +56,8 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * <P>
  * <b>SERVICE:</b> The port to connect to is hardcoded. See
  * specific comments with this keyword in them in the source.
+ * <p>
+ * <b>SECURITY:</b> Sockets are encrypted with TLS
  */
 public class BlackjackCLClient {
 
@@ -180,6 +182,7 @@ public class BlackjackCLClient {
         Socket socket = null;
 		
         try {
+        	// SECURITY: In here a secure socket is established with TLS as encryption
             // Keystore
             KeyStore ks = KeyStore.getInstance(KEYSTORE_TYPE);
             InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream( KEYSTORE_FILE );

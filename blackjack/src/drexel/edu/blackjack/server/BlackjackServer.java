@@ -43,6 +43,7 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * each connection. This way, multiple clients can be handled.
  * The exact spot in the code where this is done is commented
  * with the word CONCURRENT.
+ * <b>SECURITY:</b> Sockets are encrypted with TLS
  */
 public class BlackjackServer {
 
@@ -115,6 +116,7 @@ public class BlackjackServer {
 		ServerSocket serverSocket = null;
 		
         try {
+        	// SECURITY: In here is where it creates a secure server socket
             // Keystore
             KeyStore ks = KeyStore.getInstance(KEYSTORE_TYPE);
             InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream( KEYSTORE_FILE );
