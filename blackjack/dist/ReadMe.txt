@@ -10,7 +10,10 @@ o Duc Anh Nguyen
 
 This file is where the 'ant jar' task compiles the jar file. It also
 contains some starter databases of users and blackjack games, as well
-as script files for Unix and Windows to run the system.
+as script files for Unix and Windows to run the system. You will need
+a Java 7 interpreter in your path (java.exe on Windows, java on Linux)
+to run. Also, your firewall must be configured such that TCP/IP 
+connections over port 55555 are allowed.
 
 1. run-server.bat or run-server.sh
    Windows or Unix commands for starting the server on the local
