@@ -42,6 +42,9 @@ import java.util.logging.Logger;
  * as the amount bet, or the number of incorrect login
  * attempts made.
  * <P>
+ * <b>CONCURRENT:</b> Each thread has its own protocol
+ * object for identifying the authenticated user.
+ * <P>
  * All state information is kept associated with the
  * protocol object. When a command is called on the
  * protocol option, the command itself is stateless.
