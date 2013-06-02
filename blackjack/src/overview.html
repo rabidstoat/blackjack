@@ -93,6 +93,7 @@
 		        <LI>The <a href="drexel/edu/blackjack/server/commands/PasswordCommand.html">drexel.edu.blackjack.server.commands.PasswordCommand
        			 </a> class checks for valid credentials and does not reveal if the error is in the username or the password
             </UL>
+            <P>
         <li><b>Access Control</b>
             <UL>
 		        <LI>The <a href="drexel/edu/blackjack/server/commands/AccountCommand.html">drexel.edu.blackjack.server.commands.AccountCommand
@@ -104,6 +105,7 @@
        			 </a> class makes use of the above method, so that only the user whose hand it is can see the facedown
        			 cards in the hand
             </UL>
+            <P>
         <li><b>Data Integrity</b>
             <UL>
 		        <LI>The <a href="drexel/edu/blackjack/client/BlackjackCLClient.html">drexel.edu.blackjack.client.BlackjackCLClient
@@ -111,9 +113,11 @@
 		        <LI>The <a href="drexel/edu/blackjack/server/BlackjackServer.html">drexel.edu.blackjack.server.BlackjackServer
        			 </a> class establishes a secure connection with TLS encryption to prevent modifying any plaintext data
             </UL>
+            <P>
         <li><b>Confidentiality</b>
-            <BR>
+            <P>
             Confidentiality is provided through the same TLS encryption later that supports data integrity.
+            <P>
         <li><b>Availability</b>
             <UL>
 		        <LI>All classes in the <a href="drexel/edu/blackjack/server/timeouts/package-summary.html">drexel.edu.blackjack.server.timeouts
@@ -124,8 +128,11 @@
 		        <LI>The <a href="drexel/edu/blackjack/db/user/FlatfileUserManager.html">drexel.edu.blackjack.db.user.FlatfileUserManager
        			 </a> class prevents a user from logging in multiple times and using additional system resources
             </UL>
+            <P>
         <li><b>Non-repudiation</b>
+            <P>
             Non-repudiation is not specifically addressed in the protocol or its implementation.
+            <P>
         </OL>
         <P>
     </OL>
