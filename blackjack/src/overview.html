@@ -19,59 +19,114 @@
         checking and validating on client and server side as appropriate
         <P>
         <UL>
-        <LI>All concrete classes in the <a href="drexel/edu/blackjack/client/screens/package-summary.html">drexel.edu.blackjack.client.screens
-        </a> package
         <LI>All classes in the <a href="drexel/edu/blackjack/client/screens/package-summary.html">drexel.edu.blackjack.client.screens
-        </a> package
+        </a> package are aware of their state, and use it to send appropriate messages to the server
+        <LI>All classes in the <a href="drexel/edu/blackjack/server/commands/package-summary.html">drexel.edu.blackjack.server.commands
+        </a> package validate that they are only called in the correct state, advertise their applicable states, and handle changing
+        states where appropriate
         <LI>All classes in the <a href="drexel/edu/blackjack/server/timeouts/package-summary.html">drexel.edu.blackjack.server.timeouts
-        </a> package
+        </a> package use state information for looking up what timeout intervals are applicable, if any, to the current state
         <LI>The <a href="drexel/edu/blackjack/server/BlackjackProtocol.html">drexel.edu.blackjack.server.BlackjackProtocol
-        </a> class
+        </a> class is where the state for a client connection and its protocol instantiation is stored
         </UL>
         <P>
     <LI><b>CONCURRENT:</b> The server must be able to handle multiple clients
         <P>
         <UL>
         <LI>The <a href="drexel/edu/blackjack/server/BlackjackProtocol.html">drexel.edu.blackjack.server.BlackjackProtocol
-        </a> class
+        </a> class is instantiated once for every client connection, and serves to identify the authenticated user
         <LI>The <a href="drexel/edu/blackjack/server/BlackjackServer.html">drexel.edu.blackjack.server.BlackjackServer
-        </a> class
+        </a> class accepts client connections and creates a thread for each of them
         <LI>The <a href="drexel/edu/blackjack/server/BlackjackServerThread.html">drexel.edu.blackjack.server.BlackjackServerThread
-        </a> class
+        </a> class is the thread that runs for each client connection
         </UL>
         <P>
     <LI><b>SERVICE:</b> The server must bind to a hard-coded port and the client defaults to this port number
         <P>
         <UL>
         <LI>The <a href="drexel/edu/blackjack/server/BlackjackServer.html">drexel.edu.blackjack.server.BlackjackServer
-        </a> class
+        </a> class defines this port and binds to it on the server side
         <LI>The <a href="drexel/edu/blackjack/client/BlackjackCLClient.html">drexel.edu.blackjack.client.BlackjackCLClient
-        </a> class
+        </a> class defines this port and binds to it on the client side
         </UL>
         <P>
-    <LI><b>CLIENT:</b> The client must be able to specify the hostname or IP address of the server. <font color="red">This
-           is not yet implemented, Duc will be working on it, but I am linking a class that's likely to be involved with
-           it for now.</font>
+    <LI><b>CLIENT:</b> The client must be able to specify the hostname or IP address of the server.
         <P>
         <UL>
         <LI>The <a href="drexel/edu/blackjack/client/BlackjackCLClient.html">drexel.edu.blackjack.client.BlackjackCLClient
-        </a> class
+        </a> class processes the command-line argument of the hostname to connect to, using the java.net package classes.
         </UL>
         <P>
     <LI><b>UI:</b> The protocol logic is in the client and not exposed to the user
         <P>
         <UL>
         <LI>The <a href="drexel/edu/blackjack/client/BlackjackCLClient.html">drexel.edu.blackjack.client.BlackjackCLClient
-        </a> class
+        </a> class is the main UI class
         <LI>All classes in the <a href="drexel/edu/blackjack/client/screens/package-summary.html">drexel.edu.blackjack.client.screens
-        </a> package
-        <LI>The <a href="drexel/edu/blackjack/cards/Card.html">drexel.edu.blackjack.cards.Card</a> class
-        <LI>The <a href="drexel/edu/blackjack/cards/Hand.html">drexel.edu.blackjack.cards.Hand</a> class
+        </a> package holds implementations for all the end-user, menu-based UI. It processes menu options and makes appropriate
+        protocol commands of it. It also processes server messages and transforms and combines them for the end-user interface.
+        <LI>The <a href="drexel/edu/blackjack/cards/Card.html">drexel.edu.blackjack.cards.Card</a> class has a routine for getting an
+        end-user, textual representation of a playing card
+        <LI>The <a href="drexel/edu/blackjack/cards/Hand.html">drexel.edu.blackjack.cards.Hand</a> class has a routine for getting an
+        end-user, textual representation of a player's hand
         <LI>The <a href="drexel/edu/blackjack/client/in/MessagesFromServerListener.html">drexel.edu.blackjack.client.in.MessagesFromServerListener
-        </a> interface
+        </a> interface is what all client screens implement to process messages from the server and update the UI appropriately
         <LI>The <a href="drexel/edu/blackjack/client/out/MessagesToServerListener.html">drexel.edu.blackjack.client.out.MessagesToServerListener
-        </a> interface
+        </a> interface is what our message monitor implements to display outbound mssages
         </UL>
+        <P>
+    </OL>
+    <p>We have also included a few extra keywords in comments, for identifying additional
+    concepts and where they are implemented (SECURITY, EXTRACREDIT).
+    <OL stat="6">
+    <LI><b>SECURITY:</b> Identifies different aspects of security and where they are implemented.
+        <OL type="a">
+        <P>
+        <li><b>Authentication and Verification</b>
+            <UL>
+		        <LI>The <a href="drexel/edu/blackjack/db/user/UserManagerInterface.html">drexel.edu.blackjack.db.user.UserManagerInterface
+       			 </a> interface defines the username/password login command
+		        <LI>The <a href="drexel/edu/blackjack/db/user/FlatfileUserManager.html">drexel.edu.blackjack.db.user.FlatfileUserManager
+       			 </a> class that implements it
+		        <LI>The <a href="drexel/edu/blackjack/server/commands/UsernameCommand.html">drexel.edu.blackjack.server.commands.UsernameCommand
+       			 </a> class does not reveal if usernames are invalid
+		        <LI>The <a href="drexel/edu/blackjack/server/commands/PasswordCommand.html">drexel.edu.blackjack.server.commands.PasswordCommand
+       			 </a> class checks for valid credentials and does not reveal if the error is in the username or the password
+            </UL>
+        <li><b>Access Control</b>
+            <UL>
+		        <LI>The <a href="drexel/edu/blackjack/server/commands/AccountCommand.html">drexel.edu.blackjack.server.commands.AccountCommand
+       			 </a> class only reveals account information to the authenticated user
+		        <LI>The <a href="drexel/edu/blackjack/cards/Hand.html">drexel.edu.blackjack.cards.Hand
+       			 </a> class has methods for getting a text description of the cards whose values change based on
+       			 the user who is requesting the information
+		        <LI>The <a href="drexel/edu/blackjack/server/game/Game.html">drexel.edu.blackjack.server.game.Game
+       			 </a> class makes use of the above method, so that only the user whose hand it is can see the facedown
+       			 cards in the hand
+            </UL>
+        <li><b>Data Integrity</b>
+            <UL>
+		        <LI>The <a href="drexel/edu/blackjack/client/BlackjackCLClient.html">drexel.edu.blackjack.client.BlackjackCLClient
+       			 </a> class establishes a secure connection with TLS encryption to prevent modifying any plaintext data
+		        <LI>The <a href="drexel/edu/blackjack/server/BlackjackServer.html">drexel.edu.blackjack.server.BlackjackServer
+       			 </a> class establishes a secure connection with TLS encryption to prevent modifying any plaintext data
+            </UL>
+        <li><b>Confidentiality</b>
+            <BR>
+            Confidentiality is provided through the same TLS encryption later that supports data integrity.
+        <li><b>Availability</b>
+            <UL>
+		        <LI>All classes in the <a href="drexel/edu/blackjack/server/timeouts/package-summary.html">drexel.edu.blackjack.server.timeouts
+        		</a> package remove inactive client connections, which prevents them from 'tying up' a port on the server side
+		        <LI>The <a href="drexel/edu/blackjack/server/commands/PasswordCommand.html">drexel.edu.blackjack.server.commands.PasswordCommand
+       			 </a> class disconnects client after a third failed login attempt, which similarly prevents a malicious attacker without 
+       			 and account from tying up system resources while trying to guess user credentials
+		        <LI>The <a href="drexel/edu/blackjack/db/user/FlatfileUserManager.html">drexel.edu.blackjack.db.user.FlatfileUserManager
+       			 </a> class prevents a user from logging in multiple times and using additional system resources
+            </UL>
+        <li><b>Non-repudiation</b>
+            Non-repudiation is not specifically addressed in the protocol or its implementation.
+        </OL>
         <P>
     </OL>
     <p>Note that though it is not obvious in the web pages, you can actually navigate directly from
