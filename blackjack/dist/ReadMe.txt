@@ -22,12 +22,12 @@ connections over port 55555 are allowed.
    
 2. run-client.bat or run-client.sh
    Windows or Unix commands for starting the command-line client. If
-   no parameters are given, it will try to connect to 127.0.0.1. An
-   optional single parameter can be used to specify the host (e.g.,
-   tux64-12.cs.drexel.edu, 192.168.224.142). Part of the client uses
-   a GUI frame for optionally displaying message traffic, so if running
-   on Linux you must have your X11 DISPLAY exported, or else run in
-   headless mode (see below).
+   no parameters are given, it will attempt to find a suitable server
+   on the LAN. An optional single parameter can be used to explicitly
+   specify the host (e.g., tux64-12.cs.drexel.edu, 192.168.224.142). 
+   Part of the client uses a GUI frame for optionally displaying 
+   message traffic, so if running on Linux you must have your X11 
+   DISPLAY exported, or else run in headless mode (see below).
    
 3. run-client-headless.bat or run-client-headless.sh
    Windows or Unix commands that are essentially the same as above,
