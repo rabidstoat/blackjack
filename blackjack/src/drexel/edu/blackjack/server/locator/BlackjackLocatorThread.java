@@ -103,9 +103,6 @@ public class BlackjackLocatorThread extends Thread {
 	 * Create a thread that is centered around processing input from,
 	 * and providing output to, a client that is connected through
 	 * this socket.
-	 * 
-	 * @param socket The secure socket for the connection to the
-	 * client. It must already be open.
 	 */
 	public BlackjackLocatorThread() {
 		super( "BlackjackLocatorThread" );
