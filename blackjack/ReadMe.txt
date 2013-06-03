@@ -134,6 +134,9 @@ o run-server
 o run-client
   Runs the client, only showing errors (not warnings or debug info)
   Requires -Dest=xxx.xxx.xxx.xx for specifying host
+o run-client-headless
+  Runs the client in headless mode (no GUI), only showing errors
+  Requires -Dest=xxx.xxx.xxx.xx for specifying host
 o run-client-local
   Runs the client, only showing errors (not warnings or debug info)
   Connects to the localhost

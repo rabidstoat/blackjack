@@ -104,6 +104,28 @@
     	</java>
     </target>
 
+	<!-- Runs the client against a potentially remote host  -->
+	<!-- with only SEVERE log messages shown, in headless mode -->
+	<!-- CLIENT: This is the ant task for the client, specifying a hostname in the property -->
+    <condition property="destination.ip.set">
+        <isset property="est"/>
+    </condition>
+    <target depends="compile" name="run-client-headless">
+        <echo message="Run-client-headless ${ant.project.name}: ${ant.file}"/>
+        <fail unless="destination.ip.set">
+            Must set argument -Dest=xxx.xxx.xxx.xxx
+        </fail>
+    	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">
+			<permissions>
+				<grant class="java.security.AllPermission"/>
+			</permissions>            
+			<classpath refid="blackjack.classpath"/>
+    		<sysproperty key="loglevel" value="SEVERE"/>
+    		<sysproperty key="java.awt.headless" value="true"/>
+            <arg value="${est}"/>
+    	</java>
+    </target>
+
     <target depends="compile" name="run-client-local">
         <echo message="Run-client-local ${ant.project.name}: ${ant.file}"/>
     	<java classname="drexel.edu.blackjack.client.BlackjackCLClient">

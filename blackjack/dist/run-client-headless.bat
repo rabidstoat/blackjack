@@ -1,0 +1,1 @@
+java -cp ./blackjack.jar -Djava.awt.headless=true drexel.edu.blackjack.client.BlackjackCLClient %*

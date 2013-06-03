@@ -24,7 +24,19 @@ connections over port 55555 are allowed.
    Windows or Unix commands for starting the command-line client. If
    no parameters are given, it will try to connect to 127.0.0.1. An
    optional single parameter can be used to specify the host (e.g.,
-   tux64-12.cs.drexel.edu, 192.168.224.142).
+   tux64-12.cs.drexel.edu, 192.168.224.142). Part of the client uses
+   a GUI frame for optionally displaying message traffic, so if running
+   on Linux you must have your X11 DISPLAY exported, or else run in
+   headless mode (see below).
+   
+3. run-client-headless.bat or run-client-headless.sh
+   Windows or Unix commands that are essentially the same as above,
+   except in headless mode no GUI (used to optionally display message
+   traffic for debug purposes) is available. The command-line, menu-
+   driven UI for logging into the blackjack server and playing
+   games is still fully functionally. Use this is you are running
+   on Tux in a putty window, for example, without your X11 DISPLAY
+   variable exported and tunneled properly.
    
 3. setup-users.bat or setup-users.sh
    Windows or Unix commands for starting a simple command-line utility
