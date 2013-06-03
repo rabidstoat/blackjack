@@ -29,6 +29,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import drexel.edu.blackjack.server.locator.BlackjackLocatorThread;
 import drexel.edu.blackjack.util.BlackjackLogger;
 
 /**
@@ -43,7 +44,11 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * each connection. This way, multiple clients can be handled.
  * The exact spot in the code where this is done is commented
  * with the word CONCURRENT.
+ * <P>
  * <b>SECURITY:</b> Sockets are encrypted with TLS
+ * <P>
+ * <b>EXTRACREDIT:</b> We start a locator service here, which
+ * is implemented in a class on its own thread.
  */
 public class BlackjackServer {
 
@@ -142,7 +147,12 @@ public class BlackjackServer {
             // SERVICE: This is where the socket binds to its predetermined port.
             serverSocket = ssf.createServerSocket(PORT);
             LOGGER.info( "Started a server on port " + PORT );
-            System.out.println( "The server is now ready to accept connections." );
+            System.out.println( "The server is now ready to accept connections on port " + PORT + "." );
+            
+            // EXTRACREDIT: This is where we start our locator service, for handling
+            // client inquiries on the LAN about where a BJP 1.0 server is
+            BlackjackLocatorThread locatorThread = new BlackjackLocatorThread();
+            locatorThread.start();
             
             // Now we do an endless loop, accepting clients
             while( true ) {
