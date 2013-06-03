@@ -221,7 +221,7 @@
         	destdir="doc"  nodeprecated="false" nodeprecatedlist="false"
         	noindex="false" nonavbar="false" notree="false" 
         	overview="src\overview.html" 
-        	packagenames="drexel.edu.blackjack.db.game,drexel.edu.blackjack.client.out,drexel.edu.blackjack.server.game.driver,drexel.edu.blackjack.client,drexel.edu.blackjack.cards,drexel.edu.blackjack.server,drexel.edu.blackjack.db.user,drexel.edu.blackjack.test.cards,drexel.edu.blackjack.client.screens,drexel.edu.blackjack.test.server.commands,drexel.edu.blackjack.server.timeouts,drexel.edu.blackjack.test.db.game,drexel.edu.blackjack.server.commands,drexel.edu.blackjack.test.server.game,drexel.edu.blackjack.client.in,drexel.edu.blackjack.client.screens.util,drexel.edu.blackjack.util,drexel.edu.blackjack.test.db.user,drexel.edu.blackjack.server.game" 
+        	packagenames="drexel.edu.blackjack.db.game,drexel.edu.blackjack.client.out,drexel.edu.blackjack.server.game.driver,drexel.edu.blackjack.client,drexel.edu.blackjack.client.locator,drexel.edu.blackjack.server.locator,drexel.edu.blackjack.cards,drexel.edu.blackjack.server,drexel.edu.blackjack.db.user,drexel.edu.blackjack.test.cards,drexel.edu.blackjack.client.screens,drexel.edu.blackjack.test.server.commands,drexel.edu.blackjack.server.timeouts,drexel.edu.blackjack.test.db.game,drexel.edu.blackjack.server.commands,drexel.edu.blackjack.test.server.game,drexel.edu.blackjack.client.in,drexel.edu.blackjack.client.screens.util,drexel.edu.blackjack.util,drexel.edu.blackjack.test.db.user,drexel.edu.blackjack.server.game" 
         	source="1.7" sourcepath="src" splitindex="true" use="true" version="true"
         	linksource="yes">
     		<doctitle><![CDATA[<h1>Blackjack Client-Server</h1>]]></doctitle>
