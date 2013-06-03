@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -39,6 +41,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import drexel.edu.blackjack.client.in.ClientInputFromServerThread;
+import drexel.edu.blackjack.client.locator.BlackjackHostSeeker;
 import drexel.edu.blackjack.client.out.ClientOutputToServerHelper;
 import drexel.edu.blackjack.client.screens.AbstractScreen;
 import drexel.edu.blackjack.client.screens.InSessionScreen;
@@ -59,6 +62,9 @@ import drexel.edu.blackjack.util.BlackjackLogger;
  * specific comments with this keyword in them in the source.
  * <p>
  * <b>SECURITY:</b> Sockets are encrypted with TLS
+ * <p>
+ * <b>EXTRACREDIT:</b> If no host is specified, it searches
+ * for one on the LAN.
  */
 public class BlackjackCLClient {
 
@@ -96,8 +102,6 @@ public class BlackjackCLClient {
 	// This system property is set true if we should show the message frame
 	private static final String SHOW_MESSAGES			= "showmessages";
 	
-	// IP of Localhost
-	private static final String LOCALHOST				= "127.0.0.1";
 	// Our logger
 	private final static Logger LOGGER = BlackjackLogger.createLogger(BlackjackCLClient.class .getName()); 
 	
@@ -156,20 +160,48 @@ public class BlackjackCLClient {
 		BlackjackCLClient client;
 		boolean debugMode = false;
 		
-		// CLIENT: If no IP address is specified, the default is the localhost 
-		// (because we use this a lot for testing locally)
-		String hostIP = LOCALHOST;
+		// EXTRACREDIT: We initialize the hostIP to null, which will be our
+		// signal to use the locator service to figure out where the
+		// blackjack server is running on the local LAN
+		String hostIP = null;
 		if (args.length > 0 && args[args.length - 1].equals("--debug")) 
 			debugMode = true;
 		
 		// CLIENT: But here is where it is possible to specify a host (IP
 		// or by name) on the command line, if desired
-		if (args.length > 0 && !args[0].equals("--debug"))
+		if (args.length > 0 && !args[0].equals("--debug")) {
 			hostIP = args[0];
+		}
 		
-		// CLIENT: That we pass into the constructor
-		client = new BlackjackCLClient(hostIP, debugMode);
-		client.runClient();
+		// EXTRACREDIT:If the host wasn't specified we will use our
+		// locator service to try to find it
+		if( hostIP == null ) {
+			try {
+				// EXTRACREDIT: Use our host seeker to try to find a blackjack server on the LAN
+				BlackjackHostSeeker seeker = new BlackjackHostSeeker();
+				hostIP = seeker.tryToLocateServerOnLAN();
+				
+				// EXTRACREDIT: Report on success or failure
+				if( hostIP == null ) {
+					System.out.println( "Unable to find a blackjack server on the LAN. Sorry." );
+				} else {
+					System.out.println( "Located a BJP 1.0 server at " + hostIP + " to connect to!" );
+				}
+			} catch (UnknownHostException e) {
+				// Silently fail as we have no idea how to recover
+			} catch (SocketException e) {
+				// Silently fail as we have no idea how to recover
+			} catch (IOException e) {
+				// Silently fail as we have no idea how to recover
+			}
+		}
+		
+		// Do we have an address? Hopefully!
+		if( hostIP != null ) {
+			// CLIENT: But if we do, that is what we pass into the constructor
+			client = new BlackjackCLClient(hostIP, debugMode);
+			client.runClient();
+		}
 				
 	}
 
