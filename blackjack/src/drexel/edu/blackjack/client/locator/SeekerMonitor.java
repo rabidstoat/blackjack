@@ -14,7 +14,6 @@ package drexel.edu.blackjack.client.locator;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
 
@@ -40,6 +39,12 @@ public class SeekerMonitor extends Thread {
 	
 	// What we found
 	private String host = null;
+	
+	// Multicast socket to use
+	private MulticastSocket socket = null;
+	
+	// Use to remotely stop the thread
+	private boolean stopped = false;
 		
 	/************************************************************
 	 * Constructor goes here
@@ -49,9 +54,11 @@ public class SeekerMonitor extends Thread {
 	 * Simple constructor to record the host seeker we need to
 	 * notify on hearing of a BJP server.
 	 * @param seeker Who to notify
+	 * @param socket Bound multicast socket to use
 	 */
-	public SeekerMonitor( BlackjackHostSeeker seeker ) {
+	public SeekerMonitor( BlackjackHostSeeker seeker, MulticastSocket socket ) {
 		this.seeker = seeker;
+		this.socket = socket;
 	}
 
 	/************************************************************
@@ -61,23 +68,13 @@ public class SeekerMonitor extends Thread {
 	@Override
 	public void run() {
 		
-		MulticastSocket socket = null;
-		InetAddress group = null;
-		
-		try {
-			// Open the socket on the default port
-			socket = new MulticastSocket(BlackjackLocatorThread.PORT);
-			
-			// Figure out the group to join
-			group = InetAddress.getByName(BlackjackLocatorThread.MULTICAST_GROUP);
-			socket.joinGroup( group );
-			
+		try {			
 			// Create a byte buffer for dealing with the data
 			byte[] inputData	= new byte[BlackjackLocatorThread.DEFAULT_BUFFER_LENGTH];
 			
 			// Fall into an endless loop, reading data (unless we couldn't figure
 			// out any host addresses and have no output data to send requesters)
-			while( host == null ) {
+			while( host == null && !stopped ) {
 				
 				// For the incoming packet
 				DatagramPacket inputPacket = new DatagramPacket( 
@@ -107,21 +104,9 @@ public class SeekerMonitor extends Thread {
 			// Alert our interested seeker that we found something
 			seeker.setHost(host);
 		} catch (SocketException e) {
-			// Silently fail
+			e.printStackTrace();
 		} catch (IOException e) {
-			// Silently fail
-		} finally {
-			// Clean up after ourselves
-			if( socket != null ) {
-				if( group != null ) {
-					try {
-						socket.leaveGroup(group);
-					} catch (IOException e) {
-						// At this point, we just ignore it
-					}
-				}
-				socket.close();
-			}
+			e.printStackTrace();
 		}
 	}
 
@@ -130,5 +115,12 @@ public class SeekerMonitor extends Thread {
 	 */
 	public String getHost() {
 		return host;
+	}
+	
+	/**
+	 * Set whether we should stop
+	 */
+	public void setStopped( boolean stopped ) {
+		this.stopped = stopped;
 	}
 }

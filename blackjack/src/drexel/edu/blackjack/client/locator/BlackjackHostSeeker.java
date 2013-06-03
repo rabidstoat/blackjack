@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 
 import drexel.edu.blackjack.server.locator.BlackjackLocatorThread;
 
@@ -62,16 +63,15 @@ public class BlackjackHostSeeker {
 		
 		// Give the user an idea of how long it will look
 		reportOnLocatorDelay();
-		
-		// Launch a thread to monitor for responses
-		SeekerMonitor monitor = new SeekerMonitor(this);
-		monitor.start();
-		
-		// Figure out the group
+
+		// Bind to a multicast socket
+		MulticastSocket socket = new MulticastSocket(BlackjackLocatorThread.PORT);
 		InetAddress group = InetAddress.getByName(BlackjackLocatorThread.MULTICAST_GROUP);
-		
-		// And a datagram socket bound to the right port
-		DatagramSocket socket = new DatagramSocket( BlackjackLocatorThread.PORT);
+		socket.joinGroup( group );
+
+		// Launch a thread to monitor for responses
+		SeekerMonitor monitor = new SeekerMonitor(this,socket);
+		monitor.start();
 		
 		// Immediately do the first broadcast
 		broadcastLocatorRequest( socket, group );
@@ -92,6 +92,15 @@ public class BlackjackHostSeeker {
 			
 			// And double the wait
 			currentWait = currentWait * 2;
+		}
+		
+		// At this point, we give up on the monitor
+		monitor.setStopped(true);
+		monitor.interrupt();
+		
+		// Close out the socket stuff best we can
+		if( socket != null ) {
+			socket.close();
 		}
 		
 		return host;
@@ -132,7 +141,7 @@ public class BlackjackHostSeeker {
 		
 		// Report how long we wait
 		System.out.println( "Will spend roughly " + (int)(totalWait/1000) +
-				" seconds looking for a local blackjack server on the network." );
+				" seconds looking for a local blackjack server." );
 	}
 
 	/**
