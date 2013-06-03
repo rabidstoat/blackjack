@@ -56,13 +56,17 @@ public class ClientOutputToServerHelper extends Thread {
 	 * Create an output writer based on the (secure) socket that is passed in.
 	 * @param socket A secure socket to the server, which has already
 	 * been successfully connected
+	 * @param isHeadless True if the client is headless (which means no
+	 * adding a message frame listener), else false
 	 */
-	public ClientOutputToServerHelper( Socket socket ) {
+	public ClientOutputToServerHelper( Socket socket, boolean isHeadless ) {
 		super( "ClientOutputToServerThread" );
 		
 		// UI: Add the message frame as a listener; needs to be explicitly made synchronized
 		listeners = Collections.synchronizedSet(new HashSet<MessagesToServerListener>());
-		addListener( MessageFrame.getDefaultMessageFrame() );
+		if( !isHeadless ) {
+			addListener( MessageFrame.getDefaultMessageFrame() );
+		}
 		
 		try {
 			writer = new PrintWriter(socket.getOutputStream(), true);

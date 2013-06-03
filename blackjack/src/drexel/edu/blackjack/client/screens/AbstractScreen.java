@@ -901,7 +901,9 @@ public abstract class AbstractScreen implements MessagesFromServerListener {
 
 	/**
 	 * Either shows, or hides, the message monitor frame, which is a
-	 * GUI frame used for monitoring messages.
+	 * GUI frame used for monitoring messages. Note that this can
+	 * only be done if the client is NOT in headless mode, which is
+	 * specified with the -Djava.awt.headless=true property
 	 */
 	protected void toggleMessageMonitorFrame() {
 		if( client != null ) {

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package drexel.edu.blackjack.client;
 
+import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -116,7 +117,11 @@ public class BlackjackCLClient {
 	private ClientOutputToServerHelper output = null;
 	private ClientInputFromServerThread input = null;
 	
+	// If it's been told to operate in debug mode, and using an alternate UI
 	private boolean debugMode = false;
+	
+	// Whether or not the client is in headless mode (with -Djava.awt.headless=true)
+	private Boolean headless = null;
 	
 	/************************************************************
 	 * Main method is here! And constructor!
@@ -215,7 +220,7 @@ public class BlackjackCLClient {
             input.start();
             
             // Create the helper to handle output
-            output = new ClientOutputToServerHelper( socket );
+            output = new ClientOutputToServerHelper( socket, isHeadless() );
             
             if (debugMode) {
             	
@@ -227,7 +232,7 @@ public class BlackjackCLClient {
 	            setScreen( LoginInputScreen.getDefaultScreen( this, input, output ), true );
             	
                 // Set up the messages frame
-                if( "true".equals(System.getProperty(SHOW_MESSAGES)) ) {
+                if( "true".equals(System.getProperty(SHOW_MESSAGES)) && !isHeadless() ) {
                 	MessageFrame.getDefaultMessageFrame().setLocationRelativeTo(null);
                 	MessageFrame.getDefaultMessageFrame().setVisible(true);
                 }
@@ -415,13 +420,37 @@ public class BlackjackCLClient {
 	
 	/**
 	 * <b>UI:</b> If the message frame is showing, hide it. If it's
-	 * hiding, show it.
+	 * hiding, show it. Note that this can only be done if the 
+	 * client is NOT in headless mode, which is specified with 
+	 * the -Djava.awt.headless=true property
 	 */
 	public void toggleMessageFrame() {
-		MessageFrame frame = MessageFrame.getDefaultMessageFrame();
-		if( frame != null ) {
-			frame.setVisible( !frame.isVisible() );
+		
+		if( isHeadless() ) {
+			System.out.println( "The message frame is unavailable in headless mode." );
+		} else {
+			MessageFrame frame = MessageFrame.getDefaultMessageFrame();
+			if( frame != null ) {
+				frame.setVisible( !frame.isVisible() );
+			}
 		}
+	}
+
+	/**
+	 * Checks to see if the client has been designated
+	 * as running in a headless environment or not. Return
+	 * true if it's designated as headless, false otherwise.
+	 * 
+	 * @return True if headless, false otherwise
+	 */
+	public boolean isHeadless() {
+		if( headless == null ) {
+			GraphicsEnvironment ge = 
+			        GraphicsEnvironment.getLocalGraphicsEnvironment();
+			headless = Boolean.valueOf( ge.isHeadlessInstance() );
+		}
+		
+		return headless.booleanValue();
 	}
 
 }

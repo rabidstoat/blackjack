@@ -85,7 +85,11 @@ public class ClientInputFromServerThread extends Thread {
 		// A listener for message traffic; need to create a synchronized set for our
 		// multithreaded environment
 		listeners = Collections.synchronizedSet(new HashSet<MessagesFromServerListener>());
-		addListener( MessageFrame.getDefaultMessageFrame() );
+		
+		// Only add the message frame listener if not in a headless environment
+		if( !blackjackClient.isHeadless() ) {
+			addListener( MessageFrame.getDefaultMessageFrame() );
+		}
 		
 		// Create a reader for the socket
 		try {
