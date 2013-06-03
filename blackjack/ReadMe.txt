@@ -111,6 +111,8 @@ Additionally, you can search the source code for the following keywords:
    Code related to the client allowing specification of host
 5. UI
    Code related to the user interface
+6. SECURITY
+   Code related to security of the client and server
 
 -----------------------------------------------------------------------------
 5. Ant tasks
