@@ -6,7 +6,10 @@
   <BODY>
     This project contains a reference implementation for the Blackjack 1.0 protocol
     proposed for a CS544 class project. It includes both a basic server, and a simple
-    command-line client.
+    command-line client. Additionally, the extra credit of automatically locating a
+    suitable host to connect to has been implemented, with the caveat that said host
+    must be able to receive multicast UDP messages from the client. Typically, this
+    means running on the same local subnet.
     <p>
     As per assignment requirements, we have marked code that implements one of the
     five protocol requirements (STATEFUL, CONCURRENT, SERVICE, CLIENT, UI) in both
@@ -135,6 +138,22 @@
             <P>
         </OL>
         <P>
+    <LI><b>EXTRACREDIT:</b> Identifies where the extra credit features are implemented on the client and server.
+        <P>
+        <UL>
+        <LI>All classes in the <a href="drexel/edu/blackjack/server/locator/package-summary.html">drexel.edu.blackjack.server.locator
+      		</a> package are used to bind a predetermined UDP port and group, monitor for BJP server requests being multicast,
+      		and then multicast a response with an appropriate host address based on common subnet.
+        <LI>The <a href="drexel/edu/blackjack/server/BlackjackServer.html">drexel.edu.blackjack.server.BlackjackServer
+     			 </a> class starts this locator service on a thread. No configuration is needed.
+        <LI>All classes in the <a href="drexel/edu/blackjack/client/locator/package-summary.html">drexel.edu.blackjack.client.locator
+      		</a> package are used to multicast BJP server queries to a predetermined UDP port and group, as well as 
+      		monitor for BJP server responses to such requests, using a back-off strategy that eventually times out to avoid
+      		network congestion.
+        <LI>The <a href="drexel/edu/blackjack/client/BlackjackCLClient.html">drexel.edu.blackjack.client.BlackjackCLClient
+     			 </a> class makes use of the previous package to broadcast requests for BJP server info, and receive (hopefully)
+     			 responses.
+        </UL>
     </OL>
     <p>Note that though it is not obvious in the web pages, you can actually navigate directly from
     the javadocs page to the source code itself. See the screenshot below for where you would click
