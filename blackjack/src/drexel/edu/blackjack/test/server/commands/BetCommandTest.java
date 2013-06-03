@@ -131,7 +131,7 @@ public class BetCommandTest {
 		
 		//7. Test successful case
 		validBet = new CommandMetadata( command.getCommandWord() );
-		validBet.addParameter("999");
+		validBet.addParameter("1000");
 		
 		
 		// Now I want to test the protocol in different states. First, I'll need a
