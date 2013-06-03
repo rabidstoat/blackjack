@@ -1,1 +1,1 @@
-java -cp ./blackjack.jar drexel.edu.blackjack.client.BlackjackCLClient %*
+java -cp ./blackjack.jar -Dloglevel=severe .edu.blackjack.client.BlackjackCLClient %*
