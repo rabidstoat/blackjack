@@ -114,21 +114,21 @@ public class PasswordCommand extends BlackjackCommand {
 				} else {
 					// Here, we let them try again
 					protocol.setState(STATE.WAITING_FOR_USERNAME);
+					protocol.setTimer( System.currentTimeMillis() );
 					// SECURITY: We don't verify if the username exists, just says the credentials are wrong
 					code = new ResponseCode( ResponseCode.CODE.INVALID_LOGIN_CREDENTIALS, 
 							"PasswordCommand.loginCredentialsCommand() received invalid login credentials; try logging in again.");
 				}
 			} else {
-				// While non-null metadata is good
 				/**Associate the new user with the protocol*/
 				
-				User user = new User(userMetadata);
-					
+				User user = new User(userMetadata);					
 				protocol.setUser(user);
 				
 				/**STATEFUL: Step 7: Update state. The client has authenticated but is not in a session*/
 				
 				protocol.setState(STATE.NOT_IN_SESSION);
+				protocol.setTimer( null );	// No longer running
 					
 				/**Step 8: Generate the proper response */
 				

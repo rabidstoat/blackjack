@@ -183,6 +183,14 @@ public class BlackjackProtocol {
 	// milliseconds
 	private Long lastCommand = null;
 	
+	// This attribute is a custom-set timer that is used for timeouts
+	// where it's not just ANY activity that will prevent a timeout,
+	// but where a specific type of activity (usually a command being 
+	// waited for) is sought. An example is setting the timer before
+	// waiting for a USERNAME command. They might enter other valid
+	// commands but that should not reset the 45-second window.
+	private Long timer = null;
+	
 	/*************************************************************
 	 * Constructor goes  here
 	 ************************************************************/
@@ -213,8 +221,10 @@ public class BlackjackProtocol {
 		// Keep a pointer to the thread
 		this.thread = thread;
 		
-		// And we start the timer
-		setLastCommand( System.currentTimeMillis() );
+		// And we start the timers
+		long time = System.currentTimeMillis();
+		setLastCommand( time );
+		setTimer( time );
 	}
 
 	/*************************************************************
@@ -544,6 +554,20 @@ public class BlackjackProtocol {
 	 */
 	public void setLastCommand(Long lastCommand) {
 		this.lastCommand = lastCommand;
+	}
+
+	/**
+	 * @return the timer
+	 */
+	public Long getTimer() {
+		return timer;
+	}
+
+	/**
+	 * @param timer the timer to set
+	 */
+	public void setTimer(Long timer) {
+		this.timer = timer;
 	}
 
 	/**

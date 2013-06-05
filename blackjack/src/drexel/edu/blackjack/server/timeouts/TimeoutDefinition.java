@@ -14,7 +14,6 @@ package drexel.edu.blackjack.server.timeouts;
 
 import drexel.edu.blackjack.server.BlackjackProtocol;
 import drexel.edu.blackjack.server.BlackjackProtocol.STATE;
-import drexel.edu.blackjack.server.ResponseCode;
 
 /**
  * <b>STATEFUL:</b> This class is a POJO that holds information 
@@ -32,6 +31,27 @@ public class TimeoutDefinition {
 	// null, but it's required that this be set.
 	private BlackjackProtocol.STATE	applicableState = null;
 	
+	/**
+	 * There are two types of timers. One is based on when the last command
+	 * of any type was received, the other on when a timer was set.
+	 */
+	enum TYPE {
+		/**
+		 * This one goes off the {@link drexel.edu.blackjack.server.BlackjackProtocol#getLastCommand()}
+		 * value 
+		 */
+		LAST_COMMAND,
+		
+		/**
+		 * This one goes of the {@link drexel.edu.blackjack.server.BlackjackProtocol#getTimer()}
+		 * value
+		 */
+		TIMER
+	}
+	
+	// And here is where we track the type
+	private TYPE type = null;
+	
 	// This is the length of the timeout, in milliseconds. Defaults
 	// to 15 minutes (time 60 seconds times 1000 milliseconds)
 	private long timeoutInMilliseconds = 15 * 60 * 1000;
@@ -40,8 +60,9 @@ public class TimeoutDefinition {
 	 * Some constructors go here.
 	 *************************************************************/
 
-	public TimeoutDefinition(STATE applicableState, long timeoutInMilliseconds ) {
+	public TimeoutDefinition(TYPE type, STATE applicableState, long timeoutInMilliseconds ) {
 		super();
+		this.type = type;
 		this.applicableState = applicableState;
 		this.timeoutInMilliseconds = timeoutInMilliseconds;
 	}
@@ -50,7 +71,9 @@ public class TimeoutDefinition {
 	 * Getters and setters
 	 *************************************************************/
 
+	
 	/**
+	 * What state does this timeout correspond to?
 	 * @return the applicableState
 	 */
 	public BlackjackProtocol.STATE getApplicableState() {
@@ -58,6 +81,7 @@ public class TimeoutDefinition {
 	}
 
 	/**
+	 * What state does this timeout correspond to?
 	 * @param applicableState the applicableState to set
 	 */
 	public void setApplicableState(BlackjackProtocol.STATE applicableState) {
@@ -65,6 +89,21 @@ public class TimeoutDefinition {
 	}
 
 	/**
+	 * @return the type
+	 */
+	public TYPE getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(TYPE type) {
+		this.type = type;
+	}
+
+	/**
+	 * New state to transition to.
 	 * @return the newState
 	 */
 	public BlackjackProtocol.STATE getNewState() {
@@ -72,13 +111,7 @@ public class TimeoutDefinition {
 	}
 
 	/**
-	 * @return the responseCode
-	 */
-	public ResponseCode getResponseCode() {
-		return null;
-	}
-
-	/**
+	 * How many milliseconds until a timeout occurs?
 	 * @return the timeoutInMilliseconds
 	 */
 	public long getTimeoutInMilliseconds() {
@@ -86,9 +119,10 @@ public class TimeoutDefinition {
 	}
 
 	/**
+	 * How many milliseconds until a timeout occurs?
 	 * @param timeoutInMilliseconds the timeoutInMilliseconds to set
 	 */
-	public void setTimeoutInMilliseconds(long timeoutInMilliseconds) {
+	protected void setTimeoutInMilliseconds(long timeoutInMilliseconds) {
 		this.timeoutInMilliseconds = timeoutInMilliseconds;
 	}
 	

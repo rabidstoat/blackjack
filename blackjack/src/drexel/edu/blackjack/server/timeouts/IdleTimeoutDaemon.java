@@ -169,9 +169,14 @@ public class IdleTimeoutDaemon extends Thread {
 							// Figure out how much time has passed since the relevant timer
 							long currentTime = System.currentTimeMillis();
 							long delta = 0;
-							if( thread.getProtocol() != null &&
-									thread.getProtocol().getLastCommand() != null ) {
-								delta = currentTime - thread.getProtocol().getLastCommand();
+							if( thread.getProtocol() != null && timeout.getType() != null ) {
+								if( timeout.getType().equals( TimeoutDefinition.TYPE.LAST_COMMAND) &&
+										thread.getProtocol().getLastCommand() != null ) {
+									delta = currentTime - thread.getProtocol().getLastCommand();
+								} else if( timeout.getType().equals(TimeoutDefinition.TYPE.TIMER) &&
+										thread.getProtocol().getTimer() != null ) {
+									delta = currentTime - thread.getProtocol().getTimer();
+								}
 							}
 							
 							LOGGER.finer( "The delta on the thread is " + delta );
@@ -180,7 +185,8 @@ public class IdleTimeoutDaemon extends Thread {
 							// If it's more than the timeout, we have to do something
 							if( delta > timeout.getTimeoutInMilliseconds() ) {
 								// STATEFUL: This will actually force a state change, to the
-								// disconnected state.
+								// disconnected state. We only have timeouts that disconnect
+								// currently implemented through this mechanism.
 								thread.forceDisconnectDueToTimeout();
 							}
 						}
@@ -212,17 +218,17 @@ public class IdleTimeoutDaemon extends Thread {
 		
 		// STATEFUL: They get disconnected after 45 seconds of no activity when waiting for a username
 		timeoutMap.put( BlackjackProtocol.STATE.WAITING_FOR_USERNAME, new TimeoutDefinition(
-				BlackjackProtocol.STATE.WAITING_FOR_USERNAME,
+				TimeoutDefinition.TYPE.TIMER, BlackjackProtocol.STATE.WAITING_FOR_USERNAME,
 				45 * SECOND_IN_MILLISECONDS) );
 		
 		// STATEFUL: Same is true when waiting for a password
 		timeoutMap.put( BlackjackProtocol.STATE.WAITING_FOR_PASSWORD, new TimeoutDefinition(
-				BlackjackProtocol.STATE.WAITING_FOR_PASSWORD,
+				TimeoutDefinition.TYPE.TIMER, BlackjackProtocol.STATE.WAITING_FOR_PASSWORD,
 				45 * SECOND_IN_MILLISECONDS) );
 
 		// STATEFUL: When authenticated but not in a game, they get 900 seconds
 		timeoutMap.put( BlackjackProtocol.STATE.NOT_IN_SESSION, new TimeoutDefinition(
-				BlackjackProtocol.STATE.NOT_IN_SESSION,
+				TimeoutDefinition.TYPE.LAST_COMMAND, BlackjackProtocol.STATE.NOT_IN_SESSION,
 				900 * SECOND_IN_MILLISECONDS) );
 
 	}

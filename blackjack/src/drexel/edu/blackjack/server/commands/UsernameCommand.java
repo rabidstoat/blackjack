@@ -89,6 +89,9 @@ public class UsernameCommand extends BlackjackCommand {
 			
 			protocol.setState(STATE.WAITING_FOR_PASSWORD);
 			
+			// Also, update the protocol timer as we will be waiting for that password
+			protocol.setTimer( System.currentTimeMillis() );
+			
 			/**Step 8: Generate the proper response */
 			return 	new ResponseCode( ResponseCode.CODE.WAITING_FOR_PASSWORD,
 					"UsernameCommand.processCommand() received valid username parameter;" +
