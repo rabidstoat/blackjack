@@ -83,8 +83,15 @@ public class BlackjackServer {
 	// Finally, the port that the server will run on
 	private static final int PORT						= 55555;
 	
-	// Use this for our EOL when sending message
+	/**
+	 *  Use this for our EOL when sending message. Determined by protocol.
+	 */
 	public static final String EOL						= "\n";
+	
+	/**
+	 * How many bytes per line is the max? Determined by protocol.
+	 */
+	public static final int MAX_BYTES_PER_LINE			= 1024;
 	
 	private final static Logger LOGGER = BlackjackLogger.createLogger(BlackjackServer.class .getName()); 
 	

@@ -108,7 +108,7 @@ public class BlackjackServerThread extends Thread {
 			out = new PrintWriter(socket.getOutputStream(), true);
 			
 			// And this is how responses are read from the client
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			in = new LengthLimitedBufferedReader(new InputStreamReader(socket.getInputStream()), BlackjackServer.MAX_BYTES_PER_LINE, BlackjackServer.EOL );
 	
 			// Keep reading single-line commands as long as we can
 			LOGGER.finer( "Inside a blackjack server thread, about to block for the first read" );
