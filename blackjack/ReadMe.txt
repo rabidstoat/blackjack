@@ -113,6 +113,8 @@ Additionally, you can search the source code for the following keywords:
    Code related to the user interface
 6. SECURITY
    Code related to security of the client and server
+7. SECURITY
+   Code related to our extra credit
 
 -----------------------------------------------------------------------------
 5. Ant tasks
@@ -165,6 +167,12 @@ o run-client-local-info
   Run the client, showing errors, warnings, and debug info (not low-level)
 o run-client-local-debug
   Run the client, showing even the most low-level debug messages
+o default-fuzz
+  Small fuzz test, sending in random binary and text strings from multiple threads
+o big-fuzz
+  More threads, more commands/messages sent, and longer binary strings
+o huge-fuzz
+  Even MORE threads, MORE commands/messages sent, and even longer binary strings
 
 -----------------------------------------------------------------------------
 6. External tools and libraries used
@@ -205,6 +213,13 @@ The following external tools and libraries were used.
 11. Github web site
    https://github.com/
    Where our code is hosted: https://github.com/rabidstoat/blackjack
+12. Camtasia
+   http://www.techsmith.com/camtasia.html
+   Used in video production
+13. Adobe After Effects
+   http://www.adobe.com/products/aftereffects.html
+   Used in video production
+
 
 Relevant licenses of included code can be found in the licenses subdirectory.
    

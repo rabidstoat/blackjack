@@ -39,23 +39,6 @@
         </javac>
     </target>
 
-    <target depends="compile" name="compile-test">
-        <javac srcdir="src" includes="**/*Test.java" destdir="bin" source="${source}" target="${target}" includeantruntime="true">
-            <classpath refid="blackjack.classpath"/>
-        </javac>
-    </target>
-
-    <target depends="compile-test" name="test">
-        <junit includeantruntime="true" printsummary="yes">
-            <formatter type="plain" usefile="false"/>
-            <classpath refid="blackjack.classpath"/>
-            <batchtest>
-                <fileset dir="src" includes="**/*Test*.java"/>
-            </batchtest>
-        </junit>
-    </target>
-
-
 	<!-- Runs the server, with only SEVERE log messages shown -->
     <target depends="compile" name="run-server">
         <echo message="Run-server ${ant.project.name}: ${ant.file}"/>
@@ -212,9 +195,32 @@
 		  </jar>
 	</target>
 	
-	<!-- Junit test tasks here -->
+	<!-- Junit and other test tasks here -->
+
+    <target depends="compile" name="compile-test">
+        <javac srcdir="src" includes="**/*Test.java" destdir="bin" source="${source}" target="${target}" includeantruntime="true">
+            <classpath refid="blackjack.classpath"/>
+        </javac>
+    </target>
+
+    <target depends="compile-test" name="test">
+        <junit includeantruntime="true" printsummary="yes">
+            <formatter type="plain" usefile="false"/>
+            <classpath refid="blackjack.classpath"/>
+            <batchtest>
+                <fileset dir="src" includes="**/*Test*.java"/>
+            </batchtest>
+        </junit>
+    </target>
 	
-	<!-- Javadoc task here -->
+    <target depends="compile-test" name="fuzz">
+        <java classname="drexel.edu.blackjack.test.SimpleFuzzTest">
+            <classpath refid="blackjack.classpath"/>
+    		<sysproperty key="loglevel" value="INFO"/>
+        </java>
+    </target>
+	
+    <!-- Javadoc task here -->
     <target name="javadoc">
         <javadoc access="protected" author="true" 
         	classpath="libs/junit-4.11.jar;libs/hamcrest-core-1.3.jar;libs/mockito-all-1.9.5.jar" 
