@@ -191,6 +191,14 @@ public class BlackjackServerThread extends Thread {
 	public void forceDisconnectDueToTimeout() {
 		
 		LOGGER.info( "Inside a client connection thread, about to force a timeout disconnect!" );
+		closeConnection();
+		
+	}
+	
+	/**
+	 * This method closes the connection by closing the socket.
+	 */
+	public void closeConnection() {
 		// Well, if we close the input reader, then the thread
 		// should (hopefully stop!)
 		try {
@@ -198,8 +206,7 @@ public class BlackjackServerThread extends Thread {
 			socket.close();
 		} catch (IOException e) {
 			LOGGER.warning( "Unable to close the socket in a blackjack server thread." );
-		}
-		
+		}		
 	}
 
 	/**

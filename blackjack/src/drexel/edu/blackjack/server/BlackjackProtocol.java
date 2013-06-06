@@ -398,6 +398,10 @@ public class BlackjackProtocol {
 		String response = "Received an unknown command, but had no command handler defined for it.";
 		if( command != null ) {
 			response = command.processCommand( this, metadata );
+			// Do we need to force them to disconnect?
+			if( response.startsWith(ResponseCode.CODE.SUCCESSFULLY_QUIT.getCodeAsString() ) ) {
+				
+			}
 		}
 		
 		// Update the timer
