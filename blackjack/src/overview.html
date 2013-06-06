@@ -130,6 +130,10 @@
        			 and account from tying up system resources while trying to guess user credentials
 		        <LI>The <a href="drexel/edu/blackjack/db/user/FlatfileUserManager.html">drexel.edu.blackjack.db.user.FlatfileUserManager
        			 </a> class prevents a user from logging in multiple times and using additional system resources
+		        <LI>The <a href="drexel/edu/blackjack/util/LengthLimitedBufferedReader.html">drexel.edu.blackjack.util.LengthLimitedBufferedReader
+       			 </a> is used to prevent a line of greater than 1024 characters from being read, as per the protocol spec, thus preventing a
+       			 possible form of DoS attack where a client sends a very long stream of data without an end-of-line delimiter, causing the
+       			 server to buffer it in memory until it runs out of memory and crashes.
             </UL>
             <P>
         <li><b>Non-repudiation</b>

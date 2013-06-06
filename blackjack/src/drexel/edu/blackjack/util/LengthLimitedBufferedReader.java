@@ -23,6 +23,12 @@ import java.io.Reader;
  * more characters than the limit specified are read before encountering the
  * line delimiter specified, then an exception is raised. Otherwise the string
  * (stripped of the delimiter) is returned. 
+ * <P>
+ * <b>SECURITY:</b> This class is used to prevent a line of greater than 1024 
+ * characters from being read, as per the protocol spec, thus preventing a
+ * possible form of DoS attack where a client sends a very long stream of data 
+ * without an end-of-line delimiter, causing the server to buffer it in memory 
+ * until it runs out of memory and crashes.
  **/
 public class LengthLimitedBufferedReader extends BufferedReader {
 
@@ -70,9 +76,10 @@ public class LengthLimitedBufferedReader extends BufferedReader {
 
 		// Keep reading until you hit the delimiter OR end of stream OR you exceed the line length
 		char ch = (char)read();
-		while( !isDelimiter(ch) && ch != -1 && index < byteLimit ) {
+		while( !isDelimiter(ch) && ch != -1 && index < byteLimit+EOL.length() ) {
 			str.append(ch);
 			ch = (char)read();
+			index++;
 		}
 		
 		// Okay, now, see if it wasn't the end of the stream (-1) we have
@@ -80,8 +87,8 @@ public class LengthLimitedBufferedReader extends BufferedReader {
 		String result = str.toString();
 		if( ch != -1 ) {
 			
-			// If the string does NOT end with the delimiter, we read too much
-			if( !str.toString().endsWith(EOL) ) {
+			// If the index value is at our limit, we had a problem
+			if( index == byteLimit ) {
 				throw new IOException( "Byte limit of " + byteLimit + " exceeded while reading." );
 			}
 			
