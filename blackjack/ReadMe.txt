@@ -12,7 +12,20 @@ Group 10 of CS544, Spring 2013 class created for their group project.
 The project is implemented entirely in Java 7.
 
 -----------------------------------------------------------------------------
-1. Quickstart Instructions
+TABLE OF CONTENTS
+-----------------------------------------------------------------------------
+
+1. Quickstart instructions
+2. Robustness analysis
+3. Extra credit
+4. Where things are implemented
+5. The user interface
+6. Contents of the zip file
+7. Ant tasks
+8. External tools and libraries used
+
+-----------------------------------------------------------------------------
+1. Quickstart instructions
 -----------------------------------------------------------------------------
 
 IF YOU WANT TO COMPILE THE CODE: You will need a Java 7 compiler and a 
@@ -41,51 +54,108 @@ use usernames of "user1" through "user4" with a password of "password" to
 log in. Only one simultaneous login per user is allowed.
 
 -----------------------------------------------------------------------------
-2. The user interface
+2. Robustness analysis
 -----------------------------------------------------------------------------
 
-The user interface is a simple command-line interface allowing the user to
-play blackjack. A user can only be logged in once at a time, and can only
-play one game at a time. Money is 'virtual', stored in an account balance.
-The interface is menu driven, and includes some options purely for the
-purpose of showing off protocol functionality; these are indicated 
-parenthetically as being for debug purposes.
+The protocol requires the use of TLS for encryption, which we leverage for
+the security benefits it provides; no commands or responses are sent over
+clear text. The protocol attempts to hide information about certain details
+of the protocol or underlying data in its error messages as well. An example
+of this is that when use authentication fails, the protocol error message 
+merely notes that it failed. It does not verify if the username given
+is valid or not, to discourage attempts at hacking into accounts that are 
+verified to exist.
 
-Aside from the command-line interface, a graphical debug window exists for
-viewing of raw protocol messages sent and received. It can be accessed from
-almost any menu, once authenticated, with the 'T' option (for toggling).
+Another thing that contributes to the robustness is that, despite there 
+being no explicit code dealing with non-repudiation in the protocol (e.g.,
+there are no sequence numbers), in most cases 'replaying' a packet will
+not cause undue harm. The protocol is stateful, for one thing. Commands
+such as the bet command, if issues multiple times (maliciously or purposefully)
+will not circumvent the bet limit on a game, it will merely update the
+bet value needlessly to the same thing. Some commands, such as replaying
+a 'hit' command, could have unintended and detrimental consequences, however.
+On the other hand, there are no commands that directly affect any user's
+bank balance in the protocol, avoiding that as a vulnerability.
+
+As far as fuzzing, we have done both manual and automated fuzz testing
+of our protocol, albeit of a simplistic nature. The javadocs for the
+drexel.edu.blackjack.test.SimpleFuzzTest class provides details on the
+approach. In general, the automated fuzz testing uses some default
+values (which can be overridden by system properties) to establish
+a number of test threads of varying types, which are then executed in
+parallel. The three types of test threads include:
+
+  1. Unathenticated binary streams: This type of thread connects, does
+     the TLS handshake, and immediately starts streaming a random number
+     of binary sequences of random values with random lengths over the
+     socket. The range for the possible number of sequences sentence, as
+     well as the range of the number of bytes in any given sequence,
+     follow a linear distribution within either default or overriden
+     ranges.
+     
+  2. Authenticated binary streams: This is similar to test #1, with the
+     exception that the user is authenticated following the TLS handshake
+     and prior to sending the random data.
+     
+  3. Test strings: This test sends ASCII text strings to the server, which
+     is what the protocol specifies. However, there is a randomization
+     algorithm used to send randomly selected valid or invalid command
+     types, with a variable number of string or numeric parameters.
+
+Fuzz testing did discover a problem early on where sending large, 
+unterminated streams of binary data could crash the server with
+an Out Of Memory error. This was corrected by enforcing the 1024-byte
+limit on single lines of input, and terminating connections for any client
+that violated this (without reading the extraneous data).
+
+Our testing is detailed in Section 15 of our updated protocol paper. In
+general we used a combination of methods that included JUnit tests (and
+coverage reports thereof), automated fuzz testing, a message monitor GUI
+for viewing unencrypted message traffic, a debug client that allowed us
+to enter erroneous commands (e.g., wrong arguments, wrong state, etc.),
+java logging for diagnostic prints, and general 'hands on' user testing
+of the software.
+
+However, the implementation was done in a very short time frame and is not
+entirely secure. Passwords are stored in plain text, for example, and anyone
+with access to an editor could change bank account balances at will. This is
+on the implementation side, and not a vulnerability of the protocol itself,
+owing more to the quick turnaround nature of this project.
 
 -----------------------------------------------------------------------------
-3. Contents of this zip file
+3. Extra credit
 -----------------------------------------------------------------------------
 
-The file structure included is as follows:
+We did implement the extra credit. The limitation is that a server must be
+run on the local area network, and that only IPv4 is supported. Starting 
+the client without a parameter for the server will search for this server 
+and, if found, connect to the default port.
 
-blackjack                         Root directory of project
-|-- src                           Our source code (directory plus subs)
-|-- config                        Supplied configuration files
-|    |-- blackjack.keystore       Keystore with X509 security certificate
-|    |-- commands.txt             Server configuration file
-|    +-- ReadMe.txt               More details on above files
-|-- dist                          Distribution directory
-|    |-- games_serialized         Default flatfile database of games
-|    |-- run-client.bat           Windows batch file for client
-|    |-- run-client.sh            Linux batch file for client
-|    |-- run-server.bat           Windows batch file for server
-|    |-- run-server.sh            Linux batch file for server
-|    |-- setup-games.bat          Windows batch file for game administration
-|    |-- setup-games.sh           Linux batch file for game administration
-|    |-- setup-users.bat          Windows batch file for user administration
-|    |-- setup-users.sh           Linux batch file for user administration
-|    +-- users_serialized         Default flatfile database of users
-|-- doc                           Pre-compiled javadocs (directory plus subs)
-|-- libs                          Supplied JAR files
-|    |-- hamcrest-core-1.3.jar    Required by JUnit
-|    |-- junit-4.11.jar           Testing framework
-|    +-- mockito-all.1.9.5.jar    Mocking framework to extend JUnit
-|-- licenses                      Licenses of included third-party code
-|-- build.xml                     Ant buildfile
-+-- ReadMe.txt                    This file
+The approach taken is a multicast text-based request-response pair of messages
+on an agreed UDP port and broadcast group. The client generates the request up
+to ten times, using a backoff strategy to incrementally increase the amount
+of time between requests. Repeating the requests is done because UDP is not a
+reliable protocol, and the backoff strategy is used to avoid undue network
+congestion.
+
+As a server may be connected to multiple networks through multiple network
+interfaces, it is possible that it will have multiple IP addresses under which
+it identifies itself. Depending on where a client is broadcasting from, some
+of these IP addresses may not be appropriate to us. For example, a server
+might be on two totally separate LANs, neither of which can see one another,
+so that a location request from a client on the first network should be given
+one address, and a request from a client on the second network be given a
+different address. The server attempts to handle these issues by keeping a 
+list of all the addresses it associates itself with for any network interfaces
+it has, and along with the addresses, the corresponding subnet mask for 
+identifying addresses on the same subnet. When a client request is received,
+it knows the address it came from. This, combined with the list of addresses
+and subnet masks, is used to find the first host address variant that is
+located on the same subnet, which is then broadcast in response. (It is 
+because of this implementation for handling the case where a server is on
+multiple LANs which might not have visibility into one another that only
+IPv4 is supported. It is probably possible to do something similar for IPv6,
+but this was not implemented.)
 
 -----------------------------------------------------------------------------
 4. Where things are implemented
@@ -117,7 +187,55 @@ Additionally, you can search the source code for the following keywords:
    Code related to our extra credit
 
 -----------------------------------------------------------------------------
-5. Ant tasks
+5. The user interface
+-----------------------------------------------------------------------------
+
+The user interface is a simple command-line interface allowing the user to
+play blackjack. A user can only be logged in once at a time, and can only
+play one game at a time. Money is 'virtual', stored in an account balance.
+The interface is menu driven, and includes some options purely for the
+purpose of showing off protocol functionality; these are indicated 
+parenthetically as being for debug purposes.
+
+Aside from the command-line interface, a graphical debug window exists for
+viewing of raw protocol messages sent and received. It can be accessed from
+almost any menu, once authenticated, with the 'T' option (for toggling).
+
+-----------------------------------------------------------------------------
+6. Contents of this zip file
+-----------------------------------------------------------------------------
+
+The file structure included is as follows:
+
+blackjack                         Root directory of project
+|-- src                           Our source code (directory plus subs)
+|-- config                        Supplied configuration files
+|    |-- blackjack.keystore       Keystore with X509 security certificate
+|    |-- commands.txt             Server configuration file
+|    +-- ReadMe.txt               More details on above files
+|-- dist                          Distribution directory
+|    |-- games_serialized         Default flatfile database of games
+|    |-- run-client.bat           Windows batch file for client
+|    |-- run-client.sh            Linux batch file for client
+|    |-- run-server.bat           Windows batch file for server
+|    |-- run-server.sh            Linux batch file for server
+|    |-- setup-games.bat          Windows batch file for game administration
+|    |-- setup-games.sh           Linux batch file for game administration
+|    |-- setup-users.bat          Windows batch file for user administration
+|    |-- setup-users.sh           Linux batch file for user administration
+|    +-- users_serialized         Default flatfile database of users
+|-- doc                           Pre-compiled javadocs (directory plus subs)
+|-- libs                          Supplied JAR files
+|    |-- hamcrest-core-1.3.jar    Required by JUnit
+|    |-- junit-4.11.jar           Testing framework
+|    +-- mockito-all.1.9.5.jar    Mocking framework to extend JUnit
+|-- licenses                      Licenses of included third-party code
+|-- build.xml                     Ant buildfile
+|-- ReadMe.txt                    This file
++-- Updated_Design_Team_10.pdf    Our updated protocol specification
+
+-----------------------------------------------------------------------------
+7. Ant tasks
 -----------------------------------------------------------------------------
 
 We use an Ant buildfile for our build system. The following common tasks
@@ -175,7 +293,7 @@ o huge-fuzz
   Even MORE threads, MORE commands/messages sent, and even longer binary strings
 
 -----------------------------------------------------------------------------
-6. External tools and libraries used
+8. External tools and libraries used
 -----------------------------------------------------------------------------
 
 The following external tools and libraries were used.
@@ -219,7 +337,6 @@ The following external tools and libraries were used.
 13. Adobe After Effects
    http://www.adobe.com/products/aftereffects.html
    Used in video production
-
 
 Relevant licenses of included code can be found in the licenses subdirectory.
    
