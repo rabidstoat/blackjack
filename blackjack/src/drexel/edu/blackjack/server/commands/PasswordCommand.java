@@ -70,14 +70,22 @@ public class PasswordCommand extends BlackjackCommand {
 					"PasswordCommand.processCommand() received null arguments").toString();	
 		}
 
-		/** STATEFUL: Step 1-2: Error 2: Return an error if not in valid state for PASSWORD command */
+		/** STATEFUL: Step 1: Error 2: Return an error if not in valid state for PASSWORD command */
 		if(!getValidStates().contains( protocol.getState()) ) {
 			
 			return new ResponseCode( ResponseCode.CODE.NOT_EXPECTING_PASSWORD,
 					"PasswordCommand.processCommand() received out-of-context command").toString();
 		}
+		
+		/**STATEFUL: Step 2: Error 3: Return an error if already logged in*/
+		if(!getValidStates().contains( protocol.getState()) ) {
+			
+			return new ResponseCode( ResponseCode.CODE.ALREADY_LOGGED_IN,
+					"PasswordCommand.processCommand() out of context logging; " +
+					" already logged in").toString();
+		}
 
-		/** Steps 3-4: Error 3: If the PASSWORD password parameter is not exactly one string,
+		/** Steps 3-4: Error 4: If the PASSWORD password parameter is not exactly one string,
 		 * send an error message.*/
 		if ((cm.getParameters() == null) || cm.getParameters().size() != 1)  {
 			
