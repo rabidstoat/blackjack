@@ -42,7 +42,7 @@ import drexel.edu.blackjack.server.game.User;
  * @author Constantine
  * @author Jennifer
  */
-public class PasswordCommand extends BlackjackCommand {
+public class PasswordCommand extends BlackjackCommand { 
 	
 	// They get 3 tries to login before they're booted
 	public static final int INCORRECT_LOGIN_LIMIT = 3;
